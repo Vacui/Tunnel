@@ -3,9 +3,10 @@
 public class Testing : MonoBehaviour {
 
     public MapGeneration mapGeneration;
+    public string testSeed;
 
     private void Awake() {
-        mapGeneration.LoadMap("3/2/0-1-2-3-4-10");
+        mapGeneration.LoadMap(testSeed);
     }
 
 }
