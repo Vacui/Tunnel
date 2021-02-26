@@ -205,7 +205,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapGeneration: {fileID: 138777467}
-  testSeed: 4/3/1-8-5-8-5-7-3-3-0-4-7-2
 --- !u!4 &370436019
 Transform:
   m_ObjectHideFlags: 0
@@ -248,7 +247,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
