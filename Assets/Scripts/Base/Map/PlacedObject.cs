@@ -10,7 +10,20 @@ public enum Direction {
     Left
 }
 
-public class PlacedObject : MonoBehaviour {    
+public class PlacedObject : MonoBehaviour {
+
+    public bool isSafe;
+    public List<Direction> openDirectionsList;
+
+    public bool IsDirectionOpen(List<Direction> openDirectionsList, Direction dir) {
+        return openDirectionsList.Count > 0 ? openDirectionsList.Contains(dir) : false;
+    }
+    public bool IsDirectionOpen(Direction dir) {
+        return IsDirectionOpen(openDirectionsList, dir);
+    }
+    internal Direction GetOtherDirection(Direction dir) {
+        return GetOtherDirection(openDirectionsList, dir);
+    }
 
     public Direction GetOtherDirection(List<Direction> openDirectionsList, Direction dir) {
         List<Direction> tempOpenDirectionsList = new List<Direction>();
@@ -23,43 +36,16 @@ public class PlacedObject : MonoBehaviour {
             return Direction.NULL;
     }
 
-    public bool isSafe;
-    public List<Direction> openDirectionsList { get; private set; }
-
-    public void ToggleOpenDirection(Direction dir) {
-        if (openDirectionsList.Contains(dir)) {
-            openDirectionsList.Remove(dir);
-        } else {
-            openDirectionsList.Add(dir);
-        }
-    }
-
-    public void ClearOpenDirection() {
-        openDirectionsList = new List<Direction>();
-    }
-
-    public bool IsDirectionOpen(List<Direction> openDirectionsList, Direction dir) {
-        if (openDirectionsList != null) {
-            if (openDirectionsList.Count > 0)
-                return openDirectionsList.Contains(dir);
-        } else {
-            openDirectionsList = new List<Direction>();
-        }
-        return false;
-    }
-    public bool IsDirectionOpen(Direction dir) {
-        return IsDirectionOpen(openDirectionsList, dir);
-    }
-    internal Direction GetOtherDirection(Direction dir) {
-        return GetOtherDirection(openDirectionsList, dir);
-    }
-
     public bool IsSafe() {
         return isSafe;
     }
 
     public void Discover() {
         
+    }
+
+    private void Reset() {
+        if (openDirectionsList == null) openDirectionsList = new List<Direction>();
     }
 
 }

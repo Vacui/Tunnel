@@ -151,17 +151,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilesArray:
-  - {fileID: 7306338724744985562, guid: bbb500f2448f26e4b8b8278371cae86b, type: 3}
-  - {fileID: 6754606564712284336, guid: cdac1902935c2544fa50cbd593fae728, type: 3}
-  - {fileID: 7438169951265744636, guid: d2a90878184c0974f92fdb6319ae8682, type: 3}
-  - {fileID: 8130175743178279312, guid: 1664372d333d9fa42b43f621e8fac85f, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 5539499347112435793, guid: 10c306f10c9bae54ba8215a32ce052d2, type: 3}
+  - {fileID: 5525292849527870855, guid: 0398faac41774314ba233e33121dcf04, type: 3}
+  - {fileID: 3963211076844739455, guid: ff04ee30a17f6244c84617fda809195b, type: 3}
+  - {fileID: 2679695866053438978, guid: d26caa54e64c5c7428f94b04aa7b5136, type: 3}
+  - {fileID: 5804613318263565617, guid: 64895f17dd3b56b459bba062f9245a65, type: 3}
+  - {fileID: 4828288150201229789, guid: 5d19d2ccfa9731d4eb4a912b0d5175eb, type: 3}
+  - {fileID: 257224966889571866, guid: fa42397164db427478c0bf6d7f87b08b, type: 3}
+  - {fileID: 8166125748645418838, guid: 341fb9a60b8ec1843b7becc44b02227b, type: 3}
+  - {fileID: 5603798683048256100, guid: d2789131044fb4a46946b1206386ba63, type: 3}
+  - {fileID: 3496276615995424176, guid: 6890a42f954c71847a7136ef52584e97, type: 3}
+  - {fileID: 4071775289650111631, guid: ed43c1f741f21094da7495c0c5d35dcd, type: 3}
 --- !u!4 &138777468
 Transform:
   m_ObjectHideFlags: 0
@@ -206,7 +205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapGeneration: {fileID: 138777467}
-  testSeed: 3/2/0-1-2-3-4-10
+  testSeed: 4/3/1-8-5-8-5-7-3-3-0-4-7-2
 --- !u!4 &370436019
 Transform:
   m_ObjectHideFlags: 0
@@ -256,7 +255,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -348,8 +347,8 @@ Camera:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -365,12 +364,12 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
-  m_Depth: -1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 567
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -389,10 +388,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535535}
+  m_LocalPosition: {x: -3.18, y: 5, z: -3.53}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 45, z: 0}
