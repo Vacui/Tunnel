@@ -108,6 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSafe: 0
+  openDirectionsList: 
 --- !u!1 &257224967447939488
 GameObject:
   m_ObjectHideFlags: 0
@@ -121,7 +122,7 @@ GameObject:
   - component: {fileID: 257224967447939501}
   - component: {fileID: 257224967447939502}
   m_Layer: 0
-  m_Name: Quad_Curve
+  m_Name: Quad-Curve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

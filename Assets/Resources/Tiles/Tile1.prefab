@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 8640599929897675191}
   - component: {fileID: 5011884263725751340}
   m_Layer: 0
-  m_Name: Quad_Circle
+  m_Name: Quad-Circle_Double
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168,7 +168,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 08190878e05605048ba0170bd4f05422, type: 2}
+  - {fileID: 2100000, guid: 09c697c08b0f3104e8d7400b7263e787, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

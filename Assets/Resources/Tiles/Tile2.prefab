@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 5424949046646582765}
   - component: {fileID: 7152859398734399065}
   m_Layer: 0
-  m_Name: Quad_End
+  m_Name: Quad-X
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

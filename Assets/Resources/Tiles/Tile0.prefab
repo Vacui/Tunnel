@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 4792969678682388878}
   - component: {fileID: 3660651107274454888}
   m_Layer: 0
-  m_Name: Quad_Circle
+  m_Name: Quad-Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

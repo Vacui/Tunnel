@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8166125748472726157}
   - component: {fileID: 8166125748472726158}
   m_Layer: 0
-  m_Name: Quad_Curve
+  m_Name: Quad-Curve
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -202,3 +202,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSafe: 0
+  openDirectionsList: 
