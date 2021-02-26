@@ -23,7 +23,20 @@ public class PlacedObject : MonoBehaviour {
             return Direction.NULL;
     }
 
-    [SerializeField] List<Direction> openDirectionsList;
+    public bool isSafe;
+    public List<Direction> openDirectionsList { get; private set; }
+
+    public void ToggleOpenDirection(Direction dir) {
+        if (openDirectionsList.Contains(dir)) {
+            openDirectionsList.Remove(dir);
+        } else {
+            openDirectionsList.Add(dir);
+        }
+    }
+
+    public void ClearOpenDirection() {
+        openDirectionsList = new List<Direction>();
+    }
 
     public bool IsDirectionOpen(List<Direction> openDirectionsList, Direction dir) {
         if (openDirectionsList != null) {
@@ -39,6 +52,10 @@ public class PlacedObject : MonoBehaviour {
     }
     internal Direction GetOtherDirection(Direction dir) {
         return GetOtherDirection(openDirectionsList, dir);
+    }
+
+    public bool IsSafe() {
+        return isSafe;
     }
 
     public void Discover() {

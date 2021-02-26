@@ -106,4 +106,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7a6d31da9ef474fb2126f79fbdd70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  openDirectionsList: 01000000020000000300000004000000
+  isSafe: 1
