@@ -206,6 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapGeneration: {fileID: 138777467}
+  testSeed: 3/2/0-1-2-3-4-10
 --- !u!4 &370436019
 Transform:
   m_ObjectHideFlags: 0
