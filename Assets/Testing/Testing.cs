@@ -5,6 +5,7 @@ public class Testing : MonoBehaviour {
     public MapGeneration mapGeneration;
 
     private string[] seeds = new string[]{
+        "1/1/1",
         "4/3/1-8-5-8-5-7-3-3-0-4-7-2",
         "4/6/1-4-8-2-3-0-3-3-3-3-3-3-6-7-3-3-5-4-0-3-6-4-4-7",
         "14/11/0-0-5-4-4-4-2-4-4-0-4-4-4-8-0-0-3-0-0-0-3-0-0-3-0-0-0-3-5-4-9-4-0-4-9-4-4-9-4-0-4-7-3-0-3-0-3-0-3-0-0-3-0-0-0-0-6-4-0-0-3-0-3-0-0-0-4-4-4-8-0-5-4-4-9-4-0-4-4-4-4-8-0-3-5-9-8-0-3-0-5-4-4-4-0-3-0-3-3-3-6-4-0-0-3-0-0-0-3-3-0-3-3-0-4-4-4-4-9-4-0-4-7-3-0-3-3-0-0-0-0-0-3-0-3-0-0-3-0-3-1-4-4-4-4-4-0-4-7-0-0-0-4-7",
@@ -14,7 +15,7 @@ public class Testing : MonoBehaviour {
     };
 
     private void Awake() {
-        mapGeneration.LoadMapAround(seeds[5], Vector3.zero);
+        mapGeneration.LoadMapAround(seeds[0], Vector3.zero);
     }
 
 }
