@@ -28,13 +28,10 @@ public class CharacterControllerXZ : MonoBehaviour {
     }
 
     private void MoveToStart(object sender, MapGeneration.OnGridReadyEventArgs e) {
-        if (e.x >= 0 && e.z >= 0) {
-            x = -1;
-            z = -1;
-            MoveToCell(e.x, e.z);
-        } else {
-            Debug.LogWarning($"Character start position {e.x},{e.z} is NOT valid.", gameObject);
-        }
+        Debug.Log($"Character moving to start {e.x},{e.z}.");
+        x = -1;
+        z = -1;
+        MoveToCell(e.x, e.z);
     }
 
     private void MoveToCell(int x, int z, Direction moveDirection = Direction.NULL) {

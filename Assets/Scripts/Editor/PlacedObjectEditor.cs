@@ -2,7 +2,6 @@
 using UnityEditor;
 
 [CustomEditor(typeof(PlacedObject))]
-[CanEditMultipleObjects]
 public class PlacedObjectEditor : Editor {
 
     private static GUIStyle ToggleButtonStyleNormal = null;

@@ -65,12 +65,12 @@ public class MapGeneration : MonoBehaviour {
             mapParent = new GameObject().transform;
             mapParent.name = "Map Parent";
             mapParent.parent = transform;
-            mapParent.localPosition = mapOriginWorldPosition;
+            mapParent.localPosition = Vector3.zero;
 
             int startX = -1;
             int startZ = -1;
 
-            grid = new GridXZ<GridObject>(seed.width, seed.height, C_CellSize, Vector2.zero, (GridXZ<GridObject> g, int x, int z) => new GridObject(g, x, z));
+            grid = new GridXZ<GridObject>(seed.width, seed.height, C_CellSize, mapOriginWorldPosition, (GridXZ<GridObject> g, int x, int z) => new GridObject(g, x, z));
             grid.OnGridObjectChanged += OnGridObjectChanged;
 
             for (int i = 0; i < seed.cells.Length; i++) {
@@ -107,10 +107,10 @@ public class MapGeneration : MonoBehaviour {
 
     }
 
-    public void LoadMapAround(string seed, Vector3 originWorldPosition) {
+    public void LoadMapAround(string seed, Vector3 originPosition) {
 
         Seed mapSeed = new Seed(seed);
-        LoadMap(mapSeed, (new Vector3(-mapSeed.width / 2.0f + 0.5f, 0, -mapSeed.height / 2.0f + 0.5f) * C_CellSize) + originWorldPosition);
+        LoadMap(mapSeed, ((new Vector3(-mapSeed.width / 2.0f + 0.5f, 0, -mapSeed.height / 2.0f + 0.5f) + originPosition) * C_CellSize));
 
     }
 
