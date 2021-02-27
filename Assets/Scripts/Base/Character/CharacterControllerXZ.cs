@@ -40,16 +40,16 @@ public class CharacterControllerXZ : MonoBehaviour {
             if (map.grid.XZValid(this.x, this.z)) {
                 currentXZPlacedObject = map.grid.GetGridObject(this.x, this.z).GetPlacedObject();
             }
-            if (currentXZPlacedObject == null || currentXZPlacedObject.IsDirectionOpen(moveDirection)) {
+            if (currentXZPlacedObject == null || currentXZPlacedObject.OpenDirections.IsDirectionOpen(moveDirection)) {
                 if (map.grid.XZValid(x, z)) {
                     PlacedObject newXZPlacedObject = map.grid.GetGridObject(x, z).GetPlacedObject();
 
-                    if (currentXZPlacedObject == null || newXZPlacedObject.IsDirectionOpen(moveDirection.GetOppositeDirection())) {
+                    if (currentXZPlacedObject == null || newXZPlacedObject.OpenDirections.IsDirectionOpen(moveDirection.GetOppositeDirection())) {
 
                         Debug.Log($"Character moving from {this.x},{this.z} to {x},{z} ({moveDirection}).");
                         this.moveDirection = moveDirection;
-                        isSafe = newXZPlacedObject.IsSafe();
-                        newXZPlacedObject.Discover();
+                        isSafe = newXZPlacedObject.IsSafe;
+                        newXZPlacedObject.Enter();
                         if (isSafe) {
                             if (map.grid.XZValid(x + 1, z)) map.grid.GetGridObject(x + 1, z).GetPlacedObject().Discover();
                             if (map.grid.XZValid(x - 1, z)) map.grid.GetGridObject(x - 1, z).GetPlacedObject().Discover();
@@ -68,7 +68,7 @@ public class CharacterControllerXZ : MonoBehaviour {
                 }
             } else {
                 Debug.LogWarning($"Character CAN'T exit {this.x},{this.z} for {x},{z} ({moveDirection}).");
-                MoveToCell(currentXZPlacedObject.GetOtherDirection(moveDirection.GetOppositeDirection()));
+                MoveToCell(currentXZPlacedObject.OpenDirections.GetOtherDirection(moveDirection.GetOppositeDirection()));
             }
         } else {
             Debug.LogWarning("Character GridManager has no grid.", gameObject);

@@ -15,7 +15,7 @@ public class Testing : MonoBehaviour {
     };
 
     private void Awake() {
-        mapGeneration.LoadMapAround(seeds[0], Vector3.zero);
+        mapGeneration.LoadMapAround(seeds[4], Vector3.zero);
     }
 
 }

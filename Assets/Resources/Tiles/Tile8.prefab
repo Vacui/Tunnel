@@ -107,8 +107,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7a6d31da9ef474fb2126f79fbdd70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSafe: 0
-  openDirectionsList: 
+  visuals:
+  - {fileID: 3496276616358391628}
+  hiddenColor: {r: 1, g: 1, b: 1, a: 1}
+  discoveredColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
+  visibleColor: {r: 0, g: 0, b: 0, a: 1}
+  IsSafe: 0
+  openDirections:
+    up: 1
+    right: 0
+    down: 0
+    left: 1
 --- !u!1 &3496276616358391625
 GameObject:
   m_ObjectHideFlags: 0

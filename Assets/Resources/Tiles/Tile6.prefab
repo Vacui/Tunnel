@@ -201,5 +201,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7a6d31da9ef474fb2126f79fbdd70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSafe: 0
-  openDirectionsList: 
+  visuals:
+  - {fileID: 8166125748472726157}
+  hiddenColor: {r: 1, g: 1, b: 1, a: 1}
+  discoveredColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
+  visibleColor: {r: 0, g: 0, b: 0, a: 1}
+  IsSafe: 0
+  openDirections:
+    up: 0
+    right: 1
+    down: 1
+    left: 0

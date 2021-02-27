@@ -10,42 +10,90 @@ public enum Direction {
     Left
 }
 
+public enum Visibility {
+    NULL,
+    Hidden,
+    Discovered,
+    Visible
+}
+
+[System.Serializable]
+public class OpenDirections {
+    public bool up;
+    public bool right;
+    public bool down;
+    public bool left;
+
+    public bool IsDirectionOpen(Direction dir) {
+        bool result = false;
+
+        switch (dir) {
+            case Direction.Up: result = up; break;
+            case Direction.Right: result = right; break;
+            case Direction.Down: result = down; break;
+            case Direction.Left: result = left; break;
+        }
+
+        return result;
+    }
+
+    public Direction GetOtherDirection(Direction dir) {
+
+        if (up && dir != Direction.Up) return Direction.Up;
+        if (right && dir != Direction.Right) return Direction.Right;
+        if (down && dir != Direction.Down) return Direction.Down;
+        if (left && dir != Direction.Left) return Direction.Left;
+
+        return Direction.NULL;
+    }
+}
+
 public class PlacedObject : MonoBehaviour {
 
-    public bool isSafe;
-    public List<Direction> openDirectionsList;
+    private Visibility status;
+    public Visibility Status {
+        get { return status; }
+        set {
+            status = value;
+            if (visuals != null) {
+                Color newColor = Color.white;
+                switch (status) {
+                    case Visibility.Hidden: newColor = hiddenColor; break;
+                    case Visibility.Discovered: newColor = discoveredColor; break;
+                    case Visibility.Visible: newColor = visibleColor; break;
+                }
 
-    public bool IsDirectionOpen(List<Direction> openDirectionsList, Direction dir) {
-        return openDirectionsList.Count > 0 ? openDirectionsList.Contains(dir) : false;
-    }
-    public bool IsDirectionOpen(Direction dir) {
-        return IsDirectionOpen(openDirectionsList, dir);
-    }
-    internal Direction GetOtherDirection(Direction dir) {
-        return GetOtherDirection(openDirectionsList, dir);
-    }
-
-    public Direction GetOtherDirection(List<Direction> openDirectionsList, Direction dir) {
-        List<Direction> tempOpenDirectionsList = new List<Direction>();
-        tempOpenDirectionsList.AddRange(openDirectionsList);
-        if (tempOpenDirectionsList.Contains(dir))
-            tempOpenDirectionsList.Remove(dir);
-        if (tempOpenDirectionsList.Count > 0)
-            return tempOpenDirectionsList[0];
-        else
-            return Direction.NULL;
+                foreach(MeshRenderer visual in visuals) {
+                    visual.material.color = newColor;
+                }
+            }
+        }
     }
 
-    public bool IsSafe() {
-        return isSafe;
+    [Header("Style")]
+    public List<MeshRenderer> visuals;
+    public Color hiddenColor;
+    public Color discoveredColor;
+    public Color visibleColor;
+
+    [Header("Navigation")]
+    public bool IsSafe;
+    [SerializeField] private OpenDirections openDirections;
+    public OpenDirections OpenDirections {
+        get { return openDirections; }
     }
 
     public void Discover() {
-        
+        //if (status != Visibility.Visible) Status = Visibility.Discovered;
+    }
+
+    public void Enter() {
+        //if (status != Visibility.Discovered) Status = Visibility.Visible;
     }
 
     private void Reset() {
-        if (openDirectionsList == null) openDirectionsList = new List<Direction>();
+        if (openDirections == null) openDirections = new OpenDirections();
+        status = Visibility.Hidden;
     }
 
 }
