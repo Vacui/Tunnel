@@ -50,6 +50,8 @@ public class OpenDirections {
 
 public class PlacedObject : MonoBehaviour {
 
+    private static readonly Color C_HiddenColor = Color.white;
+
     private Visibility status;
     public Visibility Status {
         get { return status; }
@@ -58,12 +60,12 @@ public class PlacedObject : MonoBehaviour {
             if (visuals != null) {
                 Color newColor = Color.white;
                 switch (status) {
-                    case Visibility.Hidden: newColor = hiddenColor; break;
-                    case Visibility.Discovered: newColor = discoveredColor; break;
-                    case Visibility.Visible: newColor = visibleColor; break;
+                    case Visibility.Hidden: newColor = C_HiddenColor; break;
+                    case Visibility.Discovered: newColor = new Color(color.r, color.g, color.b, 0.5f); break;
+                    case Visibility.Visible: newColor = color; break;
                 }
 
-                foreach(MeshRenderer visual in visuals) {
+                foreach (MeshRenderer visual in visuals) {
                     visual.material.color = newColor;
                 }
             }
@@ -72,9 +74,7 @@ public class PlacedObject : MonoBehaviour {
 
     [Header("Style")]
     public List<MeshRenderer> visuals;
-    public Color hiddenColor;
-    public Color discoveredColor;
-    public Color visibleColor;
+    public Color color;
 
     [Header("Navigation")]
     public bool IsSafe;
@@ -83,17 +83,21 @@ public class PlacedObject : MonoBehaviour {
         get { return openDirections; }
     }
 
+    private void Awake() {
+        Status = Visibility.Hidden;
+    }
+
     public void Discover() {
-        //if (status != Visibility.Visible) Status = Visibility.Discovered;
+        if (status != Visibility.Visible) Status = Visibility.Discovered;
     }
 
     public void Enter() {
-        //if (status != Visibility.Discovered) Status = Visibility.Visible;
+        Status = Visibility.Visible;
     }
 
     private void Reset() {
         if (openDirections == null) openDirections = new OpenDirections();
-        status = Visibility.Hidden;
+        Status = Visibility.Hidden;
     }
 
 }

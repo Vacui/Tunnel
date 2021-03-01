@@ -49,7 +49,7 @@ public class MapGeneration : MonoBehaviour {
         public int z;
     }
 
-    private const int C_CellSize = 1;
+    private const float C_CellSize = 1f;
 
     public GridXZ<GridObject> grid { get; private set; }
     [SerializeField] private GameObject[] tilesArray;
@@ -77,28 +77,32 @@ public class MapGeneration : MonoBehaviour {
                 int value;
                 grid.GetXZ(i, out int x, out int z);
 
-                if (int.TryParse(seed.cells[i], out value)) {
-                    if (value < tilesArray.Length) {
-                        if (tilesArray[value] != null) {
-                            Transform newCellTransform = Instantiate(tilesArray[value], mapParent).transform;
-                            newCellTransform.localPosition = grid.GetWorldPosition(x, z);
-                            PlacedObject placedObject = newCellTransform.GetComponent<PlacedObject>();
-                            grid.GetGridObject(i).SetPlacedObject(placedObject);
-                            if (value == 1) {
-                                startX = x;
-                                startZ = z;
-                                placedObject.Discover();
-                            } else if (value == 2) {
-                                placedObject.Discover();
+                if (seed.cells[i] != "") {
+                    if (int.TryParse(seed.cells[i], out value)) {
+                        if (value < tilesArray.Length) {
+                            if (tilesArray[value] != null) {
+                                Transform newCellTransform = Instantiate(tilesArray[value], mapParent).transform;
+                                newCellTransform.localPosition = grid.GetWorldPosition(x, z);
+                                PlacedObject placedObject = newCellTransform.GetComponent<PlacedObject>();
+                                grid.GetGridObject(i).SetPlacedObject(placedObject);
+                                if (value == 1) {
+                                    startX = x;
+                                    startZ = z;
+                                    placedObject.Discover();
+                                } else if (value == 2) {
+                                    placedObject.Discover();
+                                }
+                            } else {
+                                Debug.LogWarning($"Tile prefab {value} is null.");
                             }
                         } else {
-                            Debug.LogWarning($"Tile prefab {value} is null.");
+                            Debug.LogWarning($"Tile prefab {value} is not present in the tiles array.");
                         }
                     } else {
-                        Debug.LogWarning($"Tile prefab {value} is not present in the tiles array.");
+                        Debug.LogWarning($"Error in parsing seed cell n.{i} content.");
                     }
                 } else {
-                    Debug.LogWarning($"Error in parsing seed cell n.{i} content.");
+                    Debug.Log($"The cell n.{i} is empty.");
                 }
             }
 

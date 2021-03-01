@@ -17,7 +17,6 @@ public class GridXZ<TGridObject> {
     private Vector3 originPosition;
     private TGridObject[,] gridArray;
 
-    public GridXZ(int width, int height, float cellSize) : this(width, height, cellSize, Vector2.zero) { }
     public GridXZ(int width, int height, float cellSize, Vector3 originPosition, Func<GridXZ<TGridObject>, int, int, TGridObject> createGridObject = null) {
 
         if (cellSize <= 0) cellSize = 1;
