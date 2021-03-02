@@ -2,7 +2,7 @@
 
 public class Testing : MonoBehaviour {
 
-    public MapGeneration mapGeneration;
+    public MapManager mapGeneration;
 
     private string[] seeds = new string[]{
         "1/1/1",

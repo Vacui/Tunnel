@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MapGeneration : MonoBehaviour {
+public class MapManager : MonoBehaviour {
 
     public class Seed {
         public int width;

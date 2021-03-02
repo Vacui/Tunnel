@@ -68,6 +68,7 @@ public class PlacedObject : MonoBehaviour {
                 foreach (MeshRenderer visual in visuals) {
                     visual.material.color = newColor;
                 }
+
             }
         }
     }

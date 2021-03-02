@@ -2,7 +2,7 @@
 
 public class CharacterControllerXZ : MonoBehaviour {
 
-    [SerializeField] private MapGeneration map;
+    [SerializeField] private MapManager map;
     private int x;
     private int z;
     public bool isSafe = true;
@@ -27,7 +27,7 @@ public class CharacterControllerXZ : MonoBehaviour {
         }
     }
 
-    private void MoveToStart(object sender, MapGeneration.OnGridReadyEventArgs e) {
+    private void MoveToStart(object sender, MapManager.OnGridReadyEventArgs e) {
         Debug.Log($"Character moving to start {e.x},{e.z}.");
         x = -1;
         z = -1;
