@@ -3,13 +3,14 @@
 using System;
 using UnityEngine;
 
+public class GridCoordEventArgs : System.EventArgs {
+    public int x;
+    public int z;
+}
+
 public class GridXZ<TGridObject> {
 
-    public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
-    public class OnGridObjectChangedEventArgs : EventArgs {
-        public int x;
-        public int z;
-    }
+    public event EventHandler<GridCoordEventArgs> OnGridObjectChanged;
 
     public int width { get; private set; }
     public int height { get; private set; }
@@ -48,7 +49,7 @@ public class GridXZ<TGridObject> {
             Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
             Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
 
-            OnGridObjectChanged += (object sender, OnGridObjectChangedEventArgs eventArgs) => { debugTextMeshArray[eventArgs.x, eventArgs.z].text = gridArray[eventArgs.x, eventArgs.z]?.ToString(); };
+            OnGridObjectChanged += (object sender, GridCoordEventArgs eventArgs) => { debugTextMeshArray[eventArgs.x, eventArgs.z].text = gridArray[eventArgs.x, eventArgs.z]?.ToString(); };
         }
 
     }
@@ -95,7 +96,7 @@ public class GridXZ<TGridObject> {
     }
 
     public void TriggerGridObjectChanged(int x, int z) {
-        OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { x = x, z = z });
+        OnGridObjectChanged?.Invoke(this, new GridCoordEventArgs { x = x, z = z });
     }
 
     public TGridObject GetGridObject(int x, int z) {

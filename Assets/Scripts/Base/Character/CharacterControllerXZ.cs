@@ -27,7 +27,7 @@ public class CharacterControllerXZ : MonoBehaviour {
         }
     }
 
-    private void MoveToStart(object sender, MapManager.OnGridReadyEventArgs e) {
+    private void MoveToStart(object sender, GridCoordEventArgs e) {
         Debug.Log($"Character moving to start {e.x},{e.z}.");
         x = -1;
         z = -1;
@@ -49,7 +49,7 @@ public class CharacterControllerXZ : MonoBehaviour {
                         Debug.Log($"Character moving from {this.x},{this.z} to {x},{z} ({moveDirection}).");
                         this.moveDirection = moveDirection;
                         isSafe = newXZPlacedObject.IsSafe;
-                        newXZPlacedObject.Enter();
+                        newXZPlacedObject.Explore();
                         if (isSafe) {
                             PlacedObject placedObject;
                             if (map.grid.XZValid(x + 1, z) && map.grid.GetGridObject(x + 1, z).GetPlacedObject(out placedObject)) placedObject.Discover();

@@ -43,17 +43,25 @@ public class MapManager : MonoBehaviour {
         }
     }
 
-    public event System.EventHandler<OnGridReadyEventArgs> OnGridReady;
-    public class OnGridReadyEventArgs : System.EventArgs {
-        public int x;
-        public int z;
-    }
+    public event System.EventHandler<GridCoordEventArgs> OnGridReady;
 
     private const float C_CellSize = 1f;
 
     public GridXZ<GridObject> grid { get; private set; }
     [SerializeField] private GameObject[] tilesArray;
     private Transform mapParent;
+
+    private int mapTiles;
+    private int mapTilesExplored;
+    public float MapExploringPercentage {
+        get {
+            return mapTilesExplored / (float)mapTiles;
+        }
+    }
+
+    private void Awake() {
+        PlacedObject.OnExploring += (s, e) => { mapTilesExplored++; Debug.Log($"Map discovery percentage {System.Math.Truncate((MapExploringPercentage * 100) * 100) / 100}% ({mapTiles}/{mapTilesExplored})"); };
+    }
 
     public void LoadMap(Seed seed, Vector3 mapOriginWorldPosition) {
 
@@ -69,6 +77,7 @@ public class MapManager : MonoBehaviour {
 
             int startX = -1;
             int startZ = -1;
+            mapTiles = 0;
 
             grid = new GridXZ<GridObject>(seed.width, seed.height, C_CellSize, mapOriginWorldPosition, (GridXZ<GridObject> g, int x, int z) => new GridObject(g, x, z));
             grid.OnGridObjectChanged += OnGridObjectChanged;
@@ -85,6 +94,7 @@ public class MapManager : MonoBehaviour {
                                 newCellTransform.localPosition = grid.GetWorldPosition(x, z);
                                 PlacedObject placedObject = newCellTransform.GetComponent<PlacedObject>();
                                 grid.GetGridObject(i).SetPlacedObject(placedObject);
+                                mapTiles++;
                                 if (value == 1) {
                                     startX = x;
                                     startZ = z;
@@ -106,7 +116,7 @@ public class MapManager : MonoBehaviour {
                 }
             }
 
-            OnGridReady?.Invoke(this, new OnGridReadyEventArgs { x = startX, z = startZ });
+            OnGridReady?.Invoke(this, new GridCoordEventArgs { x = startX, z = startZ });
         }
 
     }
@@ -118,7 +128,7 @@ public class MapManager : MonoBehaviour {
 
     }
 
-    private void OnGridObjectChanged(object sender, GridXZ<GridObject>.OnGridObjectChangedEventArgs e) {
+    private void OnGridObjectChanged(object sender, GridCoordEventArgs e) {
 
     }
 

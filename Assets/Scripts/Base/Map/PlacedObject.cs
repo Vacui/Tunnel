@@ -14,7 +14,7 @@ public enum Visibility {
     NULL,
     Hidden,
     Discovered,
-    Visible
+    Explored
 }
 
 [System.Serializable]
@@ -50,6 +50,8 @@ public class OpenDirections {
 
 public class PlacedObject : MonoBehaviour {
 
+    public static event System.EventHandler OnExploring;
+
     private static readonly Color C_HiddenColor = Color.white;
 
     private Visibility status;
@@ -62,7 +64,7 @@ public class PlacedObject : MonoBehaviour {
                 switch (status) {
                     case Visibility.Hidden: newColor = C_HiddenColor; break;
                     case Visibility.Discovered: newColor = new Color(color.r, color.g, color.b, 0.5f); break;
-                    case Visibility.Visible: newColor = color; break;
+                    case Visibility.Explored: newColor = color; break;
                 }
 
                 foreach (MeshRenderer visual in visuals) {
@@ -89,11 +91,20 @@ public class PlacedObject : MonoBehaviour {
     }
 
     public void Discover() {
-        if (status != Visibility.Visible) Status = Visibility.Discovered;
+        if (status == Visibility.Hidden) {
+            Status = Visibility.Discovered;
+        } else {
+            Debug.LogWarning("This tile cannot been discovered because it is not hidden.", gameObject);
+        }
     }
 
-    public void Enter() {
-        Status = Visibility.Visible;
+    public void Explore() {
+        if (status != Visibility.Explored) {
+            Status = Visibility.Explored;
+            OnExploring?.Invoke(this, new System.EventArgs { });
+        } else {
+            Debug.LogWarning("This tile has already been explored.", gameObject);
+        }
     }
 
     private void Reset() {

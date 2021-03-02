@@ -14,7 +14,8 @@ public class GridObject {
     }
 
     public void SetPlacedObject(PlacedObject placedObject) {
-        this.placedObject = placedObject; grid.TriggerGridObjectChanged(x, z);
+        this.placedObject = placedObject;
+        grid.TriggerGridObjectChanged(x, z);
     }
 
     public PlacedObject GetPlacedObject() {
