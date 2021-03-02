@@ -47,12 +47,17 @@ MonoBehaviour:
   visuals:
   - {fileID: 4792969678682388878}
   color: {r: 0, g: 0, b: 0, a: 1}
-  IsSafe: 1
+  isSafe: 1
   openDirections:
     up: 1
     right: 1
     down: 1
     left: 1
+  openDirectionsCurrent:
+    up: 0
+    right: 0
+    down: 0
+    left: 0
 --- !u!1 &6520496011460609707
 GameObject:
   m_ObjectHideFlags: 0

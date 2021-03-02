@@ -18,13 +18,13 @@ public enum Visibility {
 }
 
 [System.Serializable]
-public class OpenDirections {
+public class DirectionsList {
     public bool up;
     public bool right;
     public bool down;
     public bool left;
 
-    public bool IsDirectionOpen(Direction dir) {
+    public bool Contains(Direction dir) {
         bool result = false;
 
         switch (dir) {
@@ -37,7 +37,7 @@ public class OpenDirections {
         return result;
     }
 
-    public Direction GetOtherDirection(Direction dir) {
+    public Direction OtherDirection(Direction dir) {
 
         if (up && dir != Direction.Up) return Direction.Up;
         if (right && dir != Direction.Right) return Direction.Right;
@@ -80,9 +80,9 @@ public class PlacedObject : MonoBehaviour {
     public Color color;
 
     [Header("Navigation")]
-    public bool IsSafe;
-    [SerializeField] private OpenDirections openDirections;
-    public OpenDirections OpenDirections {
+    [SerializeField] private bool isSafe;
+    [SerializeField] private DirectionsList openDirections;
+    public DirectionsList OpenDirections {
         get { return openDirections; }
     }
 
@@ -98,17 +98,42 @@ public class PlacedObject : MonoBehaviour {
         }
     }
 
-    public void Explore() {
-        if (status != Visibility.Explored) {
-            Status = Visibility.Explored;
-            OnExploring?.Invoke(this, new System.EventArgs { });
+    public bool Enter(Direction enteringDirection, ref bool isSafe) {
+        bool result = false;
+
+        if(openDirections.Contains(enteringDirection.Opposite())) {
+            if (status != Visibility.Explored) {
+                Status = Visibility.Explored;
+                OnExploring?.Invoke(this, new System.EventArgs { });
+            } else {
+                Debug.LogWarning("This tile has already been explored.", gameObject);
+            }
+
+            isSafe = this.isSafe;
+            result = true;
         } else {
-            Debug.LogWarning("This tile has already been explored.", gameObject);
+            isSafe = true;
         }
+
+        return result;
+    }
+
+    public bool Exit(ref Direction exitingDirection) {
+        bool result = false;
+        if (openDirections.Contains(exitingDirection)) {
+            result = true;
+        } else {
+            if (!isSafe) {
+                exitingDirection = openDirections.OtherDirection(exitingDirection.Opposite());
+            } else {
+                exitingDirection = Direction.NULL;
+            }
+        }
+        return result;
     }
 
     private void Reset() {
-        if (openDirections == null) openDirections = new OpenDirections();
+        if (openDirections == null) openDirections = new DirectionsList();
         Status = Visibility.Hidden;
     }
 

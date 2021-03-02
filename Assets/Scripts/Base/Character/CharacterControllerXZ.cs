@@ -1,5 +1,12 @@
 ﻿using UnityEngine;
 
+public enum MoveStatus {
+    NULL,
+    MoveAndExit,
+    MoveAndStop,
+    Stop
+}
+
 public class CharacterControllerXZ : MonoBehaviour {
 
     [SerializeField] private MapManager map;
@@ -36,20 +43,24 @@ public class CharacterControllerXZ : MonoBehaviour {
 
     private void MoveToCell(int x, int z, Direction moveDirection = Direction.NULL) {
         if (map.grid != null) {
+
             PlacedObject currentXZPlacedObject = null;
             if (map.grid.XZValid(this.x, this.z)) {
                 currentXZPlacedObject = map.grid.GetGridObject(this.x, this.z).GetPlacedObject();
             }
-            if (currentXZPlacedObject == null || currentXZPlacedObject.OpenDirections.IsDirectionOpen(moveDirection)) {
+            // variable necessary for debug info
+            Direction exitDirection = moveDirection;
+            if (currentXZPlacedObject == null || currentXZPlacedObject.Exit(ref exitDirection)) {
                 if (map.grid.XZValid(x, z)) {
                     PlacedObject newXZPlacedObject = map.grid.GetGridObject(x, z).GetPlacedObject();
 
-                    if (currentXZPlacedObject == null || newXZPlacedObject.OpenDirections.IsDirectionOpen(moveDirection.GetOppositeDirection())) {
-
-                        Debug.Log($"Character moving from {this.x},{this.z} to {x},{z} ({moveDirection}).");
+                    if (newXZPlacedObject.Enter(moveDirection, ref isSafe)) {
+                        Debug.Log($"Character moving from {this.x},{this.z} to {x},{z} ({moveDirection}).", newXZPlacedObject.gameObject);
+                        transform.position = map.grid.GetWorldPosition(x, z);
+                        this.x = x;
+                        this.z = z;
                         this.moveDirection = moveDirection;
-                        isSafe = newXZPlacedObject.IsSafe;
-                        newXZPlacedObject.Explore();
+
                         if (isSafe) {
                             PlacedObject placedObject;
                             if (map.grid.XZValid(x + 1, z) && map.grid.GetGridObject(x + 1, z).GetPlacedObject(out placedObject)) placedObject.Discover();
@@ -57,19 +68,20 @@ public class CharacterControllerXZ : MonoBehaviour {
                             if (map.grid.XZValid(x, z + 1) && map.grid.GetGridObject(x, z + 1).GetPlacedObject(out placedObject)) placedObject.Discover();
                             if (map.grid.XZValid(x, z - 1) && map.grid.GetGridObject(x, z - 1).GetPlacedObject(out placedObject)) placedObject.Discover();
                         }
-                        transform.position = map.grid.GetWorldPosition(x, z);
-                        this.x = x;
-                        this.z = z;
 
                     } else {
-                        Debug.LogWarning($"Character CAN'T enter {x},{z} from {this.x},{this.z} ({moveDirection}).");
+                        Debug.LogWarning($"Character CAN'T enter {x},{z} from {this.x},{this.z} ({moveDirection}).", gameObject);
                     }
                 } else {
                     Debug.LogWarning($"Character moving coordinates {x},{z} are NOT valid.", gameObject);
                 }
             } else {
-                Debug.LogWarning($"Character CAN'T exit {this.x},{this.z} for {x},{z} ({moveDirection}).");
-                MoveToCell(currentXZPlacedObject.OpenDirections.GetOtherDirection(moveDirection.GetOppositeDirection()));
+                if (moveDirection != Direction.NULL) {
+                    Debug.LogWarning($"Character CAN'T exit {this.x},{this.z} to {x},{z} ({moveDirection}).", gameObject);
+                    MoveToCell(exitDirection);
+                } else {
+                    Debug.LogWarning($"Character CAN'T exit {this.x},{this.z} for {x},{z}.", gameObject);
+                }
             }
         } else {
             Debug.LogWarning("Character GridManager has no grid.", gameObject);
@@ -77,17 +89,11 @@ public class CharacterControllerXZ : MonoBehaviour {
     }
 
     private void MoveToCell(Direction dir) {
+        int x = this.x;
+        int z = this.z;
 
-        if (dir != Direction.NULL) {
-            switch (dir) {
-                default:
-                case Direction.Up: MoveToCell(x, z + 1, dir); break;
-                case Direction.Right: MoveToCell(x + 1, z, dir); break;
-                case Direction.Down: MoveToCell(x, z - 1, dir); break;
-                case Direction.Left: MoveToCell(x - 1, z, dir); break;
-            }
-        }
-
+        DirectionUtils.DirectionToCoord(dir, ref x, ref z);
+        MoveToCell(x, z, dir);
     }
 
 }

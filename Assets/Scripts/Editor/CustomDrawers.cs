@@ -16,8 +16,8 @@ public class ReadOnlyDrawer : PropertyDrawer {
 
 }
 
-[CustomPropertyDrawer(typeof(OpenDirections))]
-public class OpenDirectionsDrawer : PropertyDrawer {
+[CustomPropertyDrawer(typeof(DirectionsList))]
+public class DirectionsListDrawer : PropertyDrawer {
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
         return EditorGUIUtility.singleLineHeight * 5;

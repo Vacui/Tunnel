@@ -60,7 +60,7 @@ public class MapManager : MonoBehaviour {
     }
 
     private void Awake() {
-        PlacedObject.OnExploring += (s, e) => { mapTilesExplored++; Debug.Log($"Map discovery percentage {System.Math.Truncate((MapExploringPercentage * 100) * 100) / 100}% ({mapTiles}/{mapTilesExplored})"); };
+        PlacedObject.OnExploring += (s, e) => { mapTilesExplored++; /*Debug.Log($"Map discovery percentage {System.Math.Truncate((MapExploringPercentage * 100) * 100) / 100}% ({mapTiles}/{mapTilesExplored})");*/ };
     }
 
     public void LoadMap(Seed seed, Vector3 mapOriginWorldPosition) {
