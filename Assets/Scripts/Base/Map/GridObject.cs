@@ -20,6 +20,10 @@ public class GridObject {
     public PlacedObject GetPlacedObject() {
         return placedObject;
     }
+    public PlacedObject GetPlacedObject(out PlacedObject placedObject) {
+        placedObject = GetPlacedObject();
+        return placedObject;
+    }
 
     public void ClearPlacedObject() {
         if (placedObject != null) {

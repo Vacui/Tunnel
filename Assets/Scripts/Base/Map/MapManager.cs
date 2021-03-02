@@ -102,7 +102,7 @@ public class MapManager : MonoBehaviour {
                         Debug.LogWarning($"Error in parsing seed cell n.{i} content.");
                     }
                 } else {
-                    Debug.Log($"The cell n.{i} is empty.");
+                    //Debug.Log($"The cell n.{i} is empty.");
                 }
             }
 

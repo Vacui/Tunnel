@@ -51,10 +51,11 @@ public class CharacterControllerXZ : MonoBehaviour {
                         isSafe = newXZPlacedObject.IsSafe;
                         newXZPlacedObject.Enter();
                         if (isSafe) {
-                            if (map.grid.XZValid(x + 1, z)) map.grid.GetGridObject(x + 1, z).GetPlacedObject().Discover();
-                            if (map.grid.XZValid(x - 1, z)) map.grid.GetGridObject(x - 1, z).GetPlacedObject().Discover();
-                            if (map.grid.XZValid(x, z + 1)) map.grid.GetGridObject(x, z + 1).GetPlacedObject().Discover();
-                            if (map.grid.XZValid(x, z - 1)) map.grid.GetGridObject(x, z - 1).GetPlacedObject().Discover();
+                            PlacedObject placedObject;
+                            if (map.grid.XZValid(x + 1, z) && map.grid.GetGridObject(x + 1, z).GetPlacedObject(out placedObject)) placedObject.Discover();
+                            if (map.grid.XZValid(x - 1, z) && map.grid.GetGridObject(x - 1, z).GetPlacedObject(out placedObject)) placedObject.Discover();
+                            if (map.grid.XZValid(x, z + 1) && map.grid.GetGridObject(x, z + 1).GetPlacedObject(out placedObject)) placedObject.Discover();
+                            if (map.grid.XZValid(x, z - 1) && map.grid.GetGridObject(x, z - 1).GetPlacedObject(out placedObject)) placedObject.Discover();
                         }
                         transform.position = map.grid.GetWorldPosition(x, z);
                         this.x = x;
