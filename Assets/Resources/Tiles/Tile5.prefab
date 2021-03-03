@@ -44,10 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7a6d31da9ef474fb2126f79fbdd70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visuals:
-  - {fileID: 257224967447939501}
+  visual: {fileID: 257224967447939501}
   color: {r: 0, g: 0, b: 0, a: 1}
-  IsSafe: 0
+  isSafe: 0
+  allDirections:
+    up: 1
+    right: 1
+    down: 0
+    left: 0
   openDirections:
     up: 1
     right: 1

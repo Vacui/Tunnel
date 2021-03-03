@@ -10,9 +10,9 @@
         }
     }
 
-    public static void DirectionToCoord(Direction moveDirection, ref int x, ref int z) {
-        if (moveDirection != Direction.NULL) {
-            switch (moveDirection) {
+    public static void ToCoord(this Direction dir, ref int x, ref int z) {
+        if (dir != Direction.NULL) {
+            switch (dir) {
                 default:
                 case Direction.Up: z++; break;
                 case Direction.Right: x++; break;
@@ -23,5 +23,15 @@
             x = -1;
             z = -1;
         }
+    }
+
+    public static float ToAngle(this Direction dir) {
+        float result = -1;
+
+        if(dir != Direction.NULL) {
+            result = (int)dir * 90;
+        }
+
+        return result;
     }
 }

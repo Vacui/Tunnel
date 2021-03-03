@@ -44,20 +44,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d7a6d31da9ef474fb2126f79fbdd70a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visuals:
-  - {fileID: 5424949046646582765}
+  visual: {fileID: 5424949046646582765}
   color: {r: 0, g: 0, b: 0, a: 1}
   isSafe: 1
+  allDirections:
+    up: 1
+    right: 1
+    down: 1
+    left: 1
   openDirections:
     up: 1
     right: 1
     down: 1
     left: 1
-  openDirectionsCurrent:
-    up: 0
-    right: 0
-    down: 0
-    left: 0
 --- !u!1 &8441259389107739036
 GameObject:
   m_ObjectHideFlags: 0

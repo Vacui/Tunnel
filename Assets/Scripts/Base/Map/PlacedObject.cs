@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [System.Serializable]
 public enum Direction {
@@ -24,28 +25,39 @@ public class DirectionsList {
     public bool down;
     public bool left;
 
-    public bool Contains(Direction dir) {
-        bool result = false;
+    public DirectionsList(bool up, bool right, bool down, bool left) {
+        this.up = up;
+        this.right = right;
+        this.down = down;
+        this.left = left;
+    }
+    public DirectionsList() : this(false, false, false, false) { }
 
-        switch (dir) {
-            case Direction.Up: result = up; break;
-            case Direction.Right: result = right; break;
-            case Direction.Down: result = down; break;
-            case Direction.Left: result = left; break;
-        }
+    public List<Direction> ToList() {
+        List<Direction> result = new List<Direction>();
+        if (up) result.Add(Direction.Up);
+        if (right) result.Add(Direction.Right);
+        if (down) result.Add(Direction.Down);
+        if (left) result.Add(Direction.Left);
+        return result;
+    }
+
+    public bool Contains(Direction dir) {
+        return ToList().Contains(dir);
+    }
+
+    public Direction OtherDirection(Direction dir) {
+        Direction result = Direction.NULL;
+        List<Direction> directions = ToList();
+        directions.Remove(dir);
+        if (directions.Any())
+            result = directions[0];
 
         return result;
     }
 
-    public Direction OtherDirection(Direction dir) {
+    public static DirectionsList operator !(DirectionsList dir) => new DirectionsList(!dir.up, !dir.right, !dir.down, !dir.left);
 
-        if (up && dir != Direction.Up) return Direction.Up;
-        if (right && dir != Direction.Right) return Direction.Right;
-        if (down && dir != Direction.Down) return Direction.Down;
-        if (left && dir != Direction.Left) return Direction.Left;
-
-        return Direction.NULL;
-    }
 }
 
 public class PlacedObject : MonoBehaviour {
@@ -59,7 +71,7 @@ public class PlacedObject : MonoBehaviour {
         get { return status; }
         set {
             status = value;
-            if (visuals != null) {
+            if (visual != null) {
                 Color newColor = Color.white;
                 switch (status) {
                     case Visibility.Hidden: newColor = C_HiddenColor; break;
@@ -67,24 +79,20 @@ public class PlacedObject : MonoBehaviour {
                     case Visibility.Explored: newColor = color; break;
                 }
 
-                foreach (MeshRenderer visual in visuals) {
-                    visual.material.color = newColor;
-                }
+                visual.material.color = newColor;
 
             }
         }
     }
 
     [Header("Style")]
-    public List<MeshRenderer> visuals;
+    public MeshRenderer visual;
     public Color color;
 
     [Header("Navigation")]
     [SerializeField] private bool isSafe;
+    [SerializeField] private DirectionsList allDirections;
     [SerializeField] private DirectionsList openDirections;
-    public DirectionsList OpenDirections {
-        get { return openDirections; }
-    }
 
     private void Awake() {
         Status = Visibility.Hidden;
@@ -98,10 +106,16 @@ public class PlacedObject : MonoBehaviour {
         }
     }
 
-    public bool Enter(Direction enteringDirection, ref bool isSafe) {
+    public bool Enter(Direction enteringDirection, ref bool isSafe, ref bool needToWait) {
         bool result = false;
+        isSafe = true;
 
-        if(openDirections.Contains(enteringDirection.Opposite())) {
+        if(allDirections.Contains(enteringDirection.Opposite())) {
+            if (!openDirections.Contains(enteringDirection.Opposite())) {
+                visual.transform.rotation = Quaternion.Euler(visual.transform.rotation.eulerAngles + new Vector3(0, 0, 90));
+                openDirections = !openDirections;
+            }
+
             if (status != Visibility.Explored) {
                 Status = Visibility.Explored;
                 OnExploring?.Invoke(this, new System.EventArgs { });
@@ -111,8 +125,6 @@ public class PlacedObject : MonoBehaviour {
 
             isSafe = this.isSafe;
             result = true;
-        } else {
-            isSafe = true;
         }
 
         return result;
@@ -124,7 +136,7 @@ public class PlacedObject : MonoBehaviour {
             result = true;
         } else {
             if (!isSafe) {
-                exitingDirection = openDirections.OtherDirection(exitingDirection.Opposite());
+                exitingDirection = allDirections.OtherDirection(exitingDirection.Opposite());
             } else {
                 exitingDirection = Direction.NULL;
             }
@@ -133,7 +145,7 @@ public class PlacedObject : MonoBehaviour {
     }
 
     private void Reset() {
-        if (openDirections == null) openDirections = new DirectionsList();
+        if (allDirections == null) allDirections = new DirectionsList();
         Status = Visibility.Hidden;
     }
 

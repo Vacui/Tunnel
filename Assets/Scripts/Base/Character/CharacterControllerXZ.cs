@@ -54,7 +54,9 @@ public class CharacterControllerXZ : MonoBehaviour {
                 if (map.grid.XZValid(x, z)) {
                     PlacedObject newXZPlacedObject = map.grid.GetGridObject(x, z).GetPlacedObject();
 
-                    if (newXZPlacedObject.Enter(moveDirection, ref isSafe)) {
+                    bool needToWait = false;
+
+                    if (newXZPlacedObject.Enter(moveDirection, ref isSafe, ref needToWait)) {
                         Debug.Log($"Character moving from {this.x},{this.z} to {x},{z} ({moveDirection}).", newXZPlacedObject.gameObject);
                         transform.position = map.grid.GetWorldPosition(x, z);
                         this.x = x;
@@ -92,7 +94,7 @@ public class CharacterControllerXZ : MonoBehaviour {
         int x = this.x;
         int z = this.z;
 
-        DirectionUtils.DirectionToCoord(dir, ref x, ref z);
+        dir.ToCoord(ref x, ref z);
         MoveToCell(x, z, dir);
     }
 
