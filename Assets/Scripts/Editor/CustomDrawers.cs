@@ -16,7 +16,7 @@ public class ReadOnlyDrawer : PropertyDrawer {
 
 }
 
-[CustomPropertyDrawer(typeof(DirectionsList))]
+//[CustomPropertyDrawer(typeof(DirectionsList))]
 public class DirectionsListDrawer : PropertyDrawer {
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
