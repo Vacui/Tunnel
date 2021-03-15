@@ -445,7 +445,7 @@ namespace UnityEditor
             }
         }
 
-        public void RuleMatrixIconOnGUI(RuleTile.TilingRule tilingRule, Dictionary<Vector3Int, int> neighbors, Vector3Int pos, Rect rect)
+        public virtual void RuleMatrixIconOnGUI(RuleTile.TilingRule tilingRule, Dictionary<Vector3Int, int> neighbors, Vector3Int pos, Rect rect)
         {
             using (var check = new EditorGUI.ChangeCheckScope())
             {
