@@ -156,7 +156,9 @@ public class MapManager : MonoBehaviour
         if (!tilemapTerrain.GetTile(position))
         {
             Debug.Log($"There is no terrain on {position} to support the tile.");
-            tilemapTerrain.SetTile(position, customRuleTerrain);
+            if (customRuleTerrain != null)
+                tilemapTerrain.SetTile(position, customRuleTerrain);
+            else Debug.LogWarning($"RuleTile for terrain is null.");
         }
 
         if (gridGame.GetGridObject(position) == TileType.NULL)
