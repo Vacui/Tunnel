@@ -7,20 +7,24 @@ public class GetName : MonoBehaviour
 {
     [SerializeField] private Transform parent;
 
-#if (UNITY_EDITOR)
     private void Awake()
     {
-        parent = transform.parent;
+        if (parent == null)
+        {
+            parent = transform.parent;
+            GetParentNameToString();
+        }
     }
 
+#if (UNITY_EDITOR)
     private void Update()
     {
-        GetParentName();
+        GetParentNameToString();
     }
+#endif
 
-    private void GetParentName()
+    private void GetParentNameToString()
     {
         if (parent != null) GetComponent<TextMeshProUGUI>().text = parent.name;
     }
-#endif
 }

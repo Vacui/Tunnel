@@ -81,6 +81,8 @@ public class MapManager : MonoBehaviour
         public Vector3Int startPosition;
     }
 
+    public static MapManager Instance;
+
     public static GridXZ<TileType> gridGame { get; private set; }
     [SerializeField] private Tilemap tilemapGame;
     [SerializeField] private Tilemap tilemapTerrain;
@@ -99,6 +101,9 @@ public class MapManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
         dictionaryCustomRuleTiles = new Dictionary<TileType, CustomRuleTile>();
         dictionaryCustomRuleTiles.Add(TileType.NULL, customRuleTileBlank);
         dictionaryCustomRuleTiles.Add(TileType.Start, customRuleTileStart);

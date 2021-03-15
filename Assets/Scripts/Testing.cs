@@ -19,7 +19,7 @@ public class Testing : MonoBehaviour
 
     private void Awake()
     {
-        mapGeneration.LoadMap(new MapManager.Seed(seeds[2]));
+        //mapGeneration.LoadMap(new MapManager.Seed(seeds[2]));
     }
 
 }

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b97690dbca7025a4ebeae4ac93229110, type: 3}
   m_Name: ToolboxEditorSettings
   m_EditorClassIdentifier: 
-  useToolboxHierarchy: 1
+  useToolboxHierarchy: 0
   drawHorizontalLines: 1
   showSelectionsCount: 0
   rowDataTypes: 0000000001000000020000000300000004000000
-  useToolboxFolders: 1
+  useToolboxFolders: 0
   largeIconScale: 0.8
   smallIconScale: 0.7
   largeIconPadding: {x: 0, y: 0.15}
@@ -24,7 +24,8 @@ MonoBehaviour:
   customFolders: []
   useToolboxDrawers: 1
   decoratorDrawerHandlers: []
-  conditionDrawerHandlers: []
+  conditionDrawerHandlers:
+  - classReference: Toolbox.Editor.Drawers.ShowIfAttributeDrawer, Toolbox-Editor
   selfPropertyDrawerHandlers: []
   listPropertyDrawerHandlers: []
   targetTypeDrawerHandlers: []
