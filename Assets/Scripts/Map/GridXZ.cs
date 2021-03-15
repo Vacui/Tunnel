@@ -15,7 +15,7 @@ public class GridXZ<T>
     private Vector3 originPosition;
     private T[,] tiles;
 
-    public GridXZ(int width, int height, float cellSize, Vector3 originPosition)
+    public GridXZ(int width, int height, float cellSize, Vector3 originPosition, T defaultGridObjectValue)
     {
         if (width > 0)
         {
@@ -29,6 +29,13 @@ public class GridXZ<T>
                     this.originPosition = originPosition;
 
                     tiles = new T[width, height];
+                    for (int x = 0; x < width; x++)
+                    {
+                        for (int z = 0; z < height; z++)
+                        {
+                            tiles[x, z] = defaultGridObjectValue;
+                        }
+                    }
                 }
             }
         }
@@ -48,15 +55,18 @@ public class GridXZ<T>
         return GetGridObject(CellNumToCell(cellNum));
     }
 
+    public void SetGridObject(Vector3Int cell, T value)
+    {
+        if (CellIsValid(cell))
+        {
+            Debug.Log($"Setting GridObject {cell.x},{cell.z} {value}.");
+            tiles[cell.x, cell.z] = value;
+            OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { position = cell });
+        }
+    }
     public void SetGridObject(int cellNum, T value)
     {
-        Vector3Int position = CellNumToCell(cellNum);
-        if (CellIsValid(position))
-        {
-            Debug.Log($"Setting tile {position.x},{position.z} {value}.");
-            tiles[position.x, position.z] = value;
-            OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { position = position});
-        }
+        SetGridObject(CellNumToCell(cellNum), value);
     }
 
     public bool CellIsValid(Vector3Int cell)

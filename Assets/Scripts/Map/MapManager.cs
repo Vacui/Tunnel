@@ -83,6 +83,8 @@ public class MapManager : MonoBehaviour
 
     public static GridXZ<TileType> gridGame { get; private set; }
     [SerializeField] private Tilemap tilemapGame;
+    [SerializeField] private Tilemap tilemapTerrain;
+    [SerializeField] private CustomRuleTile customRuleTerrain;
 
     [SerializeField] private CustomRuleTile customRuleTileBlank;
     [SerializeField] private CustomRuleTile customRuleTileStart;
@@ -113,34 +115,66 @@ public class MapManager : MonoBehaviour
         if (mapSeed != null && mapSeed.isValid)
         {
             Debug.Log("Loading map");
-            gridGame = new GridXZ<TileType>(mapSeed.width, mapSeed.height, 1, Vector3.zero);
-            TileType tileType = TileType.NULL;
-            Vector3Int startPosition = Vector3Int.zero;
-            for (int i = 0; i < mapSeed.cells.Count; i++)
-            {
-                tileType = (TileType)mapSeed.cells[i];
-                gridGame.SetGridObject(i, tileType);
-                if (tileType == TileType.Start) startPosition = gridGame.CellNumToCell(i);
-            }
 
-            CustomRuleTile ruleTile;
-            Vector3Int tilePosition;
-            for (int x = 0; x < gridGame.width; x++)
-            {
-                for (int z = 0; z < gridGame.height; z++)
-                {
-                    tilePosition = new Vector3Int(x, 0, z);
-                    tileType = gridGame.GetGridObject(tilePosition);
-                    if (dictionaryCustomRuleTiles.ContainsKey(tileType))
-                    {
-                        ruleTile = dictionaryCustomRuleTiles[tileType];
-                        tilePosition = new Vector3Int(tilePosition.x, tilePosition.z, 0);
-                        if (ruleTile != null)
-                            tilemapGame.SetTile(tilePosition, ruleTile);
-                    }
-                }
-            }
+            InitializeMap(mapSeed.width, mapSeed.height);
+
+            Vector3Int startPosition = GenerateMap(mapSeed.cells);
+
             OnMapReady?.Invoke(this, new OnMapReadyEventArgs { startPosition = startPosition });
         }
+    }
+
+    public void InitializeMap(int width, int height)
+    {
+        Debug.Log($"Initializing map");
+        tilemapTerrain.ClearAllTiles();
+        tilemapGame.ClearAllTiles();
+        gridGame = new GridXZ<TileType>(width, height, 1, Vector3.zero, TileType.NULL);
+    }
+
+    public Vector3Int GenerateMap(List<int> cells)
+    {
+        Debug.Log("Generating map");
+        TileType tileType = TileType.NULL;
+        Vector3Int startPosition = Vector3Int.one * -1;
+        Vector3Int tilePosition;
+       
+        for (int i = 0; i < cells.Count; i++)
+        {
+            tilePosition = gridGame.CellNumToCell(i);
+            SetTile(tilePosition, (TileType)cells[i]);
+            if (tileType == TileType.Start) startPosition = gridGame.CellNumToCell(i);
+        }
+
+        return startPosition;
+    }
+
+    private bool SetTile(Vector3Int position, TileType value)
+    {
+        bool result = false;
+        CustomRuleTile ruleTile;
+        if (!tilemapTerrain.GetTile(position))
+        {
+            Debug.Log($"There is no terrain on {position} to support the tile.");
+            tilemapTerrain.SetTile(position, customRuleTerrain);
+        }
+
+        if (gridGame.GetGridObject(position) == TileType.NULL)
+        {
+            gridGame.SetGridObject(position, value);
+            result = true;
+            if (dictionaryCustomRuleTiles.ContainsKey(value))
+            {
+                position = new Vector3Int(position.x, position.z, 0);
+                ruleTile = dictionaryCustomRuleTiles[value];
+                if (ruleTile != null)
+                    tilemapGame.SetTile(position, ruleTile);
+                else Debug.LogWarning($"RuleTile for TileType {value} is null.");
+            } else Debug.LogWarning($"No key for TileType {value} in RuleTiles dictionary.");
+        } else Debug.Log($"There is already a tile on {position}.");
+        
+
+        Debug.Log($"{result} Setting tile {position} to {value}");
+        return result;
     }
 }
