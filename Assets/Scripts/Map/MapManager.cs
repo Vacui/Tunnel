@@ -122,7 +122,24 @@ public class MapManager : MonoBehaviour
                 gridGame.SetGridObject(i, tileType);
                 if (tileType == TileType.Start) startPosition = gridGame.CellNumToCell(i);
             }
-            Debug.Log(tilemapGame.GetLayoutCellCenter());
+
+            CustomRuleTile ruleTile;
+            Vector3Int tilePosition;
+            for (int x = 0; x < gridGame.width; x++)
+            {
+                for (int z = 0; z < gridGame.height; z++)
+                {
+                    tilePosition = new Vector3Int(x, 0, z);
+                    tileType = gridGame.GetGridObject(tilePosition);
+                    if (dictionaryCustomRuleTiles.ContainsKey(tileType))
+                    {
+                        ruleTile = dictionaryCustomRuleTiles[tileType];
+                        tilePosition = new Vector3Int(tilePosition.x, tilePosition.z, 0);
+                        if (ruleTile != null)
+                            tilemapGame.SetTile(tilePosition, ruleTile);
+                    }
+                }
+            }
             OnMapReady?.Invoke(this, new OnMapReadyEventArgs { startPosition = startPosition });
         }
     }

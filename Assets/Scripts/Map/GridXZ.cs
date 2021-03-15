@@ -9,8 +9,8 @@ public class GridXZ<T>
         public Vector3Int position;
     }
 
-    private int height;
-    private int width;
+    public int height { get; private set; }
+    public int width { get; private set; }
     private float cellSize;
     private Vector3 originPosition;
     private T[,] tiles;
@@ -42,6 +42,10 @@ public class GridXZ<T>
             result = tiles[cell.x, cell.z];
         }
         return result;
+    }
+    public T GetGridObject(int cellNum)
+    {
+        return GetGridObject(CellNumToCell(cellNum));
     }
 
     public void SetGridObject(int cellNum, T value)

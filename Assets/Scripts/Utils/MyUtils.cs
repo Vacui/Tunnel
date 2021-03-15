@@ -123,14 +123,14 @@ public static class DirectionUtils
 [System.Serializable]
 public enum TileType
 {
-    NULL,
-    Start,
-    End,
-    Node,
-    FacingUp,
-    FacingRight,
-    FacingDown,
-    FacingLeft 
+    NULL = 0,
+    Start = 1,
+    End = 2,
+    Node = 3,
+    FacingUp = 4,
+    FacingRight = 5,
+    FacingDown = 6,
+    FacingLeft = 7 
 }
 
 public static class TileTypeUtils
