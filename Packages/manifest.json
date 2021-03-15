@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.arimger.editor-toolbox": "https://github.com/arimger/Unity-Editor-Toolbox.git#upm",
     "com.malee.reorderablelist": "https://github.com/cfoulston/Unity-Reorderable-List.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "1.2.16",

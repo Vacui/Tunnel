@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.arimger.editor-toolbox": {
+      "version": "https://github.com/arimger/Unity-Editor-Toolbox.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.editorcoroutines": "1.0.0"
+      },
+      "hash": "aa3c46f0fd15bf3d161c71b326c9d792ba12c31a"
+    },
     "com.malee.reorderablelist": {
       "version": "https://github.com/cfoulston/Unity-Reorderable-List.git",
       "depth": 0,
@@ -31,6 +40,13 @@
     "com.unity.collab-proxy": {
       "version": "1.2.16",
       "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.editorcoroutines": {
+      "version": "1.0.0",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
