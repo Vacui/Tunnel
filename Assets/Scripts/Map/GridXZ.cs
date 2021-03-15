@@ -1,8 +1,7 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-public class GridXZ<TGridObject>
+public class GridXZ<T>
 {
     public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
     public class OnGridObjectChangedEventArgs : EventArgs
@@ -14,7 +13,7 @@ public class GridXZ<TGridObject>
     private int width;
     private float cellSize;
     private Vector3 originPosition;
-    private TGridObject[,] tiles;
+    private T[,] tiles;
 
     public GridXZ(int width, int height, float cellSize, Vector3 originPosition)
     {
@@ -29,15 +28,15 @@ public class GridXZ<TGridObject>
                     this.cellSize = cellSize;
                     this.originPosition = originPosition;
 
-                    tiles = new TGridObject[width, height];
+                    tiles = new T[width, height];
                 }
             }
         }
     }
 
-    public TGridObject GetGridObject(Vector3Int cell)
+    public T GetGridObject(Vector3Int cell)
     {
-        TGridObject result = default(TGridObject);
+        T result = default(T);
         if (CellIsValid(cell))
         {
             result = tiles[cell.x, cell.z];
@@ -45,7 +44,7 @@ public class GridXZ<TGridObject>
         return result;
     }
 
-    public void SetGridObject(int cellNum, TGridObject value)
+    public void SetGridObject(int cellNum, T value)
     {
         Vector3Int position = CellNumToCell(cellNum);
         if (CellIsValid(position))

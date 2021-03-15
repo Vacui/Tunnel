@@ -12,7 +12,6 @@ public class CustomRuleTileEditor : RuleTileEditor
     private const string s_ArrowRight = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAlQTFRFAAAAIzc+OYDGY5BUjQAAAAN0Uk5TAP//RFDWIQAAACtJREFUeJxjYEAAVhDB5gAiJjAwMIYtATJWrQQRqxwgLLAYWBaijhVJNwMAK6IIBbOT/U8AAAAASUVORK5CYII=";
     private const string s_ArrowDown = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAlQTFRFAAAAIzc+OYDGY5BUjQAAAAN0Uk5TAP//RFDWIQAAAC1JREFUeJxjYEAAVgcgITUBmWCNmurAwLZqlQMD46qVQLGsJTBZNpBiRiTdDABC3ghlvZKIiAAAAABJRU5ErkJggg==";
     private const string s_ArrowLeft = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAlQTFRFAAAAIzc+OYDGY5BUjQAAAAN0Uk5TAP//RFDWIQAAACpJREFUeJxjYEAARgcgwQYipEBEVihQaNUqBwY2EAFmgcUgsmB1YB0wAAArUggFgSGXYQAAAABJRU5ErkJggg==";
-    private const string s_Intersection = "iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAAlQTFRFAAAAIzc+OYDGY5BUjQAAAAN0Uk5TAP//RFDWIQAAACVJREFUeJxjYEAAVgcgITUBSjBGTWVgYFu1ygGJAIshlEB0wAAAcEYJ4bSCm7YAAAAASUVORK5CYII=";
 
     private static Texture2D[] s_Arrows;
     public static Texture2D[] customArrows
@@ -21,7 +20,7 @@ public class CustomRuleTileEditor : RuleTileEditor
         {
             if (s_Arrows == null)
             {
-                s_Arrows = new Texture2D[11];
+                s_Arrows = new Texture2D[10];
                 s_Arrows[3] = Base64ToTexture(s_Start);
                 s_Arrows[4] = Base64ToTexture(s_End);
                 s_Arrows[5] = Base64ToTexture(s_Node);
@@ -29,7 +28,6 @@ public class CustomRuleTileEditor : RuleTileEditor
                 s_Arrows[7] = Base64ToTexture(s_ArrowRight);
                 s_Arrows[8] = Base64ToTexture(s_ArrowDown);
                 s_Arrows[9] = Base64ToTexture(s_ArrowLeft);
-                s_Arrows[10] = Base64ToTexture(s_Intersection);
             }
             return s_Arrows;
         }
@@ -37,7 +35,7 @@ public class CustomRuleTileEditor : RuleTileEditor
 
     public override void RuleOnGUI(Rect rect, Vector3Int position, int neighbor)
     {
-        if(neighbor > 2)
+        if (neighbor > 2)
         {
             GUI.DrawTexture(rect, customArrows[neighbor]);
         } else

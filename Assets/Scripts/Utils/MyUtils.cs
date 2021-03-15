@@ -75,8 +75,8 @@ public enum Direction
 {
     NULL,
     Up,
-    Down,
     Right,
+    Down,
     Left
 }
 
@@ -130,20 +130,16 @@ public enum TileType
     FacingUp,
     FacingRight,
     FacingDown,
-    FacingLeft,
-    Intersection 
+    FacingLeft 
 }
 
 public static class TileTypeUtils
 {
-    public static string TileTypeArrayToString(TileType[] array)
+    public static Direction TileTypeToDirection(this TileType tileType)
     {
-        string result = "";
-        for (int i = 0; i < array.Length; i++)
-        {
-            result += $"-{array[i]}";
-        }
-        result = result.Trim('-');
+        Direction result = Direction.NULL;
+        int directionIndex = (int)tileType - 3;
+        if (directionIndex > 0) result = (Direction)directionIndex;
         return result;
     }
 }

@@ -16,7 +16,6 @@ public class CustomRuleTile : RuleTile<CustomRuleTile.Neighbor>
         public const int FacingRight = 7;
         public const int FacingDown = 8;
         public const int FacingLeft = 9;
-        public const int Intersection = 10;
     }
 
     public override bool RuleMatch(int neighbor, TileBase other)
@@ -34,16 +33,5 @@ public class CustomRuleTile : RuleTile<CustomRuleTile.Neighbor>
             return false;
         }
         return base.RuleMatch(neighbor, other);
-    }
-
-    public override bool Equals(object other)
-    {
-        if(other is CustomRuleTile)
-        {
-            return tileType == (other as CustomRuleTile).tileType;
-        } else
-        {
-            return false;
-        }
     }
 }

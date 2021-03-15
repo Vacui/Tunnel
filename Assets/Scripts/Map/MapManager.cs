@@ -86,7 +86,6 @@ public class MapManager : MonoBehaviour
     [SerializeField] private CustomRuleTile customRuleTileFacingRight;
     [SerializeField] private CustomRuleTile customRuleTileFacingDown;
     [SerializeField] private CustomRuleTile customRuleTileFacingLeft;
-    [SerializeField] private CustomRuleTile customRuleTileIntersection;
 
     private Dictionary<TileType, CustomRuleTile> dictionaryCustomRuleTiles;
 
@@ -101,7 +100,6 @@ public class MapManager : MonoBehaviour
         dictionaryCustomRuleTiles.Add(TileType.FacingRight, customRuleTileFacingRight);
         dictionaryCustomRuleTiles.Add(TileType.FacingDown, customRuleTileFacingDown);
         dictionaryCustomRuleTiles.Add(TileType.FacingLeft, customRuleTileFacingLeft);
-        dictionaryCustomRuleTiles.Add(TileType.Intersection, customRuleTileIntersection);
     }
 
     public void LoadMap(Seed mapSeed)
