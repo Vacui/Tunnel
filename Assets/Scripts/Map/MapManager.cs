@@ -75,6 +75,12 @@ public class MapManager : MonoBehaviour
 
     private const float C_CellSize = 4f;
 
+    public event EventHandler<OnMapReadyEventArgs> OnMapReady;
+    public class OnMapReadyEventArgs : EventArgs
+    {
+        public Vector3Int startPosition;
+    }
+
     public static GridXZ<TileType> gridGame { get; private set; }
     [SerializeField] private Tilemap tilemapGame;
 
@@ -104,15 +110,20 @@ public class MapManager : MonoBehaviour
 
     public void LoadMap(Seed mapSeed)
     {
-
         if (mapSeed != null && mapSeed.isValid)
         {
             Debug.Log("Loading map");
             gridGame = new GridXZ<TileType>(mapSeed.width, mapSeed.height, 1, Vector3.zero);
+            TileType tileType = TileType.NULL;
+            Vector3Int startPosition = Vector3Int.zero;
             for (int i = 0; i < mapSeed.cells.Count; i++)
             {
-                gridGame.SetGridObject(i, (TileType)mapSeed.cells[i]);
+                tileType = (TileType)mapSeed.cells[i];
+                gridGame.SetGridObject(i, tileType);
+                if (tileType == TileType.Start) startPosition = gridGame.CellNumToCell(i);
             }
+            Debug.Log(tilemapGame.GetLayoutCellCenter());
+            OnMapReady?.Invoke(this, new OnMapReadyEventArgs { startPosition = startPosition });
         }
     }
 }

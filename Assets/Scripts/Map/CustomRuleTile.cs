@@ -25,9 +25,9 @@ public class CustomRuleTile : RuleTile<CustomRuleTile.Neighbor>
             CustomRuleTile otherCustomRuleTile = other as CustomRuleTile;
             if (otherCustomRuleTile)
             {
-                Debug.Log($"neighbor={neighbor}({(TileType)(neighbor - 2)})"
-                    + $" ---- other={otherCustomRuleTile.tileType}"
-                    + $" ---- this={tileType}.");
+                //Debug.Log($"neighbor={neighbor}({(TileType)(neighbor - 2)})"
+                //    + $" ---- other={otherCustomRuleTile.tileType}"
+                //    + $" ---- this={tileType}.");
                 return otherCustomRuleTile.tileType == (TileType)(neighbor - 2);
             }
             return false;

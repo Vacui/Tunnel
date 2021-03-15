@@ -60,7 +60,7 @@ public class GridXZ<T>
         return cell.x == Mathf.Clamp(cell.x, 0, width - 1) && cell.z == Mathf.Clamp(cell.z, 0, height - 1);
     }
 
-    private Vector3Int CellNumToCell(int cellNum)
+    public Vector3Int CellNumToCell(int cellNum)
     {
         return new Vector3Int(cellNum % width, 0, cellNum / width);
     }
