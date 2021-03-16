@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class MapManager : MonoBehaviour
+public class LevelManager : MonoBehaviour
 {
 
     public class Seed
@@ -75,13 +75,13 @@ public class MapManager : MonoBehaviour
 
     private const float C_CellSize = 4f;
 
-    public event EventHandler<OnMapReadyEventArgs> OnMapReady;
-    public class OnMapReadyEventArgs : EventArgs
+    public event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
+    public class OnLevelReadyEventArgs : EventArgs
     {
         public Vector3Int startPosition;
     }
 
-    public static MapManager Instance;
+    public static LevelManager Instance;
 
     public static GridXZ<TileType> gridGame { get; private set; }
     [SerializeField] private Tilemap tilemapGame;
@@ -115,31 +115,31 @@ public class MapManager : MonoBehaviour
         dictionaryCustomRuleTiles.Add(TileType.FacingLeft, customRuleTileFacingLeft);
     }
 
-    public void LoadMap(Seed mapSeed)
+    public void LoadLevel(Seed seedLevel)
     {
-        if (mapSeed != null && mapSeed.isValid)
+        if (seedLevel != null && seedLevel.isValid)
         {
-            Debug.Log("Loading map");
+            Debug.Log("Loading level");
 
-            InitializeMap(mapSeed.width, mapSeed.height);
+            InitializeLevel(seedLevel.width, seedLevel.height);
 
-            Vector3Int startPosition = GenerateMap(mapSeed.cells);
+            Vector3Int startPosition = GenerateLevel(seedLevel.cells);
 
-            OnMapReady?.Invoke(this, new OnMapReadyEventArgs { startPosition = startPosition });
+            OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { startPosition = startPosition });
         }
     }
 
-    public void InitializeMap(int width, int height)
+    public void InitializeLevel(int width, int height)
     {
-        Debug.Log($"Initializing map");
+        Debug.Log($"Initializing level");
         tilemapTerrain.ClearAllTiles();
         tilemapGame.ClearAllTiles();
         gridGame = new GridXZ<TileType>(width, height, 1, Vector3.zero, TileType.NULL);
     }
 
-    public Vector3Int GenerateMap(List<int> cells)
+    public Vector3Int GenerateLevel(List<int> cells)
     {
-        Debug.Log("Generating map");
+        Debug.Log("Generating level");
         TileType tileType = TileType.NULL;
         Vector3Int startPosition = Vector3Int.one * -1;
         Vector3Int tilePosition;

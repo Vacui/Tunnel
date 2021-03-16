@@ -3,7 +3,7 @@
 public class Testing : MonoBehaviour
 {
 
-    public MapManager mapGeneration;
+    public LevelManager levelManager;
 
     private string[] seeds = new string[]{
         "1/1/1",
@@ -19,7 +19,7 @@ public class Testing : MonoBehaviour
 
     private void Awake()
     {
-        //mapGeneration.LoadMap(new MapManager.Seed(seeds[2]));
+        //levelManager.LoadLevel(new LevelManager.Seed(seeds[2]));
     }
 
 }

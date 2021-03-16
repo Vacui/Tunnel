@@ -10,7 +10,7 @@ public class LevelTemplateManager : MonoBehaviour
             if (lvlTemplateElement)
             {
                 lvlTemplateElement.GetSize(out int width, out int height);
-                MapManager.Instance.InitializeMap(width, height);
+                LevelManager.Instance.InitializeLevel(width, height);
             }
         }
     }
