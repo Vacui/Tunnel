@@ -3,7 +3,7 @@
 public interface ITestInterface { }
 
 [RequireComponent(typeof(UIElement))]
-public class GetLevelEditorState : MonoBehaviour
+public class OnLevelStateChange : MonoBehaviour
 {
     [System.Serializable]
     public class Rule
