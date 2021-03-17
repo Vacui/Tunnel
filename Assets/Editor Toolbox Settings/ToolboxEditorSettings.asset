@@ -27,6 +27,7 @@ MonoBehaviour:
   - classReference: Toolbox.Editor.Drawers.EditorButtonAttributeDrawer, Toolbox-Editor
   conditionDrawerHandlers:
   - classReference: Toolbox.Editor.Drawers.DisableAttributeDrawer, Toolbox-Editor
+  - classReference: Toolbox.Editor.Drawers.EnableIfAttributeDrawer, Toolbox-Editor
   selfPropertyDrawerHandlers: []
   listPropertyDrawerHandlers: []
   targetTypeDrawerHandlers: []

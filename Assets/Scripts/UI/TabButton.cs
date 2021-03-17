@@ -10,6 +10,9 @@ using UnityEngine.UI;
 public class TabButton : UIElement, IPointerClickHandler
 {
     [SerializeField] private TabGroup tabGroup;
+    [SerializeField] private bool customIndex;
+    [SerializeField, Clamp(0, 100), EnableIf("customIndex", true)] private int index;
+    public int Index { get { return customIndex ? index : -1; } }
 
     [Header("Colors")]
     [SerializeField] private Graphic[] graphics;

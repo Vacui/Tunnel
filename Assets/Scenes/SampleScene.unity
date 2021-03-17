@@ -1976,7 +1976,6 @@ GameObject:
   - component: {fileID: 423235251}
   - component: {fileID: 423235250}
   - component: {fileID: 423235249}
-  - component: {fileID: 423235252}
   m_Layer: 5
   m_Name: Body
   m_TagString: Untagged
@@ -2062,21 +2061,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423235247}
   m_CullTransparentMesh: 0
---- !u!114 &423235252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 423235247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a8ae2c7af286f2418ce98a9d33d93a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  panels:
-  - {fileID: 93706890}
-  - {fileID: 935605853}
 --- !u!1 &436960389
 GameObject:
   m_ObjectHideFlags: 0
@@ -2850,7 +2834,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 010cd92cbfe0a264a86692ec7a6cc272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panelGroup: {fileID: 0}
 --- !u!114 &738607119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4178,6 +4161,8 @@ MonoBehaviour:
   - {fileID: 935605853}
   showOnVisible: []
   tabGroup: {fileID: 738607118}
+  customIndex: 1
+  index: 1
   graphics:
   - {fileID: 1227255247}
   - {fileID: 361688922}
@@ -5173,6 +5158,8 @@ MonoBehaviour:
   - {fileID: 93706890}
   showOnVisible: []
   tabGroup: {fileID: 738607118}
+  customIndex: 1
+  index: 1
   graphics:
   - {fileID: 2021511117}
   - {fileID: 13489816}
