@@ -24,6 +24,13 @@ public static class MyUtils
         MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
         clearConsoleMethod.Invoke(new object(), null);
     }
+
+    public static void SetObjectsActive(GameObject[] gameObjects, bool active)
+    {
+        if (gameObjects != null)
+            foreach (GameObject gameObject in gameObjects)
+                gameObject?.SetActive(active);
+    }
 }
 
 public static class UIUtils

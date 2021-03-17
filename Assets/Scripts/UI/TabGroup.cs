@@ -13,34 +13,30 @@ public class TabGroup : MonoBehaviour
 
     public void Subscribe(TabButton button)
     {
-        if (tabButtons == null)
-            tabButtons = new List<TabButton>();
-
         if (button != null)
+        {
+            if (tabButtons == null)
+                tabButtons = new List<TabButton>();
+
             if (!tabButtons.Contains(button))
                 tabButtons.Add(button);
 
-        if (button.Interactable)
-        {
             if (selectedButton == null)
                 OnTabSelected(button);
             else
-                button.Deselect();
-        } else
-            button.Lock();
+                button.Inactive();
+        }
     }
 
     public void OnTabSelected(TabButton button)
     {
-        if (button != null && button != selectedButton)
+        if (button != null && !button.IsLocked && button != selectedButton)
         {
             if (selectedButton != null)
-            {
-                selectedButton.Deselect();
-            }
+                selectedButton.Inactive();
 
             selectedButton = button;
-            selectedButton.Select();
+            selectedButton.Active();
 
             if (panelGroup != null)
                 panelGroup.SetPanelIndex(selectedButton.transform.GetSiblingIndex());

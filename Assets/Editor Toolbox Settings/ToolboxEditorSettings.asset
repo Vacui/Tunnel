@@ -23,9 +23,10 @@ MonoBehaviour:
   smallIconPadding: {x: 0.15, y: 0.15}
   customFolders: []
   useToolboxDrawers: 1
-  decoratorDrawerHandlers: []
+  decoratorDrawerHandlers:
+  - classReference: Toolbox.Editor.Drawers.EditorButtonAttributeDrawer, Toolbox-Editor
   conditionDrawerHandlers:
-  - classReference: Toolbox.Editor.Drawers.ShowIfAttributeDrawer, Toolbox-Editor
+  - classReference: Toolbox.Editor.Drawers.DisableAttributeDrawer, Toolbox-Editor
   selfPropertyDrawerHandlers: []
   listPropertyDrawerHandlers: []
   targetTypeDrawerHandlers: []
