@@ -26,21 +26,10 @@ public class OnLevelStateChange : MonoBehaviour
 
         if (myUIElement != null)
         {
-            LevelEditor.OnLevelNotReady += (() => myUIElement.IsVisible = OnLevelNotReady.IsVisible);
-            LevelEditor.OnLevelNotReady += (() => myUIElement.IsLocked = OnLevelNotReady.IsLocked);
-            LevelEditor.OnLevelNotReady += (() => myUIElement.IsActive = OnLevelNotReady.IsActive);
-
-            LevelEditor.OnLevelNotPlayable += (() => myUIElement.IsVisible = OnLevelNotPlayable.IsVisible);
-            LevelEditor.OnLevelNotPlayable += (() => myUIElement.IsLocked = OnLevelNotPlayable.IsLocked);
-            LevelEditor.OnLevelNotPlayable += (() => myUIElement.IsActive = OnLevelNotPlayable.IsActive);
-
-            LevelEditor.OnLevelPlayable += (() => myUIElement.IsVisible = OnLevelPlayable.IsVisible);
-            LevelEditor.OnLevelPlayable += (() => myUIElement.IsLocked = OnLevelPlayable.IsLocked);
-            LevelEditor.OnLevelPlayable += (() => myUIElement.IsActive = OnLevelPlayable.IsActive);
-
-            LevelEditor.OnLevelReady += (() => myUIElement.IsVisible = OnLevelReady.IsVisible);
-            LevelEditor.OnLevelReady += (() => myUIElement.IsLocked = OnLevelReady.IsLocked);
-            LevelEditor.OnLevelReady += (() => myUIElement.IsActive = OnLevelReady.IsActive);
+            LevelEditor.OnLevelNotReady += (() => myUIElement.SetValues(OnLevelNotReady.IsVisible, OnLevelNotReady.IsActive, OnLevelNotReady.IsLocked));
+            LevelEditor.OnLevelNotPlayable += (() => myUIElement.SetValues(OnLevelNotPlayable.IsVisible, OnLevelNotPlayable.IsActive, OnLevelNotPlayable.IsLocked));
+            LevelEditor.OnLevelPlayable += (() => myUIElement.SetValues(OnLevelPlayable.IsVisible, OnLevelPlayable.IsActive, OnLevelPlayable.IsLocked));
+            LevelEditor.OnLevelReady += (() => myUIElement.SetValues(OnLevelReady.IsVisible, OnLevelReady.IsActive, OnLevelReady.IsLocked));
         }
     }
 

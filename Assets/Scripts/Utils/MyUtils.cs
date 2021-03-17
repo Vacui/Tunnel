@@ -27,7 +27,7 @@ public static class MyUtils
 
     public static void SetObjectsActive(GameObject[] gameObjects, bool active)
     {
-        if (gameObjects != null)
+        if (gameObjects != null && gameObjects.Length > 0)
             foreach (GameObject gameObject in gameObjects)
                 gameObject?.SetActive(active);
     }

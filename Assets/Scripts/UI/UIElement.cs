@@ -2,12 +2,15 @@
 
 public class UIElement : MonoBehaviour
 {
-    [SerializeField, Disable] private bool isVisible;
+    private bool needInitialize = true;
+
+    [SerializeField] private bool isVisible = true;
     public bool IsVisible
     {
         get { return isVisible; }
         set
         {
+            needInitialize = false;
             isVisible = value;
             if (isVisible) Show();
             else Hide();
@@ -15,7 +18,7 @@ public class UIElement : MonoBehaviour
         }
     }
 
-    [SerializeField, Disable] private bool isActive;
+    [SerializeField] private bool isActive = false;
     public bool IsActive
     {
         get { return isActive; }
@@ -23,17 +26,17 @@ public class UIElement : MonoBehaviour
         {
             isActive = value;
             if (isActive) Active();
-            else Inactive();
-            MyUtils.SetObjectsActive(showOnActive, isActive);
+            else Inactive();            
         }
     }
 
-    [SerializeField, Disable] private bool isLocked;
+    [SerializeField] private bool isLocked = false;
     public bool IsLocked
     {
         get { return isLocked; }
         set
         {
+            needInitialize = false;
             isLocked = value;
             if (isLocked) Lock();
             else Unlock();
@@ -44,17 +47,49 @@ public class UIElement : MonoBehaviour
     [SerializeField] private GameObject[] showOnActive = new GameObject[0];
     [SerializeField] private GameObject[] showOnVisible = new GameObject[0];
 
-    protected virtual void Awake() { }
+    protected virtual void Awake()
+    {
+        if (needInitialize)
+            SetValues(isVisible, isActive, isLocked);
+    }
+
+    public void SetValues(bool isVisible, bool isActive, bool isLocked)
+    {
+        needInitialize = false;
+        IsVisible = isVisible;
+        IsActive = isActive;
+        IsLocked = isLocked;
+    }
 
     public void ToggleVisible() { IsVisible = !IsVisible; }
-    public virtual void Show() { isVisible = true; }
-    public virtual void Hide() { isVisible = false; }
+    public virtual void Show()
+    {
+        isVisible = true;
+    }
+    public virtual void Hide()
+    {
+        isVisible = false;
+    }
 
     public void ToggleActive() { IsActive = !IsActive; }
-    public virtual void Active() { isActive = true; }
-    public virtual void Inactive() { isActive = false; }
+    public virtual void Active()
+    {
+        isActive = true;
+        MyUtils.SetObjectsActive(showOnActive, isActive);
+    }
+    public virtual void Inactive()
+    {
+        isActive = false;
+        MyUtils.SetObjectsActive(showOnActive, isActive);
+    }
 
     public void ToggleLock() { IsLocked = !IsLocked; }
-    public virtual void Lock() { isLocked = true; }
-    public virtual void Unlock() { isLocked = false; }
+    public virtual void Lock()
+    {
+        isLocked = true;
+    }
+    public virtual void Unlock()
+    {
+        isLocked = false;
+    }
 }

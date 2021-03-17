@@ -9,7 +9,6 @@ public class TabGroup : MonoBehaviour
 {
     private List<TabButton> tabButtons;
     private TabButton selectedButton;
-    [SerializeField] PanelGroup panelGroup;
 
     public void Subscribe(TabButton button)
     {
@@ -32,14 +31,10 @@ public class TabGroup : MonoBehaviour
     {
         if (button != null && !button.IsLocked && button != selectedButton)
         {
-            if (selectedButton != null)
-                selectedButton.Inactive();
+            selectedButton?.Inactive();
 
             selectedButton = button;
             selectedButton.Active();
-
-            if (panelGroup != null)
-                panelGroup.SetPanelIndex(selectedButton.transform.GetSiblingIndex());
         }
     }
 }
