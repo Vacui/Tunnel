@@ -41,7 +41,6 @@ public class TabGroup : MonoBehaviour
     {
         tabButtons.AddRange(tabButtonsTemp);
         tabButtons.RemoveAll(item => item == null);
-        Debug.Log(tabButtons.Count);
 
         bool activated = false;
         for (int i = 0; i < tabButtons.Count && !activated; i++)
