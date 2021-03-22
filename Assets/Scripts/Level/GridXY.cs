@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class GridXZ<T>
+public class GridXY<T>
 {
     public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
     public class OnGridObjectChangedEventArgs : EventArgs
@@ -15,7 +15,7 @@ public class GridXZ<T>
     private Vector3 originPosition;
     private T[,] tiles;
 
-    public GridXZ(int width, int height, float cellSize, Vector3 originPosition, T defaultGridObjectValue)
+    public GridXY(int width, int height, float cellSize, Vector3 originPosition, T defaultGridObjectValue)
     {
         if (width > 0)
         {

@@ -82,7 +82,7 @@ public class LevelManager : MonoBehaviour
 
     public static LevelManager Instance;
 
-    public static GridXZ<TileType> gridGame { get; private set; }
+    public static GridXY<TileType> gridGame { get; private set; }
 
     private void Awake()
     {
@@ -107,7 +107,7 @@ public class LevelManager : MonoBehaviour
     public void InitializeLevel(int width, int height)
     {
         Debug.Log($"Initializing level");
-        gridGame = new GridXZ<TileType>(width, height, 1, Vector3.zero, TileType.NULL);
+        gridGame = new GridXY<TileType>(width, height, 1, Vector3.zero, TileType.NULL);
     }
 
     public Vector3Int GenerateLevel(List<int> cells)
