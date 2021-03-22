@@ -14,6 +14,7 @@ public class GridXY<T>
     private float cellSize;
     private Vector3 originPosition;
     private T[,] tiles;
+    private T defaultTileValue;
 
     public GridXY(int width, int height, float cellSize, Vector3 originPosition, T defaultTileValue)
     {
@@ -27,15 +28,9 @@ public class GridXY<T>
                     this.height = height;
                     this.cellSize = cellSize;
                     this.originPosition = originPosition;
-
+                    this.defaultTileValue = defaultTileValue;
                     tiles = new T[width, height];
-                    for (int x = 0; x < width; x++)
-                    {
-                        for (int z = 0; z < height; z++)
-                        {
-                            tiles[x, z] = defaultTileValue;
-                        }
-                    }
+                    ClearAllTiles();
                 }
             }
         }
@@ -82,6 +77,14 @@ public class GridXY<T>
     public Vector3Int GetCell(Vector3Int startCell, Direction direction)
     {
         return startCell + direction.ToOffset();
+    }
+
+    public void ClearAllTiles()
+    {
+        if (tiles != null)
+            for (int x = 0; x < width; x++)
+                for (int z = 0; z < height; z++)
+                    tiles[x, z] = defaultTileValue;
     }
 
 }
