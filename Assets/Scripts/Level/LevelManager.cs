@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class LevelManager : MonoBehaviour
 {
@@ -84,35 +83,11 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
 
     public static GridXZ<TileType> gridGame { get; private set; }
-    [SerializeField] private Tilemap tilemapGame;
-    [SerializeField] private Tilemap tilemapTerrain;
-    [SerializeField] private CustomRuleTile customRuleTerrain;
-
-    [SerializeField] private CustomRuleTile customRuleTileBlank;
-    [SerializeField] private CustomRuleTile customRuleTileStart;
-    [SerializeField] private CustomRuleTile customRuleTileEnd;
-    [SerializeField] private CustomRuleTile customRuleTileNode;
-    [SerializeField] private CustomRuleTile customRuleTileFacingUp;
-    [SerializeField] private CustomRuleTile customRuleTileFacingRight;
-    [SerializeField] private CustomRuleTile customRuleTileFacingDown;
-    [SerializeField] private CustomRuleTile customRuleTileFacingLeft;
-
-    private Dictionary<TileType, CustomRuleTile> dictionaryCustomRuleTiles;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-
-        dictionaryCustomRuleTiles = new Dictionary<TileType, CustomRuleTile>();
-        dictionaryCustomRuleTiles.Add(TileType.NULL, customRuleTileBlank);
-        dictionaryCustomRuleTiles.Add(TileType.Start, customRuleTileStart);
-        dictionaryCustomRuleTiles.Add(TileType.End, customRuleTileEnd);
-        dictionaryCustomRuleTiles.Add(TileType.Node, customRuleTileNode);
-        dictionaryCustomRuleTiles.Add(TileType.FacingUp, customRuleTileFacingUp);
-        dictionaryCustomRuleTiles.Add(TileType.FacingRight, customRuleTileFacingRight);
-        dictionaryCustomRuleTiles.Add(TileType.FacingDown, customRuleTileFacingDown);
-        dictionaryCustomRuleTiles.Add(TileType.FacingLeft, customRuleTileFacingLeft);
     }
 
     public void LoadLevel(Seed seedLevel)
@@ -132,8 +107,6 @@ public class LevelManager : MonoBehaviour
     public void InitializeLevel(int width, int height)
     {
         Debug.Log($"Initializing level");
-        tilemapTerrain.ClearAllTiles();
-        tilemapGame.ClearAllTiles();
         gridGame = new GridXZ<TileType>(width, height, 1, Vector3.zero, TileType.NULL);
     }
 
@@ -156,32 +129,6 @@ public class LevelManager : MonoBehaviour
 
     private bool SetTile(Vector3Int position, TileType value)
     {
-        bool result = false;
-        CustomRuleTile ruleTile;
-        if (!tilemapTerrain.GetTile(position))
-        {
-            Debug.Log($"There is no terrain on {position} to support the tile.");
-            if (customRuleTerrain != null)
-                tilemapTerrain.SetTile(position, customRuleTerrain);
-            else Debug.LogWarning($"RuleTile for terrain is null.");
-        }
-
-        if (gridGame.GetGridObject(position) == TileType.NULL)
-        {
-            gridGame.SetGridObject(position, value);
-            result = true;
-            if (dictionaryCustomRuleTiles.ContainsKey(value))
-            {
-                position = new Vector3Int(position.x, position.z, 0);
-                ruleTile = dictionaryCustomRuleTiles[value];
-                if (ruleTile != null)
-                    tilemapGame.SetTile(position, ruleTile);
-                else Debug.LogWarning($"RuleTile for TileType {value} is null.");
-            } else Debug.LogWarning($"No key for TileType {value} in RuleTiles dictionary.");
-        } else Debug.Log($"There is already a tile on {position}.");
-        
-
-        Debug.Log($"{result} Setting tile {position} to {value}");
-        return result;
+        return true;
     }
 }
