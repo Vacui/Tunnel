@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class GridXY<T>
 {
-    public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
-    public class OnGridObjectChangedEventArgs : EventArgs
+    public event EventHandler<OnTileChangedEventArgs> OnTileChanged;
+    public class OnTileChangedEventArgs : EventArgs
     {
         public Vector3Int position;
     }
@@ -15,7 +15,7 @@ public class GridXY<T>
     private Vector3 originPosition;
     private T[,] tiles;
 
-    public GridXY(int width, int height, float cellSize, Vector3 originPosition, T defaultGridObjectValue)
+    public GridXY(int width, int height, float cellSize, Vector3 originPosition, T defaultTileValue)
     {
         if (width > 0)
         {
@@ -33,7 +33,7 @@ public class GridXY<T>
                     {
                         for (int z = 0; z < height; z++)
                         {
-                            tiles[x, z] = defaultGridObjectValue;
+                            tiles[x, z] = defaultTileValue;
                         }
                     }
                 }
@@ -41,7 +41,7 @@ public class GridXY<T>
         }
     }
 
-    public T GetGridObject(Vector3Int cell)
+    public T GetTile(Vector3Int cell)
     {
         T result = default(T);
         if (CellIsValid(cell))
@@ -50,23 +50,23 @@ public class GridXY<T>
         }
         return result;
     }
-    public T GetGridObject(int cellNum)
+    public T GetTile(int cellNum)
     {
-        return GetGridObject(CellNumToCell(cellNum));
+        return GetTile(CellNumToCell(cellNum));
     }
 
-    public void SetGridObject(Vector3Int cell, T value)
+    public void SetTile(Vector3Int cell, T value)
     {
         if (CellIsValid(cell))
         {
-            Debug.Log($"Setting GridObject {cell.x},{cell.z} {value}.");
+            Debug.Log($"Setting Tile {cell.x},{cell.z} {value}.");
             tiles[cell.x, cell.z] = value;
-            OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { position = cell });
+            OnTileChanged?.Invoke(this, new OnTileChangedEventArgs { position = cell });
         }
     }
-    public void SetGridObject(int cellNum, T value)
+    public void SetTile(int cellNum, T value)
     {
-        SetGridObject(CellNumToCell(cellNum), value);
+        SetTile(CellNumToCell(cellNum), value);
     }
 
     public bool CellIsValid(Vector3Int cell)
