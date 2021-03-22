@@ -26,10 +26,10 @@ public class OnLevelStateChange : MonoBehaviour
 
         if (myUIElement != null)
         {
-            LevelEditor.OnLevelNotReady += (() => myUIElement.SetValues(OnLevelNotReady.IsVisible, OnLevelNotReady.IsActive, OnLevelNotReady.IsLocked));
-            LevelEditor.OnLevelNotPlayable += (() => myUIElement.SetValues(OnLevelNotPlayable.IsVisible, OnLevelNotPlayable.IsActive, OnLevelNotPlayable.IsLocked));
-            LevelEditor.OnLevelPlayable += (() => myUIElement.SetValues(OnLevelPlayable.IsVisible, OnLevelPlayable.IsActive, OnLevelPlayable.IsLocked));
-            LevelEditor.OnLevelReady += (() => myUIElement.SetValues(OnLevelReady.IsVisible, OnLevelReady.IsActive, OnLevelReady.IsLocked));
+            LevelManager.OnLevelNotReady += (() => myUIElement.SetValues(OnLevelNotReady.IsVisible, OnLevelNotReady.IsActive, OnLevelNotReady.IsLocked));
+            LevelManager.OnLevelNotPlayable += ((object sender, LevelManager.OnLevelNotPlayableEventArgs args) => myUIElement.SetValues(OnLevelNotPlayable.IsVisible, OnLevelNotPlayable.IsActive, OnLevelNotPlayable.IsLocked));
+            LevelManager.OnLevelPlayable += (() => myUIElement.SetValues(OnLevelPlayable.IsVisible, OnLevelPlayable.IsActive, OnLevelPlayable.IsLocked));
+            LevelManager.OnLevelReady += (() => myUIElement.SetValues(OnLevelReady.IsVisible, OnLevelReady.IsActive, OnLevelReady.IsLocked));
         }
     }
 

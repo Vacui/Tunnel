@@ -17,9 +17,21 @@ public class Testing : MonoBehaviour
         "14/11/--------5-2-4-4-4-8-5-4-4-0-4-4-4-4-9-9-4-0-4-7-3---3-----3-6-8-3---3-5-4-9-4-0-4-8-3--3-6-4-8-3-3--3--3--3-6-8-0-4-8-3-3-1-4-9-4-9-8-3--3-3--3-3-6-4-4-9-8-3-3-6-4-9-9-4-0-3--5-4-7-3-3-0-4-4-9-7---3-5-9-4-4-0-3-3-0-4-9-4-4-8-3-3-3----3-3-3--3---3-3-0-6-4-0-4-7-6-7--6-4-4-0-7"
     };
 
-    private void Awake()
+    private void Start()
     {
-        //levelManager.LoadLevel(new LevelManager.Seed(seeds[2]));
+        //levelManager.LoadLevel(new LevelManager.Seed("3/3/1-4-3-3-6-6-4-4-2"));
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+            levelManager.LoadLevel(new LevelManager.Seed("3/6/1-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"));
+        if(Input.GetKeyDown(KeyCode.Alpha2))
+            levelManager.LoadLevel(new LevelManager.Seed("6/6/1-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"));
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+            levelManager.LoadLevel(new LevelManager.Seed("3/3/1-4-3-3-6-6-4-4-2"));
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+            levelManager.LoadLevel(new LevelManager.Seed("5/5/4-4-4-4-3-5-1-0-0-3-5-0-0-0-3-5-0-0-0-3-5-6-6-6-6"));
     }
 
 }

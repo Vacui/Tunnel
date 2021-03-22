@@ -101,17 +101,17 @@ public static class DirectionUtils
         }
     }
 
-    public static Vector3Int ToOffset(this Direction dir)
+    public static void ToOffset(this Direction dir, out int offsetX, out int offsetY)
     {
-        Vector3Int result = Vector3Int.zero;
+        offsetX = 0;
+        offsetY = 0;
         switch (dir)
         {
-            case Direction.Up: result.z++; break;
-            case Direction.Right: result.x++; break;
-            case Direction.Down: result.z--; break;
-            case Direction.Left: result.x--; break;
+            case Direction.Up: offsetY++; break;
+            case Direction.Right: offsetX++; break;
+            case Direction.Down: offsetY--; break;
+            case Direction.Left: offsetX--; break;
         }
-        return result;
     }
 
     public static float ToAngle(this Direction dir)
@@ -130,22 +130,21 @@ public static class DirectionUtils
 [System.Serializable]
 public enum TileType
 {
-    NULL = 0,
-    Start = 1,
-    End = 2,
-    Node = 3,
-    FacingUp = 4,
-    FacingRight = 5,
-    FacingDown = 6,
-    FacingLeft = 7 
+    NULL,
+    Player,
+    Goal,
+    Up,
+    Right,
+    Down,
+    Left 
 }
 
 public static class TileTypeUtils
 {
-    public static Direction TileTypeToDirection(this TileType tileType)
+    public static Direction ToDirection(this TileType tileType)
     {
         Direction result = Direction.NULL;
-        int directionIndex = (int)tileType - 3;
+        int directionIndex = (int)tileType - 2;
         if (directionIndex > 0) result = (Direction)directionIndex;
         return result;
     }

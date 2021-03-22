@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-
     public class Seed
     {
         public int width;
@@ -74,20 +73,32 @@ public class LevelManager : MonoBehaviour
 
     private const float C_CellSize = 4f;
 
-    public event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
-    public class OnLevelReadyEventArgs : EventArgs
+    public static event Action OnLevelNotReady;
+    public static event EventHandler<OnLevelNotPlayableEventArgs> OnLevelNotPlayable;
+    public class OnLevelNotPlayableEventArgs : EventArgs
     {
-        public Vector3Int startPosition;
+        public int width, height;
     }
+    public static event Action OnLevelPlayable;
+    public static event Action OnLevelReady;
 
     public static LevelManager Instance;
 
-    public static GridXY<TileType> gridGame { get; private set; }
+    public static GridXY<TileType> gridLevel { get; private set; }
+    private GridXY<GameObject> gridUnknown;
+    private Transform transformLevel;
+
+    [SerializeField] private PlayerController prefabPlayer;
+    [SerializeField] private LevelSkin skinTiles;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        PlayerController.OnPlayerStartedMove += ((object sender, PlayerController.OnPlayerStartedMoveEventArgs args) => DiscoverTile(args.x, args.y));
+
+        OnLevelNotReady?.Invoke();
     }
 
     public void LoadLevel(Seed seedLevel)
@@ -96,41 +107,99 @@ public class LevelManager : MonoBehaviour
         {
             Debug.Log("Loading level");
 
+            if (transformLevel)
+                Destroy(transformLevel.gameObject);
+
+            transformLevel = Instantiate(new GameObject("level"), Vector3.zero, Quaternion.identity, transform).transform;
+
             InitializeLevel(seedLevel.width, seedLevel.height);
+            GenerateLevel(seedLevel.cells);
 
-            Vector3Int startPosition = GenerateLevel(seedLevel.cells);
-
-            OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { startPosition = startPosition });
+            OnLevelNotPlayable?.Invoke(this, new OnLevelNotPlayableEventArgs { width = seedLevel.width, height = seedLevel.height });
         }
     }
 
     public void InitializeLevel(int width, int height)
     {
         Debug.Log($"Initializing level");
-        gridGame = new GridXY<TileType>(width, height, 1, Vector3.zero, TileType.NULL);
+        gridLevel = new GridXY<TileType>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, TileType.NULL);
+        gridUnknown = new GridXY<GameObject>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, null);
     }
 
-    public Vector3Int GenerateLevel(List<int> cells)
+    public void GenerateLevel(List<int> cells)
     {
         Debug.Log("Generating level");
-        TileType tileType = TileType.NULL;
-        Vector3Int startPosition = Vector3Int.one * -1;
-        Vector3Int tilePosition;
-       
         for (int i = 0; i < cells.Count; i++)
         {
-            gridGame.CellNumToCell(i, out int x, out int y);
-            tilePosition = new Vector3Int(x, 0, y);
-            SetTile(tilePosition, (TileType)cells[i]);
-            if (tileType == TileType.Start)
-                startPosition = tilePosition;
+            gridLevel.CellNumToCell(i, out int x, out int y);
+            CreateTile(x, y, (TileType)cells[i]);
         }
-
-        return startPosition;
     }
 
-    private bool SetTile(Vector3Int position, TileType value)
+    private void CreateTile(int x, int y, TileType type)
     {
-        return true;
+        if (gridLevel.GetTile(x, y) == TileType.NULL)
+        {
+            if (type != TileType.Player && type != TileType.Goal)
+            {
+                if (skinTiles)
+                {
+                    LevelSkin.TileSkin skinTile = skinTiles.GetUnknownSkin();
+                    if (skinTile != null)
+                    {
+                        gridUnknown.SetTile(x, y, SpawnTile(x, y, skinTile.skin, 1));
+                    }
+                }
+            }
+            if (type != TileType.Player)
+            {
+                gridLevel.SetTile(x, y, type);
+
+                if (skinTiles)
+                {
+                    LevelSkin.TileSkin skinTile = skinTiles.GetSkin(type);
+                    if (skinTile != null)
+                    {
+                        SpawnTile(x, y, skinTile.skin, 0);
+                    }
+                }
+            } else
+            {
+                CreateTile(x, y, TileType.NULL);
+                if (prefabPlayer != null)
+                {
+                    PlayerController player;
+                    if (!FindObjectOfType<PlayerController>())
+                        player = Instantiate(prefabPlayer).GetComponent<PlayerController>();
+                    else
+                        player = FindObjectOfType<PlayerController>();
+                    if (player)
+                    {
+                        player.MoveToCell(x, y, true);
+                    }
+                }
+            }
+        }
+    }
+
+    private GameObject SpawnTile(int x, int y, Sprite sprite, int sortingOrder)
+    {
+        SpriteRenderer newTile = new GameObject($"{x},{y}").AddComponent<SpriteRenderer>();
+        newTile.transform.parent = transformLevel;
+        newTile.transform.localPosition = gridLevel.CellToWorld(x, y);
+        newTile.sprite = sprite;
+        newTile.sortingOrder = sortingOrder;
+        return newTile.gameObject;
+    }
+
+    private void DiscoverTile(int x, int y)
+    {
+        if (gridUnknown != null)
+            if (gridUnknown.CellIsValid(x, y))
+            {
+                GameObject tileToDestroy = gridUnknown.GetTile(x, y);
+                if (tileToDestroy != null)
+                    Destroy(tileToDestroy);
+            }
     }
 }
