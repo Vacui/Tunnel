@@ -119,9 +119,11 @@ public class LevelManager : MonoBehaviour
        
         for (int i = 0; i < cells.Count; i++)
         {
-            tilePosition = gridGame.CellNumToCell(i);
+            gridGame.CellNumToCell(i, out int x, out int y);
+            tilePosition = new Vector3Int(x, 0, y);
             SetTile(tilePosition, (TileType)cells[i]);
-            if (tileType == TileType.Start) startPosition = gridGame.CellNumToCell(i);
+            if (tileType == TileType.Start)
+                startPosition = tilePosition;
         }
 
         return startPosition;

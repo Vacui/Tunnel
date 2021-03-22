@@ -6,17 +6,17 @@ public class GridXY<T>
     public event EventHandler<OnTileChangedEventArgs> OnTileChanged;
     public class OnTileChangedEventArgs : EventArgs
     {
-        public Vector3Int position;
+        public int x, y;
     }
 
     public int height { get; private set; }
     public int width { get; private set; }
     private float cellSize;
-    private Vector3 originPosition;
+    private Vector2 originPosition;
     private T[,] tiles;
     private T defaultTileValue;
 
-    public GridXY(int width, int height, float cellSize, Vector3 originPosition, T defaultTileValue)
+    public GridXY(int width, int height, float cellSize, Vector2 originPosition, T defaultTileValue)
     {
         if (width > 0)
         {
@@ -36,47 +36,39 @@ public class GridXY<T>
         } else Debug.LogWarning($"Can't create a grid with width {width}.");
     }
 
-    public T GetTile(Vector3Int cell)
+    public void SetTile(int x, int y, T value)
     {
-        T result = default(T);
-        if (CellIsValid(cell))
+        if (CellIsValid(x, y))
         {
-            result = tiles[cell.x, cell.z];
-        }
-        return result;
-    }
-    public T GetTile(int cellNum)
-    {
-        return GetTile(CellNumToCell(cellNum));
-    }
-
-    public void SetTile(Vector3Int cell, T value)
-    {
-        if (CellIsValid(cell))
-        {
-            Debug.Log($"Setting Tile {cell.x},{cell.z} {value}.");
-            tiles[cell.x, cell.z] = value;
-            OnTileChanged?.Invoke(this, new OnTileChangedEventArgs { position = cell });
+            tiles[x, y] = value;
+            OnTileChanged?.Invoke(this, new OnTileChangedEventArgs { x = x, y = y });
         }
     }
     public void SetTile(int cellNum, T value)
     {
-        SetTile(CellNumToCell(cellNum), value);
+        CellNumToCell(cellNum, out int x, out int y);
+        SetTile(x, y, value);
     }
 
-    public bool CellIsValid(Vector3Int cell)
+    public bool CellIsValid(int x, int y)
     {
-        return cell.x == Mathf.Clamp(cell.x, 0, width - 1) && cell.z == Mathf.Clamp(cell.z, 0, height - 1);
+        return x >= 0 && x < width && y >= 0 && y < height;
     }
 
-    public Vector3Int CellNumToCell(int cellNum)
+    public void CellNumToCell(int cellNum, out int x, out int y)
     {
-        return new Vector3Int(cellNum % width, 0, cellNum / width);
+        x = cellNum % width;
+        y = cellNum / width;
+    }
+    public Vector2Int CellNumToCell(int cellNum)
+    {
+        CellNumToCell(cellNum, out int x, out int y);
+        return new Vector2Int(x, y);
     }
 
-    public Vector3Int GetCell(Vector3Int startCell, Direction direction)
+    public Vector2 CellToWorld(int x, int y)
     {
-        return startCell + direction.ToOffset();
+        return new Vector2(x, y) * cellSize + originPosition;
     }
 
     public void ClearAllTiles()
@@ -86,5 +78,4 @@ public class GridXY<T>
                 for (int z = 0; z < height; z++)
                     tiles[x, z] = defaultTileValue;
     }
-
 }
