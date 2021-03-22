@@ -31,9 +31,9 @@ public class GridXY<T>
                     this.defaultTileValue = defaultTileValue;
                     tiles = new T[width, height];
                     ClearAllTiles();
-                }
-            }
-        }
+                } else Debug.LogWarning($"Can't create a grid with cellSize {cellSize}.");
+            } else Debug.LogWarning($"Can't create a grid with height {height}.");
+        } else Debug.LogWarning($"Can't create a grid with width {width}.");
     }
 
     public T GetTile(Vector3Int cell)
