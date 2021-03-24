@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelManager: {fileID: 740065235}
+  useAutoLevelGeneration: 0
 --- !u!4 &106636208
 Transform:
   m_ObjectHideFlags: 0
@@ -534,7 +535,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2fb9fe7e6d3a8a945b38c56d3f3f6cff, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 21b380b1f1129554db662b1950e0deab, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -906,6 +907,8 @@ MonoBehaviour:
   prefabPlayer: {fileID: 8668952672037739463, guid: ba4e8cb4837e3c141af28dda417f2a6e,
     type: 3}
   skinTiles: {fileID: 11400000, guid: e619457bed41daf45ba684a65f502768, type: 2}
+  hideLevel: 0
+  showDebugLog: 0
 --- !u!1 &785260863
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,7 +1417,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fbb36ecb1b2e04044be71c0fa3cca2c6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 08dddd33f26440f4bb684b867ab15388, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2112,7 +2115,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 36e79937ed8245f40bf83af3452bc28c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9511bbbfb03d7864db1aef47b5e2896d, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2912,7 +2915,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1e8d24a03d013d448837b52cb69dd138, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e10445ce9c0119448b059cc8bd7b51f2, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

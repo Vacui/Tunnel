@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class GameCamera : MonoBehaviour
@@ -19,9 +17,10 @@ public class GameCamera : MonoBehaviour
 
     private void ResizeCamera(int width, int height)
     {
-        if (height > width)
-            gameCamera.orthographicSize = height;
+        int size = Mathf.Max(width, height);
+        if (size > 10)
+            gameCamera.orthographicSize = size - size * 0.3f;
         else
-            gameCamera.orthographicSize = width + 2;
+            gameCamera.orthographicSize = 7.7f;
     }
 }

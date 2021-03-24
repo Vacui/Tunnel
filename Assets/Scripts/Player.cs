@@ -34,6 +34,9 @@ public class Player : MonoBehaviour
     [Header("Visual")]
     [SerializeField] private ElementsVisuals visuals;
 
+    [Header("Debug")]
+    [SerializeField] private bool showDebugLog = false;
+
     public Player(int x, int y)
     {
         this.x = x;
@@ -60,7 +63,7 @@ public class Player : MonoBehaviour
             {
                 if (LevelManager.gridLevel.GetTile(x, y) != TileType.NULL)
                 {
-                    Debug.Log($"Moving to tile {x},{y}", gameObject);
+                    if (showDebugLog) Debug.Log($"Moving to tile {x},{y}", gameObject);
 
                     Vector2 nextPos = LevelManager.gridLevel.CellToWorld(x, y);
 
@@ -127,13 +130,13 @@ public class Player : MonoBehaviour
 
     private void MoveToCurrentDirection()
     {
-        Debug.Log($"Moving To Current Direction {dirCurrent}.", gameObject);
+        if (showDebugLog) Debug.Log($"Moving To Current Direction {dirCurrent}.", gameObject);
         MoveToCell(dirCurrent);
     }
 
     private void CheckCurrentTile()
     {
-        Debug.Log("Checking current tile", gameObject);
+        if (showDebugLog) Debug.Log("Checking current tile", gameObject);
         if (LevelManager.gridLevel.CellIsValid(x, y))
         {
             TileType currentTileType = LevelManager.gridLevel.GetTile(x, y);
@@ -154,7 +157,7 @@ public class Player : MonoBehaviour
 
     private void CancelMovementTween()
     {
-        Debug.Log("Cancelling movement tween.", gameObject);
+        if (showDebugLog) Debug.Log("Cancelling movement tween.", gameObject);
         if (currentScaleTweenId > 0 && LeanTween.isTweening(currentScaleTweenId))
             LeanTween.cancel(currentScaleTweenId);
         transform.localScale = Vector3.one;

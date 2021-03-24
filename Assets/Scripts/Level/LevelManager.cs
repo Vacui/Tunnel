@@ -89,6 +89,10 @@ public class LevelManager : MonoBehaviour
     private Player player;
     [SerializeField] private ElementsVisuals skinTiles;
 
+    [Header("Debug")]
+    [SerializeField] private bool hideLevel = true;
+    [SerializeField] private bool showDebugLog = false;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -107,7 +111,7 @@ public class LevelManager : MonoBehaviour
     {
         if (seedLevel != null && seedLevel.isValid)
         {
-            Debug.Log("0. Loading level");
+            if (showDebugLog) Debug.Log("0. Loading level");
 
             if (transformLevel)
                 Destroy(transformLevel.gameObject);
@@ -129,21 +133,21 @@ public class LevelManager : MonoBehaviour
 
     public void InitializeLevel(int width, int height)
     {
-        Debug.Log($"1. Initializing level");
+        if (showDebugLog) Debug.Log($"1. Initializing level");
         gridLevel = new GridXY<TileType>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, TileType.NULL);
         gridLevelVisuals = new GridXY<SpriteRenderer>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, null);
     }
 
     public void GenerateLevel(List<int> cells)
     {
-        Debug.Log("2. Generating level");
+        if (showDebugLog) Debug.Log("2. Generating level");
         int startCellX = -1;
         int startCellY = -1;
         for (int i = 0; i < cells.Count; i++)
         {
             gridLevel.CellNumToCell(i, out int x, out int y);
             TileType tile = (TileType)cells[i];
-            Debug.Log(tile);
+            if (showDebugLog) Debug.Log($"Tile {i} {x},{y} value {cells[i]} = {tile}.");
             CreateTile(x, y, tile != TileType.Player ? tile : TileType.Node);
             if (tile == TileType.Player)
             {
@@ -162,7 +166,7 @@ public class LevelManager : MonoBehaviour
 
     private void CreateTile(int x, int y, TileType type)
     {
-        Debug.Log($"Creating Tile {x},{y} - {type}.");
+        if (showDebugLog) Debug.Log($"Creating Tile {x},{y} - {type}.");
         if (gridLevel.GetTile(x, y) == TileType.NULL)
         {
             gridLevel.SetTile(x, y, type);
@@ -174,8 +178,11 @@ public class LevelManager : MonoBehaviour
                 newTileVisual = SpawnTileVisual(x, y);
                 gridLevelVisuals.SetTile(x, y, newTileVisual);
             }
-            
-            HideTile(x, y);
+
+            if (hideLevel)
+                HideTile(x, y);
+            else
+                DiscoverTile(x, y);
 
             if (type == TileType.Goal)
                 DiscoverTile(x, y);
@@ -198,19 +205,19 @@ public class LevelManager : MonoBehaviour
 
     private void HideTile(int x, int y)
     {
-        Debug.Log($"Hiding Tile {x},{y}.");
+        if (showDebugLog) Debug.Log($"Hiding Tile {x},{y}.");
         SetTileVisualSprite(x, y, true);
     }
 
     private void DiscoverTile(int x, int y)
     {
-        Debug.Log($"Discovering Tile {x},{y}.");
+        if (showDebugLog) Debug.Log($"Discovering Tile {x},{y}.");
         SetTileVisualSprite(x, y, false);
     }
 
     private void SetTileVisualSprite(int x, int y, bool unknown)
     {
-        Debug.Log($"Setting Tile Visual Sprite {x},{y} - Unknown: {unknown}.");
+        if (showDebugLog) Debug.Log($"Setting Tile Visual Sprite {x},{y} - Unknown: {unknown}.");
         if (gridLevel != null && gridLevel.CellIsValid(x, y))
             if (gridLevelVisuals != null && gridLevelVisuals.CellIsValid(x, y))
                 gridLevelVisuals.GetTile(x, y).sprite = skinTiles.GetVisual(unknown ? TileType.NULL : gridLevel.GetTile(x, y));
