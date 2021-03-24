@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
         public int width;
         public int height;
         public List<int> cells;
+        public string SeedOriginal { get; private set; }
 
         public bool isValid { get; private set; }
 
@@ -19,6 +20,7 @@ public class LevelManager : MonoBehaviour
             height = -1;
             cells = new List<int>();
 
+            SeedOriginal = seed;
             seed = seed.Trim();
             List<string> seedParts = seed.Split('/').ToList();
 
@@ -40,15 +42,12 @@ public class LevelManager : MonoBehaviour
                                     int cell;
                                     for (int i = 0; i < cellString.Count; i++)
                                     {
-                                        if (int.TryParse(cellString[i], out cell))
-                                        {
+                                        if (cellString[i] != "" && int.TryParse(cellString[i], out cell))
                                             cells.Add(cell);
-                                        }
+                                        else
+                                            cells.Add(0);
                                     }
-                                    if (cells.Count == cellString.Count)
-                                    {
-                                        isValid = true;
-                                    }
+                                    isValid = cells.Count == cellString.Count;
                                 } else { Debug.LogWarning("Error in the seed cells section length."); }
                             } else { Debug.LogWarning("Seed height is less or equal to 0."); }
                         } else { Debug.LogWarning("Error in parsing seed height number."); }
@@ -88,14 +87,18 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private Player prefabPlayer;
     private Player player;
-    [SerializeField] private LevelSkin skinTiles;
+    [SerializeField] private ElementsVisuals skinTiles;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        PlayerController.OnPlayerStartedMove += ((object sender, PlayerController.OnPlayerStartedMoveEventArgs args) => DiscoverTile(args.x, args.y));
+        Player.OnPlayerStartedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x, args.y));
+        Player.OnPlayerStoppedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x+1, args.y));
+        Player.OnPlayerStoppedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x-1, args.y));
+        Player.OnPlayerStoppedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x, args.y+1));
+        Player.OnPlayerStoppedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x, args.y-1));
 
         OnLevelNotReady?.Invoke();
     }
@@ -109,12 +112,18 @@ public class LevelManager : MonoBehaviour
             if (transformLevel)
                 Destroy(transformLevel.gameObject);
 
-            transformLevel = Instantiate(new GameObject("level"), Vector3.zero, Quaternion.identity, transform).transform;
+            transformLevel = new GameObject("level").transform;
+            transformLevel.parent = transform;
+            transformLevel.localPosition = Vector3.zero;
+            transformLevel.localRotation = Quaternion.identity;
 
             InitializeLevel(seedLevel.width, seedLevel.height);
             GenerateLevel(seedLevel.cells);
 
             OnLevelNotPlayable?.Invoke(this, new OnLevelNotPlayableEventArgs { width = seedLevel.width, height = seedLevel.height });
+        } else
+        {
+            Debug.LogWarning($"Can't load level from seed {seedLevel.SeedOriginal}.");
         }
     }
 
@@ -128,17 +137,26 @@ public class LevelManager : MonoBehaviour
     public void GenerateLevel(List<int> cells)
     {
         Debug.Log("2. Generating level");
+        int startCellX = -1;
+        int startCellY = -1;
         for (int i = 0; i < cells.Count; i++)
         {
             gridLevel.CellNumToCell(i, out int x, out int y);
             TileType tile = (TileType)cells[i];
-            CreateTile(x, y, tile != TileType.Player ? tile : TileType.Empty);
+            Debug.Log(tile);
+            CreateTile(x, y, tile != TileType.Player ? tile : TileType.Node);
             if (tile == TileType.Player)
             {
-                if (player == null)
-                    player = Instantiate(prefabPlayer);
-                player.MoveToStartCell(x, y);
+                startCellX = x;
+                startCellY = y;
             }
+        }
+
+        if(startCellX >= 0 && startCellY >= 0)
+        {
+            if (player == null)
+                player = Instantiate(prefabPlayer);
+            player.MoveToStartCell(startCellX, startCellY);
         }
     }
 
@@ -148,12 +166,25 @@ public class LevelManager : MonoBehaviour
         if (gridLevel.GetTile(x, y) == TileType.NULL)
         {
             gridLevel.SetTile(x, y, type);
-            if (!gridLevelVisuals.GetTile(x, y))
-                gridLevelVisuals.SetTile(x, y, SpawnTileVisual(x, y));
+
+            SpriteRenderer newTileVisual = gridLevelVisuals.GetTile(x, y);
+
+            if (!newTileVisual)
+            {
+                newTileVisual = SpawnTileVisual(x, y);
+                gridLevelVisuals.SetTile(x, y, newTileVisual);
+            }
+            
             HideTile(x, y);
 
             if (type == TileType.Goal)
                 DiscoverTile(x, y);
+
+            if (newTileVisual)
+            {
+                newTileVisual.transform.localScale = Vector3.one * 0.5f;
+                LeanTween.scale(newTileVisual.gameObject, Vector3.one, 0.5f);
+            }
         }
     }
 
@@ -165,53 +196,23 @@ public class LevelManager : MonoBehaviour
         return newTile;
     }
 
-    public void EnterTile(int x, int y)
-    {
-        DiscoverTile(x, y);
-        Debug.Log($"Entering Tile {x},{y}.");
-        SetTileVisualSprite(x, y, TileVisual.Full);
-    }
-
-    public void ExitTile(int x, int y)
-    {
-        Debug.Log($"Exiting Tile {x},{y}.");
-        SetTileVisualSprite(x, y, TileVisual.Empty);
-    }
-
     private void HideTile(int x, int y)
     {
         Debug.Log($"Hiding Tile {x},{y}.");
-        SetTileVisualSprite(x, y, TileVisual.Unknown);
+        SetTileVisualSprite(x, y, true);
     }
 
     private void DiscoverTile(int x, int y)
     {
         Debug.Log($"Discovering Tile {x},{y}.");
-        ExitTile(x, y);
+        SetTileVisualSprite(x, y, false);
     }
 
-    enum TileVisual
+    private void SetTileVisualSprite(int x, int y, bool unknown)
     {
-        Empty,
-        Full,
-        Unknown
-    }
-
-    private void SetTileVisualSprite(int x, int y, TileVisual visual)
-    {
-        Debug.Log($"Setting Tile Visual Sprite {x},{y} - {visual}.");
-        if (gridLevelVisuals != null)
-            if (gridLevelVisuals.CellIsValid(x, y))
-                if (skinTiles)
-                {
-                    LevelSkin.TileSkin skinTile;
-                    if (visual == TileVisual.Unknown)
-                        skinTile = skinTiles.GetUnknownSkin();
-                    else
-                        skinTile = skinTiles.GetSkin(gridLevel.GetTile(x, y));
-
-                    if (skinTile != null)
-                        gridLevelVisuals.GetTile(x, y).sprite = visual == TileVisual.Full ? skinTile.full : skinTile.empty;
-                }
+        Debug.Log($"Setting Tile Visual Sprite {x},{y} - Unknown: {unknown}.");
+        if (gridLevel != null && gridLevel.CellIsValid(x, y))
+            if (gridLevelVisuals != null && gridLevelVisuals.CellIsValid(x, y))
+                gridLevelVisuals.GetTile(x, y).sprite = skinTiles.GetVisual(unknown ? TileType.NULL : gridLevel.GetTile(x, y));
     }
 }

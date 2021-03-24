@@ -890,7 +890,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabPlayer: {fileID: 8668952672037739463, guid: ba4e8cb4837e3c141af28dda417f2a6e,
     type: 3}
-  skinTiles: {fileID: 11400000, guid: 56116db5ad84a46478ad048fcdb2763f, type: 2}
+  skinTiles: {fileID: 11400000, guid: e619457bed41daf45ba684a65f502768, type: 2}
 --- !u!1 &785260863
 GameObject:
   m_ObjectHideFlags: 0

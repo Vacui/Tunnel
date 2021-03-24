@@ -81,6 +81,7 @@ public static class EditorUtils
 public enum Direction
 {
     NULL,
+    All,
     Up,
     Right,
     Down,
@@ -89,6 +90,11 @@ public enum Direction
 
 public static class DirectionUtils
 {
+    public static bool IsNull(this Direction dir)
+    {
+        return dir == Direction.NULL;
+    }
+
     public static Direction Opposite(this Direction dir)
     {
         switch (dir)
@@ -131,8 +137,8 @@ public static class DirectionUtils
 public enum TileType
 {
     NULL,
-    Empty,
     Player,
+    Node,
     Goal,
     Up,
     Right,
@@ -144,9 +150,7 @@ public static class TileTypeUtils
 {
     public static Direction ToDirection(this TileType tileType)
     {
-        Direction result = Direction.NULL;
-        int directionIndex = (int)tileType - 3;
-        if (directionIndex > 0) result = (Direction)directionIndex;
-        return result;
+        int directionIndex = tileType == TileType.Node ? 1 : (int)tileType - 2;
+        return (Direction)directionIndex;
     }
 }

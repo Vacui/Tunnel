@@ -119,7 +119,7 @@ public class PlayerController : MonoBehaviour
     private void CancelTween(int id)
     {
         //Debug.Log($"Canceling tween {id}.");
-        if (id > 0 && LeanTween.isTweening(currentScaleTweenId))
+        if (id > 0 && LeanTween.isTweening(id))
             LeanTween.cancel(id);
     }
 }

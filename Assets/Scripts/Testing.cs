@@ -2,7 +2,6 @@
 
 public class Testing : MonoBehaviour
 {
-
     public LevelManager levelManager;
 
     private string[] seeds = new string[]{
@@ -24,16 +23,13 @@ public class Testing : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-            levelManager.LoadLevel(new LevelManager.Seed("3/6/1-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"));
-        if(Input.GetKeyDown(KeyCode.Alpha2))
-            levelManager.LoadLevel(new LevelManager.Seed("6/6/1-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0"));
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            levelManager.LoadLevel(new LevelManager.Seed("3/1/1-5-3"));
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+            levelManager.LoadLevel(new LevelManager.Seed("3/3/1-5-4-4-7-7-5-5-3"));
         if (Input.GetKeyDown(KeyCode.Alpha3))
-            levelManager.LoadLevel(new LevelManager.Seed("3/3/1-4-3-3-6-6-4-4-2"));
+            levelManager.LoadLevel(new LevelManager.Seed("4/4/1-5-5-4--6--4--6-7-2-3-7-7-7"));
         if (Input.GetKeyDown(KeyCode.Alpha4))
-            levelManager.LoadLevel(new LevelManager.Seed("5/5/5-5-5-5-4-6-2-1-1-4-6-1-1-1-4-6-1-1-1-4-6-7-7-7-7"));
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-            levelManager.LoadLevel(new LevelManager.Seed("3/1/2-1-3"));
+            levelManager.LoadLevel(new LevelManager.Seed("5/5/5-5-5-5-4-6-1---4-6----4-6----4-6-7-7-7-7"));
     }
-
 }
