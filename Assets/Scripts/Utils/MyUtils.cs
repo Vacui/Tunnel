@@ -131,6 +131,7 @@ public static class DirectionUtils
 public enum TileType
 {
     NULL,
+    Empty,
     Player,
     Goal,
     Up,
@@ -144,7 +145,7 @@ public static class TileTypeUtils
     public static Direction ToDirection(this TileType tileType)
     {
         Direction result = Direction.NULL;
-        int directionIndex = (int)tileType - 2;
+        int directionIndex = (int)tileType - 3;
         if (directionIndex > 0) result = (Direction)directionIndex;
         return result;
     }

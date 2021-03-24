@@ -8,7 +8,8 @@ public class LevelSkin : ScriptableObject
     public class TileSkin
     {
         public TileType type;
-        public Sprite skin;
+        public Sprite empty;
+        public Sprite full;
     }
 
     [SerializeField] private TileSkin defaultSkin;

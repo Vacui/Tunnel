@@ -31,7 +31,9 @@ public class Testing : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3))
             levelManager.LoadLevel(new LevelManager.Seed("3/3/1-4-3-3-6-6-4-4-2"));
         if (Input.GetKeyDown(KeyCode.Alpha4))
-            levelManager.LoadLevel(new LevelManager.Seed("5/5/4-4-4-4-3-5-1-0-0-3-5-0-0-0-3-5-0-0-0-3-5-6-6-6-6"));
+            levelManager.LoadLevel(new LevelManager.Seed("5/5/5-5-5-5-4-6-2-1-1-4-6-1-1-1-4-6-1-1-1-4-6-7-7-7-7"));
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+            levelManager.LoadLevel(new LevelManager.Seed("3/1/2-1-3"));
     }
 
 }

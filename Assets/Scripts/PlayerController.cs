@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
 
     private void CancelMovement()
     {
-        Debug.Log("Canceling movement.");
+        //Debug.Log("Canceling movement.");
         CancelTween(currentMoveTweenID);
         CancelTween(currentScaleTweenId);
         currentScaleTweenId = LeanTween.scale(gameObject, Vector2.one, stretchSpeed).id;
@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
 
     private void CancelTween(int id)
     {
-        Debug.Log($"Canceling tween {id}.");
+        //Debug.Log($"Canceling tween {id}.");
         if (id > 0 && LeanTween.isTweening(currentScaleTweenId))
             LeanTween.cancel(id);
     }

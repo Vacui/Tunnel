@@ -14,20 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultSkin:
     type: 0
-    skin: {fileID: 21300000, guid: 64c88e2d365ee2640b6958898e5b4a5f, type: 3}
+    empty: {fileID: 0}
+    full: {fileID: 21300000, guid: 7520a044cb9cc1943a953e09413381c6, type: 3}
   unknownSkin:
     type: 0
-    skin: {fileID: 21300000, guid: c841a4591ada82549be2ae47b02ae2d7, type: 3}
+    empty: {fileID: 21300000, guid: a6b4412b10c25df4da9a20a26a2d6c5c, type: 3}
+    full: {fileID: 0}
   arrayTileSkins:
   - type: 1
-    skin: {fileID: 21300000, guid: da399f8b631ba43419ff454420cdf360, type: 3}
-  - type: 2
-    skin: {fileID: 21300000, guid: ef04f43eeb874e945ae1d0aafe159357, type: 3}
+    empty: {fileID: 0}
+    full: {fileID: 21300000, guid: 7520a044cb9cc1943a953e09413381c6, type: 3}
   - type: 3
-    skin: {fileID: 21300000, guid: 64feaabad3db4084696956b00b1f2cf9, type: 3}
+    empty: {fileID: 21300000, guid: c6f98eb340e35f846a8d0d2f5f5bf961, type: 3}
+    full: {fileID: 21300000, guid: 708d9d3c719de2046a448016b3490f84, type: 3}
   - type: 4
-    skin: {fileID: 21300000, guid: 0f3f07a3193de684094e6aad2c571deb, type: 3}
+    empty: {fileID: 21300000, guid: fbb36ecb1b2e04044be71c0fa3cca2c6, type: 3}
+    full: {fileID: 21300000, guid: a3f26d95fc0fb1a4a855db60a4f41871, type: 3}
   - type: 5
-    skin: {fileID: 21300000, guid: ef87e1b3782dc104ca2f23a41d276558, type: 3}
+    empty: {fileID: 21300000, guid: 1e8d24a03d013d448837b52cb69dd138, type: 3}
+    full: {fileID: 21300000, guid: cae460267e1eb4c4baa3e5cfc633dba3, type: 3}
   - type: 6
-    skin: {fileID: 21300000, guid: 0774f1d2c7fa0df49a0c647c27532d57, type: 3}
+    empty: {fileID: 21300000, guid: 36e79937ed8245f40bf83af3452bc28c, type: 3}
+    full: {fileID: 21300000, guid: 9d0dd4ef21a9a6d429a1d45b54482e68, type: 3}
+  - type: 7
+    empty: {fileID: 21300000, guid: 2fb9fe7e6d3a8a945b38c56d3f3f6cff, type: 3}
+    full: {fileID: 21300000, guid: 22081163155c4fa4d99f03a11bcfa3ce, type: 3}

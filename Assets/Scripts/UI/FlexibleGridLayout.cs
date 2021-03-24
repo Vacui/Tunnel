@@ -2,8 +2,6 @@
  * source: https://www.youtube.com/watch?v=CGsEJToeXmA
  * */
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,14 +34,16 @@ public class FlexibleGridLayout : LayoutGroup
 
         if (fitType == FitType.Uniform || fitType == FitType.Width || fitType == FitType.Height)
         {
-            fitX = fitY = true;
+            fitX = true;
+            fitY = true;
+
             float sqrRt = Mathf.Sqrt(transform.childCount);
             rows = Mathf.CeilToInt(sqrRt);
             columns = Mathf.CeilToInt(sqrRt);
         }
 
 
-        if(fitType == FitType.Width || fitType == FitType.FixedColumns)
+        if (fitType == FitType.Width || fitType == FitType.FixedColumns)
         {
             rows = Mathf.CeilToInt(transform.childCount / (float)columns);
         }
@@ -64,9 +64,9 @@ public class FlexibleGridLayout : LayoutGroup
         int columnCount = 0;
         int rowCount = 0;
 
-        for(int i = 0; i < rectChildren.Count; i++)
+        for (int i = 0; i < rectChildren.Count; i++)
         {
-            rowCount = 1 / columns;
+            rowCount = i / columns;
             columnCount = i % columns;
 
             RectTransform item = rectChildren[i];
