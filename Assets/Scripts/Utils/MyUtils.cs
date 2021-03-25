@@ -113,9 +113,9 @@ public static class DirectionUtils
         offsetY = 0;
         switch (dir)
         {
-            case Direction.Up: offsetY++; break;
+            case Direction.Up: offsetY--; break;
             case Direction.Right: offsetX++; break;
-            case Direction.Down: offsetY--; break;
+            case Direction.Down: offsetY++; break;
             case Direction.Left: offsetX--; break;
         }
     }

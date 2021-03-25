@@ -98,6 +98,8 @@ public class LevelManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
+        LeanTween.init(1000);
+
         Player.OnPlayerStartedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x, args.y));
         Player.OnPlayerStoppedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x+1, args.y));
         Player.OnPlayerStoppedMove += ((object sender, Player.GridCoordsEventArgs args) => DiscoverTile(args.x-1, args.y));
@@ -112,6 +114,8 @@ public class LevelManager : MonoBehaviour
         if (seedLevel != null && seedLevel.isValid)
         {
             if (showDebugLog) Debug.Log("0. Loading level");
+
+            LeanTween.cancelAll();
 
             if (transformLevel)
                 Destroy(transformLevel.gameObject);
@@ -134,7 +138,7 @@ public class LevelManager : MonoBehaviour
     public void InitializeLevel(int width, int height)
     {
         if (showDebugLog) Debug.Log($"1. Initializing level");
-        gridLevel = new GridXY<TileType>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, TileType.NULL);
+        gridLevel = new GridXY<TileType>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * new Vector2(-1.1f, 1.1f), TileType.NULL);
         gridLevelVisuals = new GridXY<SpriteRenderer>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, null);
     }
 

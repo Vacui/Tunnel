@@ -17,7 +17,7 @@ public class GameCamera : MonoBehaviour
 
     private void ResizeCamera(int width, int height)
     {
-        int size = Mathf.Max(width, height);
+        int size = Mathf.Clamp(Mathf.Max(width, height), 0, 20);
         if (size > 10)
             gameCamera.orthographicSize = size - size * 0.3f;
         else

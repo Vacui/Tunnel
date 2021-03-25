@@ -88,6 +88,7 @@ public class GridXY<T>
     {
         x = cellNum % width;
         y = cellNum / width;
+        Debug.Log($"{cellNum} = x={x}, y={y}");
     }
     public Vector2Int CellNumToCell(int cellNum)
     {
@@ -97,7 +98,7 @@ public class GridXY<T>
 
     public Vector2 CellToWorld(int x, int y)
     {
-        return new Vector2(x, y) * cellSize + originPosition;
+        return new Vector2(x, y) * new Vector2(1,-1) * cellSize + originPosition;
     }
 
     public void ClearAllTiles()
