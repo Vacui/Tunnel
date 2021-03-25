@@ -224,6 +224,6 @@ public class LevelManager : MonoBehaviour
         if (showDebugLog) Debug.Log($"Setting Tile Visual Sprite {x},{y} - Unknown: {unknown}.");
         if (gridLevel != null && gridLevel.CellIsValid(x, y))
             if (gridLevelVisuals != null && gridLevelVisuals.CellIsValid(x, y))
-                gridLevelVisuals.GetTile(x, y).sprite = skinTiles.GetVisual(unknown ? TileType.NULL : gridLevel.GetTile(x, y));
+                gridLevelVisuals.GetTile(x, y).sprite = unknown || gridLevel.GetTile(x, y) != TileType.NULL ? skinTiles.GetVisual(unknown ? TileType.NULL : gridLevel.GetTile(x, y)) : null;
     }
 }
