@@ -102,9 +102,15 @@ public class LevelManager : MonoBehaviour
 
         LeanTween.init(1000);
 
-        Player.OnPlayerStartedMove += ((object sender, GridCoordsEventArgs args) => DiscoverTile(args.x, args.y));
+        Player.OnPlayerStartedMove += (object sender, GridCoordsEventArgs args) => DiscoverTile(args.x, args.y);
 
-        Player.OnPlayerStoppedMove += ((object sender, GridCoordsEventArgs args) => DiscoverTilesAround(args.x, args.y));
+        Player.OnPlayerStoppedMove += (object sender, GridCoordsEventArgs args) =>
+        {
+            DiscoverTile(args.x + 1, args.y);
+            DiscoverTile(args.x - 1, args.y);
+            DiscoverTile(args.x, args.y + 1);
+            DiscoverTile(args.x, args.y - 1);
+        };
 
         OnLevelNotReady?.Invoke();
     }
@@ -113,7 +119,7 @@ public class LevelManager : MonoBehaviour
     {
         if (seedLevel != null && seedLevel.isValid)
         {
-            if (showDebugLog) Debug.Log("0. Loading level");
+            Debug.Log("0. Loading level...");
 
             LeanTween.cancelAll();
 
@@ -126,14 +132,12 @@ public class LevelManager : MonoBehaviour
             transformLevel.localRotation = Quaternion.identity;
 
             InitializeLevel(seedLevel.width, seedLevel.height);
+            gridLevelVisibility.OnGridObjectChanged += (object sender, GridCoordsEventArgs args) => UpdateTileVisual(args.x, args.y);
             Vector2Int startPos = GenerateLevel(seedLevel.cells);
-            gridLevelVisibility.OnGridObjectChanged += ((object sender, GridCoordsEventArgs args) => CheckTilesVisibilityAround(args.x, args.y));
-            gridLevelVisibility.OnGridObjectChanged += ((object sender, GridCoordsEventArgs args) => UpdateTileVisual(args.x, args.y));
-
-
+            gridLevelVisibility.OnGridObjectChanged += (object sender, GridCoordsEventArgs args) => CheckTilesVisibilityAround(args.x, args.y);
             if (startPos.x >= 0 && startPos.y >= 0)
             {
-                if (showDebugLog) Debug.Log("Level is ready!");
+                Debug.Log("Level is ready!");
                 if (player == null)
                     player = Instantiate(prefabPlayer);
                 player.MoveToStartCell(startPos.x, startPos.y);
@@ -141,14 +145,12 @@ public class LevelManager : MonoBehaviour
 
             OnLevelNotPlayable?.Invoke(this, new OnLevelNotPlayableEventArgs { width = seedLevel.width, height = seedLevel.height });
         } else
-        {
-            Debug.LogWarning($"Can't load level from seed {seedLevel.SeedOriginal}.");
-        }
+            Debug.LogWarning($"Can't load level from seed {seedLevel.SeedOriginal}");
     }
 
     public void InitializeLevel(int width, int height)
     {
-        if (showDebugLog) Debug.Log($"1. Initializing level");
+        Debug.Log($"1. Initializing level...");
 
         gridLevel = new GridXY<TileType>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * new Vector2(-1.1f, 1.1f), TileType.NULL);
 
@@ -159,18 +161,18 @@ public class LevelManager : MonoBehaviour
 
     public Vector2Int GenerateLevel(List<int> cells)
     {
-        if (showDebugLog) Debug.Log("2. Generating level");
+        Debug.Log("2. Generating level...");
         Vector2Int startPos = Vector2Int.one * -1;
 
         TileType type;
 
-        if (showDebugLog) Debug.Log("2.1. Setting tile types...");
+        Debug.Log("2.1. Setting tile types...");
         for (int i = 0; i < cells.Count; i++)
         {
             gridLevel.CellNumToCell(i, out int x, out int y);
             type = (TileType)cells[i];
             gridLevel.SetTile(x, y, type != TileType.Player ? type : TileType.Node);
-            if (showDebugLog) Debug.Log($"Setted Tile n.{i} {gridLevel.GetTileToString(x, y)}.");
+            if (showDebugLog) Debug.Log($"Setted Tile n.{i} {gridLevel.GetTileToString(x, y)}");
             if (type == TileType.Player)
             {
                 startPos.x = x;
@@ -178,37 +180,32 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        if (showDebugLog) Debug.Log("2.2. Creating tile visuals...");
+        Debug.Log($"2.2. Creating tile visuals...");
         for (int x = 0; x < gridLevel.width; x++)
             for (int y = 0; y < gridLevel.height; y++)
             {
                 type = gridLevel.GetTile(x, y);
 
-                CreateTileVisual(x, y, type);
+                InstantiateTileVisual(x, y, type);
 
                 if (hideLevel)
                 {
+                    HideTile(x, y);
                     if (type == TileType.Goal)
                         DiscoverTile(x, y);
-                    else
-                    {
-                        if (type == TileType.NULL)
-                            IsNullTileReadyToVisible(x, y);
-                        else
-                            HideTile(x, y);
-                    }
+                    else if (type == TileType.NULL)
+                        IsNullTileReadyToVisible(x, y);
                 } else
                     DiscoverTile(x, y);
-
-                UpdateTileVisual(x, y);
             }
 
         return startPos;
     }
 
-    private void CreateTileVisual(int x, int y, TileType type)
+    private void InstantiateTileVisual(int x, int y, TileType type)
     {
-        if (showDebugLog) Debug.Log($"Creating Tile Visual {gridLevel.GetTileToString(x, y)}.");
+        if (showDebugLog) Debug.Log($"Instantiating Tile {gridLevel.GetTileToString(x, y)} Visual");
+
         SpriteRenderer newTileVisual = gridLevelVisuals.GetTile(x, y);
 
         if (!newTileVisual)
@@ -234,36 +231,22 @@ public class LevelManager : MonoBehaviour
         return newTile;
     }
 
-    private void HideTile(int x, int y)
-    {   
-        if (gridLevel.CellIsValid(x, y))
-        {
-            if (showDebugLog) Debug.Log($"Hiding Tile {x},{y}.");
-            gridLevelVisibility.SetTile(x, y, TileVisibility.Invisible);
-        }   
-    }
-
-    private void DiscoverTile(int x, int y)
+    private void SetTileVisibility(int x, int y, TileVisibility visibility)
     {
-        if (gridLevel.CellIsValid(x, y))
+        if (gridLevelVisibility.CellIsValid(x, y) && gridLevelVisibility.GetTile(x, y) != visibility)
         {
-            if (showDebugLog) Debug.Log($"Discovering Tile {x},{y}.");
-            gridLevelVisibility.SetTile(x, y, TileVisibility.Visible);
-        }   
+            if (showDebugLog) Debug.Log($"Setting Tile {gridLevel.GetTileToString(x, y)} Visibility ({visibility})");
+            gridLevelVisibility.SetTile(x, y, visibility);
+        }
     }
-    private void DiscoverTilesAround(int x, int y)
-    {
-        DiscoverTile(x + 1, y);
-        DiscoverTile(x - 1, y);
-        DiscoverTile(x, y + 1);
-        DiscoverTile(x, y - 1);
-    }
+    private void DiscoverTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Visible); }
+    private void HideTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Invisible); }
 
     private void UpdateTileVisual(int x, int y)
     {
         if (gridLevelVisibility.CellIsValid(x, y))
         {
-            if (showDebugLog) Debug.Log($"Updating Tile Visual {x},{y}.");
+            if (showDebugLog) Debug.Log($"Updating Tile {gridLevel.GetTileToString(x, y)} Visual");
             TileVisibility visibility = gridLevelVisibility.GetTile(x, y);
             if (visibility != TileVisibility.ReadyToVisible)
                 SetTileVisualSprite(x, y, gridLevelVisibility.GetTile(x, y) == TileVisibility.Invisible);
@@ -281,7 +264,7 @@ public class LevelManager : MonoBehaviour
                         visualColor = new Color(0.1529f, 0.6823f, 0.3764f, 1.0f); //green
 
                     srTileVisual.color = visualColor;
-                } else Debug.LogWarning($"Can't update tile visibility of null SpriteRenderer {x},{y}");
+                } else Debug.LogWarning($"Can't update null SpriteRenderer for Tile {gridLevel.GetTileToString(x, y)}");
             }
         }
     }
@@ -299,22 +282,38 @@ public class LevelManager : MonoBehaviour
         {
             if (gridLevel.GetTile(x, y) == TileType.NULL && gridLevelVisibility.GetTile(x, y) == TileVisibility.Invisible)
             {
-                if (showDebugLog) Debug.Log($"Is NULL tile {x},{y} ready to visible?", gridLevelVisuals.GetTile(x, y).gameObject);
+                if (showDebugLog) Debug.Log($"Is Tile {gridLevel.GetTileToString(x, y)} ReadyToVisible?", gridLevelVisuals.GetTile(x, y)?.gameObject);
                 isReadyToVisible = true;
 
                 TileType type;
                 TileVisibility visibility;
 
-                for (int xT = -1; xT < 2 && isReadyToVisible; xT++)
-                    for (int yT = -1; yT < 2 && isReadyToVisible; yT++)
-                        if (xT != 0 || yT != 0)
-                            if (gridLevel.CellIsValid(x + xT, y + yT) && gridLevelVisibility.CellIsValid(x + xT, y + yT))
-                            {
-                                type = gridLevel.GetTile(x + xT, y + yT);
-                                visibility = gridLevelVisibility.GetTile(x + xT, y + yT);
-                                isReadyToVisible = visibility == TileVisibility.Visible || type == TileType.NULL;
-                                if (showDebugLog) Debug.Log($"{x},{y} - {type} - {visibility} - {isReadyToVisible}");
-                            }
+                MyUtils.LoopNeighbours((tX, tY) =>
+                {
+                    if (isReadyToVisible)
+                        if (gridLevel.CellIsValid(tX, tY) && gridLevelVisibility.CellIsValid(tX, tY))
+                        {
+                            type = gridLevel.GetTile(tX, tY);
+                            visibility = gridLevelVisibility.GetTile(tX, tY);
+                            isReadyToVisible = visibility == TileVisibility.Visible || type == TileType.NULL;
+                            if (showDebugLog) Debug.Log($"{gridLevel.GetTileToString(tX, tY)} ({visibility}) - {isReadyToVisible}");
+                        }
+                }, x, y, 1, true, false);
+                //int tX2, tY2;
+                //for (int xT = -1; xT < 2 && isReadyToVisible; xT++)
+                //    for (int yT = -1; yT < 2 && isReadyToVisible; yT++)
+                //        if ((xT != 0 || yT != 0))
+                //        {
+                //            tX2 = x + xT; tY2 = y + yT;
+                //            Debug.Log($"{tX2},{tY2}");
+                //            if (gridLevel.CellIsValid(tX2, tY2) && gridLevelVisibility.CellIsValid(tX2, tY2))
+                //            {
+                //                type = gridLevel.GetTile(tX2, tY2);
+                //                visibility = gridLevelVisibility.GetTile(tX2, tY2);
+                //                isReadyToVisible = visibility == TileVisibility.Visible || type == TileType.NULL;
+                //                if (showDebugLog) Debug.Log($"{gridLevel.GetTileToString(tX2, tY2)} ({visibility}) - {isReadyToVisible}");
+                //            }
+                //        }
 
                 if (isReadyToVisible)
                     gridLevelVisibility.SetTile(x, y, TileVisibility.ReadyToVisible);
@@ -330,28 +329,28 @@ public class LevelManager : MonoBehaviour
         TileType type = gridLevel.GetTile(x, y);
         TileVisibility visibility = gridLevelVisibility.GetTile(x, y);
 
-        if (showDebugLog) Debug.Log($"CheckTilesVisibilityAround({x},{y}) {type} - {visibility}");
+        if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {gridLevel.GetTileToString(x, y)} ({visibility})");
 
         if (type != TileType.NULL && visibility == TileVisibility.Visible)
         {
-            for (int xT = -1; xT < 2; xT++)
-                for (int yT = -1; yT < 2; yT++)
-                    if (xT != 0 || yT != 0)
-                        IsNullTileReadyToVisible(x + xT, y + yT);
-        }else if(type == TileType.NULL && visibility == TileVisibility.ReadyToVisible)
+            MyUtils.LoopNeighbours((tX, tY) => IsNullTileReadyToVisible(tX, tY), x, y, 1, true, false);
+            //for (int xT = -1; xT < 2; xT++)
+            //    for (int yT = -1; yT < 2; yT++)
+            //        if (xT != 0 || yT != 0)
+            //            IsNullTileReadyToVisible(x + xT, y + yT);
+        } else if(type == TileType.NULL && visibility == TileVisibility.ReadyToVisible)
         {
-            if(showDebugLog) Debug.Log("Check for cluster completion");
+            if(showDebugLog) Debug.Log("Checking for cluster completion");
 
             List<Vector2Int> cellsChecked = new List<Vector2Int>() { };
-            bool clusterIsOk = CheckTile(x, y, ref cellsChecked);
-            if (showDebugLog) Debug.Log(clusterIsOk);
+            bool clusterIsOk = CheckClusterTileVisibility(x, y, ref cellsChecked);
             if (clusterIsOk)
                 foreach (Vector2Int cell in cellsChecked)
                     DiscoverTile(cell.x, cell.y);
         }
     }
 
-    private bool CheckTile(int x, int y, ref List<Vector2Int> cellsChecked)
+    private bool CheckClusterTileVisibility(int x, int y, ref List<Vector2Int> cellsChecked)
     {
         Vector2Int cell = new Vector2Int(x, y);
 
@@ -360,17 +359,28 @@ public class LevelManager : MonoBehaviour
 
         bool result = gridLevelVisibility.CellIsValid(x, y) && gridLevelVisibility.GetTile(x, y) != TileVisibility.Invisible;
 
-        if (showDebugLog) Debug.Log($"CheckTile({x},{y}) = {gridLevelVisibility.GetTile(x, y)} ({result})");
+        if (showDebugLog) Debug.Log($"Checking cluster Tile {gridLevel.GetTileToString(x, y)} ({gridLevelVisibility.GetTile(x, y)}) = {result}");
 
+        //MyUtils.LoopNeighbours((tX, tY) =>
+        //{
+        //    if (result)
+        //    {
+        //        cell = new Vector2Int(tX, tY);
+        //        if (gridLevel.CellIsValid(cell.x, cell.y) && gridLevelVisibility.CellIsValid(cell.x, cell.y))
+        //            if (!cellsChecked.Contains(cell))
+        //                if (gridLevel.GetTile(cell.x, cell.y) == TileType.NULL)
+        //                    result = CheckClusterTileVisibility(cell.x, cell.y, ref cellsChecked);
+        //    }
+        //}, x, y, 1, true, true);
         for (int xT = -1; xT < 2 && result; xT++)
             for (int yT = -1; yT < 2 && result; yT++)
-                if (xT != 0 || yT != 0)
+                if ((xT != 0 || yT != 0) && (Mathf.Abs(xT) != Mathf.Abs(yT)))
                 {
                     cell = new Vector2Int(x + xT, y + yT);
                     if (gridLevel.CellIsValid(cell.x, cell.y) && gridLevelVisibility.CellIsValid(cell.x, cell.y))
                         if (!cellsChecked.Contains(cell))
-                            if (gridLevel.GetTile(cell.x, cell.y) == TileType.NULL)
-                                result = CheckTile(cell.x, cell.y, ref cellsChecked);
+                            if (gridLevel.GetTile(cell.x, cell.y) == TileType.NULL && gridLevelVisibility.GetTile(cell.x, cell.y) != TileVisibility.Visible)
+                                result = CheckClusterTileVisibility(cell.x, cell.y, ref cellsChecked);
                 }
 
         return result;

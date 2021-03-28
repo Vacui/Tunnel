@@ -31,6 +31,16 @@ public static class MyUtils
             foreach (GameObject gameObject in gameObjects)
                 gameObject?.SetActive(active);
     }
+
+    public static void LoopNeighbours(Action<int, int> OnLoop, int x = 0, int y = 0, int radius = 1, bool avoidCenter = false, bool avoidCorners = false)
+    {
+        if (radius > 0)
+            for (int xT = -radius; xT < radius + 1; xT++)
+                for (int yT = -radius; yT < radius + 1; yT++)
+                    if (!avoidCenter || (xT != 0 || yT != 0))
+                        if (!avoidCorners || (Mathf.Abs(xT) != Mathf.Abs(yT)))
+                            OnLoop?.Invoke(x + xT, y + yT);
+    }
 }
 
 public static class UIUtils
@@ -125,9 +135,7 @@ public static class DirectionUtils
         float result = -1;
 
         if (dir != Direction.NULL)
-        {
             result = (int)dir * 90;
-        }
 
         return result;
     }
