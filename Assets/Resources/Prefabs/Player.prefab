@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8668952672037739463}
   - component: {fileID: 6626373409857047932}
   m_Layer: 0
-  m_Name: Player 1
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -50,6 +50,7 @@ MonoBehaviour:
   SCALE_SIZE: 1.2
   SCALE_SPEED: 0.1
   visuals: {fileID: 11400000, guid: c53f75edb399bf049be26d7945ed571f, type: 2}
+  showDebugLog: 0
 --- !u!212 &6626373409857047932
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -86,11 +87,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 140132965
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

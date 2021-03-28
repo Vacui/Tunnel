@@ -154,3 +154,10 @@ public static class TileTypeUtils
         return (Direction)directionIndex;
     }
 }
+
+public enum TileVisibility
+{
+    Invisible,
+    ReadyToVisible,
+    Visible
+}

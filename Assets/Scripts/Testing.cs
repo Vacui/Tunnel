@@ -25,6 +25,7 @@ public class Testing : MonoBehaviour
     private string[] seeds = new string[]{
         "1/1/1",
         "3/1/1-5-3",
+        "3/2/1-5-3-0-0-0",
         "3/3/5-5-3-4-7-7-1-5-4",
         "4/4/3-7-7-7--6-7-2--6--4-1-5-5-4",
         "5/5/6-7-7-7-7-6--0--4-6--0--4-6-1--0-4-5-5-5-5-4",
@@ -50,6 +51,8 @@ public class Testing : MonoBehaviour
             CurrentIndex++;
         if (Input.GetKeyDown(KeyCode.LeftArrow))
             CurrentIndex--;
+        if (Input.GetKeyDown(KeyCode.R))
+            CurrentIndex = currentIndex;
     }
 
     private void GenerateLevel(int size)

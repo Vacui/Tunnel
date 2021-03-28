@@ -1,14 +1,14 @@
 ﻿using System;
 using UnityEngine;
 
+public class GridCoordsEventArgs : EventArgs
+{
+    public int x, y;
+}
+
 public class GridXY<T>
 {
-    public event EventHandler<OnGridObjectChangedEventArgs> OnGridObjectChanged;
-    public class OnGridObjectChangedEventArgs : EventArgs
-    {
-        public int x;
-        public int y;
-    }
+    public event EventHandler<GridCoordsEventArgs> OnGridObjectChanged;
 
     public int height { get; private set; }
     public int width { get; private set; }
@@ -70,7 +70,7 @@ public class GridXY<T>
         if (CellIsValid(x, y))
         {
             tiles[x, y] = value;
-            OnGridObjectChanged?.Invoke(this, new OnGridObjectChangedEventArgs { x = x, y = y });
+            OnGridObjectChanged?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
         }
     }
     public void SetTile(int cellNum, T value)
@@ -88,7 +88,6 @@ public class GridXY<T>
     {
         x = cellNum % width;
         y = cellNum / width;
-        Debug.Log($"{cellNum} = x={x}, y={y}");
     }
     public Vector2Int CellNumToCell(int cellNum)
     {
@@ -107,5 +106,15 @@ public class GridXY<T>
             for (int x = 0; x < width; x++)
                 for (int z = 0; z < height; z++)
                     tiles[x, z] = defaultTileValue;
+    }
+
+    public string GetTileToString(int x, int y)
+    {
+        string result = "";
+
+        if (CellIsValid(x, y))
+            result = $"{x},{y} ({GetTile(x, y)})";
+
+        return result;
     }
 }

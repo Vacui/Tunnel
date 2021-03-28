@@ -5,10 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static event EventHandler<GridCoordsEventArgs> OnPlayerStartedMove;
-    public class GridCoordsEventArgs : EventArgs
-    {
-        public int x, y;
-    }
+    
     public static event EventHandler<GridCoordsEventArgs> OnPlayerStoppedMove;
 
     [SerializeField, Disable] private int x = -1;
