@@ -2,7 +2,6 @@
 
 public class Testing : MonoBehaviour
 {
-    public LevelManager levelManager;
     private int currentIndex = -1;
     private int CurrentIndex
     {
@@ -16,7 +15,7 @@ public class Testing : MonoBehaviour
             } else
             {
                 currentIndex = Mathf.Clamp(value, 0, seeds.Length - 1);
-                levelManager.LoadLevel(new LevelManager.Seed(seeds[currentIndex]));
+                Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seeds[currentIndex]));
             }
         }
     }
@@ -65,6 +64,6 @@ public class Testing : MonoBehaviour
         for (int i = 1; i < width * height; i++)
             seed += "2-";
 
-        levelManager.LoadLevel(new LevelManager.Seed(seed.Trim('-')));
+        Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seed.Trim('-')));
     }
 }

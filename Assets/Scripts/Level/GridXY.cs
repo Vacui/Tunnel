@@ -6,9 +6,23 @@ public class GridCoordsEventArgs : EventArgs
     public int x, y;
 }
 
+public class GridCreationEventArgs : EventArgs
+{
+    public int width;
+    public int height;
+    public float cellSize;
+    public Vector2 originPosition;
+}
+
 public class GridXY<T>
 {
-    public event EventHandler<GridCoordsEventArgs> OnGridObjectChanged;
+    public event EventHandler<GridObjectChangedEventArgs> OnGridObjectChanged;
+    public class GridObjectChangedEventArgs : EventArgs
+    {
+        public int x, y;
+        public T value;
+    }
+    public event EventHandler<GridCreationEventArgs> OnGridCreated;
 
     public int height { get; private set; }
     public int width { get; private set; }
@@ -17,7 +31,9 @@ public class GridXY<T>
     private T[,] tiles;
     private T defaultTileValue;
 
-    public GridXY(int width, int height, float cellSize, Vector3 originPosition, T defaultTileValue)
+    public GridXY() { }
+
+    public void CreateGridXY(int width, int height, float cellSize, Vector3 originPosition)
     {
         if (width > 0)
         {
@@ -29,12 +45,19 @@ public class GridXY<T>
                     this.height = height;
                     this.cellSize = cellSize;
                     this.originPosition = originPosition;
-                    this.defaultTileValue = defaultTileValue;
                     tiles = new T[width, height];
-                    ClearAllTiles();
+                    OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height, cellSize = cellSize, originPosition = originPosition });
                 }
             }
         }
+    }
+
+    public void SetAllTiles(T value)
+    {
+        if (tiles != null)
+            for (int x = 0; x < width; x++)
+                for (int z = 0; z < height; z++)
+                    tiles[x, z] = value;
     }
 
     public T GetTile(int x, int y)
@@ -54,12 +77,10 @@ public class GridXY<T>
     }
     public T GetTile(int x, int y, Direction dir)
     {
-        Debug.Log($"GetTile {x},{y},{dir}.");
         T result = default(T);
         if(dir != Direction.NULL)
         {
             dir.ToOffset(out int offsetX, out int offsetY);
-            Debug.Log($"offset {offsetX},{offsetY}.");
             result = GetTile(x + offsetX, y + offsetY);
         }
         return result;
@@ -70,7 +91,7 @@ public class GridXY<T>
         if (CellIsValid(x, y))
         {
             tiles[x, y] = value;
-            OnGridObjectChanged?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+            OnGridObjectChanged?.Invoke(this, new GridObjectChangedEventArgs { x = x, y = y, value = value });
         }
     }
     public void SetTile(int cellNum, T value)
@@ -98,14 +119,6 @@ public class GridXY<T>
     public Vector2 CellToWorld(int x, int y)
     {
         return new Vector2(x, y) * new Vector2(1,-1) * cellSize + originPosition;
-    }
-
-    public void ClearAllTiles()
-    {
-        if (tiles != null)
-            for (int x = 0; x < width; x++)
-                for (int z = 0; z < height; z++)
-                    tiles[x, z] = defaultTileValue;
     }
 
     public string GetTileToString(int x, int y)

@@ -8,9 +8,11 @@ public class LevelManager : MonoBehaviour
 {
     public class Seed
     {
-        public int width;
-        public int height;
-        public List<int> cells;
+        int width;
+        public int Width { get { return width; } }
+        int height;
+        public int Height { get { return height; } }
+        public List<int> cells { get; private set; }
         public string SeedOriginal { get; private set; }
 
         public bool isValid { get; private set; }
@@ -69,94 +71,49 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private const float C_CellSize = 4f;
+    public const float CELLSIZE = 1.1f;
 
-    public static event Action OnLevelNotReady;
-    public static event EventHandler<OnLevelNotPlayableEventArgs> OnLevelNotPlayable;
-    public class OnLevelNotPlayableEventArgs : EventArgs
+    public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
+    public class OnLevelReadyEventArgs: EventArgs
     {
         public int width, height;
     }
     public static event Action OnLevelPlayable;
-    public static event Action OnLevelReady;
 
-    public static LevelManager Instance;
-
-    public static GridXY<TileType> gridLevel { get; private set; }
-    private GridXY<SpriteRenderer> gridLevelVisuals;
-    private GridXY<TileVisibility> gridLevelVisibility;
-    private Transform transformLevel;
-
-    [SerializeField] private Player prefabPlayer;
-    private Player player;
-    [SerializeField] private ElementsVisuals skinTiles;
+    public GridXY<TileType> grid { get; private set; }
 
     [Header("Debug")]
-    [SerializeField] private bool hideLevel = true;
     [SerializeField] private bool showDebugLog = false;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        LeanTween.init(1000);
-
-        Player.OnPlayerStartedMove += (object sender, GridCoordsEventArgs args) => DiscoverTile(args.x, args.y);
-
-        Player.OnPlayerStoppedMove += (object sender, GridCoordsEventArgs args) =>
-        {
-            DiscoverTile(args.x + 1, args.y);
-            DiscoverTile(args.x - 1, args.y);
-            DiscoverTile(args.x, args.y + 1);
-            DiscoverTile(args.x, args.y - 1);
-        };
-
-        OnLevelNotReady?.Invoke();
+        grid = new GridXY<TileType>();
     }
 
-    public void LoadLevel(Seed seedLevel)
+    public void LoadLevel(Seed lvlSeed)
     {
-        if (seedLevel != null && seedLevel.isValid)
+        if (lvlSeed != null && lvlSeed.isValid)
         {
             Debug.Log("0. Loading level...");
 
-            LeanTween.cancelAll();
+            Debug.Log($"1. Initializing level...");
+            grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE);
+            grid.SetAllTiles(TileType.NULL);
 
-            if (transformLevel)
-                Destroy(transformLevel.gameObject);
+            Vector2Int startPos = GenerateLevel(lvlSeed.cells);
 
-            transformLevel = new GameObject("level").transform;
-            transformLevel.parent = transform;
-            transformLevel.localPosition = Vector3.zero;
-            transformLevel.localRotation = Quaternion.identity;
-
-            InitializeLevel(seedLevel.width, seedLevel.height);
-            gridLevelVisibility.OnGridObjectChanged += (object sender, GridCoordsEventArgs args) => UpdateTileVisual(args.x, args.y);
-            Vector2Int startPos = GenerateLevel(seedLevel.cells);
-            gridLevelVisibility.OnGridObjectChanged += (object sender, GridCoordsEventArgs args) => CheckTilesVisibilityAround(args.x, args.y);
             if (startPos.x >= 0 && startPos.y >= 0)
             {
                 Debug.Log("Level is ready!");
-                if (player == null)
-                    player = Instantiate(prefabPlayer);
-                player.MoveToStartCell(startPos.x, startPos.y);
+
+                OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
+
+                Singletons.main.player.MoveToStartCell(startPos.x, startPos.y);
+
+                OnLevelPlayable?.Invoke();
             }
-
-            OnLevelNotPlayable?.Invoke(this, new OnLevelNotPlayableEventArgs { width = seedLevel.width, height = seedLevel.height });
         } else
-            Debug.LogWarning($"Can't load level from seed {seedLevel.SeedOriginal}");
-    }
-
-    public void InitializeLevel(int width, int height)
-    {
-        Debug.Log($"1. Initializing level...");
-
-        gridLevel = new GridXY<TileType>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * new Vector2(-1.1f, 1.1f), TileType.NULL);
-
-        gridLevelVisuals = new GridXY<SpriteRenderer>(width, height, 1.1f, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * -1.1f, null);
-
-        gridLevelVisibility = new GridXY<TileVisibility>(width, height, 1, Vector3.zero, TileVisibility.Invisible);
+            Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
     }
 
     public Vector2Int GenerateLevel(List<int> cells)
@@ -169,10 +126,10 @@ public class LevelManager : MonoBehaviour
         Debug.Log("2.1. Setting tile types...");
         for (int i = 0; i < cells.Count; i++)
         {
-            gridLevel.CellNumToCell(i, out int x, out int y);
+            grid.CellNumToCell(i, out int x, out int y);
             type = (TileType)cells[i];
-            gridLevel.SetTile(x, y, type != TileType.Player ? type : TileType.Node);
-            if (showDebugLog) Debug.Log($"Setted Tile n.{i} {gridLevel.GetTileToString(x, y)}");
+            grid.SetTile(x, y, type != TileType.Player ? type : TileType.Node);
+            if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
             if (type == TileType.Player)
             {
                 startPos.x = x;
@@ -180,186 +137,6 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"2.2. Creating tile visuals...");
-        for (int x = 0; x < gridLevel.width; x++)
-            for (int y = 0; y < gridLevel.height; y++)
-            {
-                type = gridLevel.GetTile(x, y);
-
-                InstantiateTileVisual(x, y, type);
-
-                if (hideLevel)
-                {
-                    HideTile(x, y);
-                    if (type == TileType.Goal)
-                        DiscoverTile(x, y);
-                    else if (type == TileType.NULL)
-                        IsNullTileReadyToVisible(x, y);
-                } else
-                    DiscoverTile(x, y);
-            }
-
         return startPos;
-    }
-
-    private void InstantiateTileVisual(int x, int y, TileType type)
-    {
-        if (showDebugLog) Debug.Log($"Instantiating Tile {gridLevel.GetTileToString(x, y)} Visual");
-
-        SpriteRenderer newTileVisual = gridLevelVisuals.GetTile(x, y);
-
-        if (!newTileVisual)
-        {
-            newTileVisual = SpawnTileVisual(x, y);
-            gridLevelVisuals.SetTile(x, y, newTileVisual);
-        }
-
-        if (newTileVisual)
-        {
-            newTileVisual.name = gridLevel.GetTileToString(x, y);
-            newTileVisual.transform.localScale = Vector3.one * 0.5f;
-            LeanTween.scale(newTileVisual.gameObject, Vector3.one, 0.5f);
-        }
-    }
-
-    private SpriteRenderer SpawnTileVisual(int x, int y)
-    {
-        SpriteRenderer newTile = new GameObject($"{x},{y}").AddComponent<SpriteRenderer>();
-        newTile.color = Color.black;
-        newTile.transform.parent = transformLevel;
-        newTile.transform.localPosition = gridLevel.CellToWorld(x, y);
-        return newTile;
-    }
-
-    private void SetTileVisibility(int x, int y, TileVisibility visibility)
-    {
-        if (gridLevelVisibility.CellIsValid(x, y) && (visibility == TileVisibility.Invisible || gridLevelVisibility.GetTile(x, y) != visibility))
-        {
-            if (showDebugLog) Debug.Log($"Setting Tile {gridLevel.GetTileToString(x, y)} Visibility ({visibility})");
-            gridLevelVisibility.SetTile(x, y, visibility);
-        }
-    }
-    private void DiscoverTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Visible); }
-    private void HideTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Invisible); }
-
-    private void UpdateTileVisual(int x, int y)
-    {
-        if (gridLevelVisibility.CellIsValid(x, y))
-        {
-            if (showDebugLog) Debug.Log($"Updating Tile {gridLevel.GetTileToString(x, y)} Visual");
-            TileVisibility visibility = gridLevelVisibility.GetTile(x, y);
-            if (visibility != TileVisibility.ReadyToVisible)
-                SetTileVisualSprite(x, y, gridLevelVisibility.GetTile(x, y) == TileVisibility.Invisible);
-
-            if (gridLevelVisuals.CellIsValid(x, y))
-            {
-                SpriteRenderer srTileVisual = gridLevelVisuals.GetTile(x, y);
-                if (srTileVisual)
-                {
-                    Color visualColor = Color.black;
-
-                    if (showDebugLog)
-                        if (visibility == TileVisibility.Visible)
-                            visualColor = new Color(0.1529f, 0.6823f, 0.3764f, 1.0f); //green
-                        else if (visibility == TileVisibility.ReadyToVisible)
-                            visualColor = new Color(0.9019f, 0.4941f, 0.1333f, 1.0f); //orange
-                        else if (visibility == TileVisibility.Invisible)
-                            visualColor = new Color(0.7529f, 0.2235f, 0.1686f, 1.0f); //red
-
-                    srTileVisual.color = visualColor;
-                } else Debug.LogWarning($"Can't update null SpriteRenderer for Tile {gridLevel.GetTileToString(x, y)}");
-            }
-        }
-    }
-
-    private void SetTileVisualSprite(int x, int y, bool unknown)
-    {
-        gridLevelVisuals.GetTile(x, y).sprite = unknown || gridLevel.GetTile(x, y) != TileType.NULL ? skinTiles.GetVisual(unknown ? TileType.NULL : gridLevel.GetTile(x, y)) : null;
-    }
-
-    private bool IsNullTileReadyToVisible(int x, int y)
-    {
-        bool isReadyToVisible = false;
-
-        if (gridLevel.CellIsValid(x, y) && gridLevelVisibility.CellIsValid(x, y))
-        {
-            if (gridLevel.GetTile(x, y) == TileType.NULL && gridLevelVisibility.GetTile(x, y) == TileVisibility.Invisible)
-            {
-                if (showDebugLog) Debug.Log($"Is Tile {gridLevel.GetTileToString(x, y)} ReadyToVisible?", gridLevelVisuals.GetTile(x, y)?.gameObject);
-                isReadyToVisible = true;
-
-                TileType type;
-                TileVisibility visibility;
-
-                List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, false);
-                Vector2Int neighbour;
-                for (int i = 0; i < neighbours.Count && isReadyToVisible; i++)
-                {
-                    neighbour = neighbours[i];
-                    if (gridLevel.CellIsValid(neighbour.x, neighbour.y) && gridLevelVisibility.CellIsValid(neighbour.x, neighbour.y))
-                    {
-                        type = gridLevel.GetTile(neighbour.x, neighbour.y);
-                        visibility = gridLevelVisibility.GetTile(neighbour.x, neighbour.y);
-                        isReadyToVisible = visibility == TileVisibility.Visible || type == TileType.NULL;
-                        if (showDebugLog) Debug.Log($"{gridLevel.GetTileToString(neighbour.x, neighbour.y)} ({visibility}) - {isReadyToVisible}");
-                    }
-                }
-
-                if (isReadyToVisible)
-                    gridLevelVisibility.SetTile(x, y, TileVisibility.ReadyToVisible);
-            } else
-                isReadyToVisible = gridLevelVisibility.GetTile(x, y) != TileVisibility.ReadyToVisible;
-        }
-
-        return isReadyToVisible;
-    }
-
-    private void CheckTilesVisibilityAround(int x, int y)
-    {
-        TileType type = gridLevel.GetTile(x, y);
-        TileVisibility visibility = gridLevelVisibility.GetTile(x, y);
-
-        if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {gridLevel.GetTileToString(x, y)} ({visibility})");
-
-        if (type != TileType.NULL && visibility == TileVisibility.Visible)
-        {
-            List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, false);
-            foreach (Vector2Int neighbour in neighbours)
-                IsNullTileReadyToVisible(neighbour.x, neighbour.y);
-        } else if (type == TileType.NULL && visibility == TileVisibility.ReadyToVisible)
-        {
-            if (showDebugLog) Debug.Log("Checking for cluster completion");
-
-            List<Vector2Int> cellsChecked = new List<Vector2Int>() { };
-            bool clusterIsOk = CheckClusterTileVisibility(x, y, ref cellsChecked);
-            if (clusterIsOk)
-                foreach (Vector2Int cell in cellsChecked)
-                    DiscoverTile(cell.x, cell.y);
-        }
-    }
-
-    private bool CheckClusterTileVisibility(int x, int y, ref List<Vector2Int> cellsChecked)
-    {
-        Vector2Int cell = new Vector2Int(x, y);
-
-        if (!cellsChecked.Contains(cell))
-            cellsChecked.Add(cell);
-
-        bool result = gridLevelVisibility.CellIsValid(x, y) && gridLevelVisibility.GetTile(x, y) != TileVisibility.Invisible;
-
-        if (showDebugLog) Debug.Log($"Checking cluster Tile {gridLevel.GetTileToString(x, y)} ({gridLevelVisibility.GetTile(x, y)}) = {result}");
-
-        List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, true);
-        Vector2Int neighbour;
-        for (int i = 0; i < neighbours.Count && result; i++)
-        {
-            neighbour = neighbours[i];
-            if (gridLevel.CellIsValid(neighbour.x, neighbour.y) && gridLevelVisibility.CellIsValid(neighbour.x, neighbour.y))
-                if (!cellsChecked.Contains(neighbour))
-                    if (gridLevel.GetTile(neighbour.x, neighbour.y) == TileType.NULL && gridLevelVisibility.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
-                        result = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
-        }
-
-        return result;
     }
 }

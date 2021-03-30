@@ -54,15 +54,15 @@ public class Player : MonoBehaviour
 
     private void MoveToCell(int x, int y, bool teleport)
     {
-        if (LevelManager.gridLevel != null)
+        if (Singletons.main.lvlManager.grid != null)
         {
-            if (LevelManager.gridLevel.CellIsValid(x, y))
+            if (Singletons.main.lvlManager.grid.CellIsValid(x, y))
             {
-                if (LevelManager.gridLevel.GetTile(x, y) != TileType.NULL)
+                if (Singletons.main.lvlManager.grid.GetTile(x, y) != TileType.NULL)
                 {
                     if (showDebugLog) Debug.Log($"Moving to tile {x},{y}", gameObject);
 
-                    Vector2 nextPos = LevelManager.gridLevel.CellToWorld(x, y);
+                    Vector2 nextPos = Singletons.main.lvlManager.grid.CellToWorld(x, y);
 
                     this.x = x;
                     this.y = y;
@@ -71,7 +71,7 @@ public class Player : MonoBehaviour
                     transform.localPosition = nextPos;
 
                     if (visuals != null)
-                        GetComponent<SpriteRenderer>().sprite = visuals.GetVisual(LevelManager.gridLevel.GetTile(x, y));
+                        GetComponent<SpriteRenderer>().sprite = visuals.GetVisual(Singletons.main.lvlManager.grid.GetTile(x, y));
 
                     if (teleport)
                         CheckCurrentTile();
@@ -98,7 +98,7 @@ public class Player : MonoBehaviour
 
     private void MoveToCell(Direction dir)
     {
-        Direction dirCurrentTile = LevelManager.gridLevel.GetTile(x, y).ToDirection();
+        Direction dirCurrentTile = Singletons.main.lvlManager.grid.GetTile(x, y).ToDirection();
         if (dir != Direction.NULL)
         {
             if (dirCurrentTile == Direction.All || dirCurrentTile == dir)
@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
                 MoveToCell(x + offsetX, y + offsetY, false);
             } else
             {
-                Debug.LogWarning($"Character can't exit tile with direction {dirCurrentTile} to {dir}.", gameObject);
+                if(showDebugLog) Debug.Log($"Character can't exit tile with direction {dirCurrentTile} to {dir}.", gameObject);
                 if (!IsSafe)
                     MoveToCell(dirCurrentTile);
             }
@@ -134,9 +134,9 @@ public class Player : MonoBehaviour
     private void CheckCurrentTile()
     {
         if (showDebugLog) Debug.Log("Checking current tile", gameObject);
-        if (LevelManager.gridLevel.CellIsValid(x, y))
+        if (Singletons.main.lvlManager.grid.CellIsValid(x, y))
         {
-            TileType currentTileType = LevelManager.gridLevel.GetTile(x, y);
+            TileType currentTileType = Singletons.main.lvlManager.grid.GetTile(x, y);
             if (currentTileType != TileType.NULL)
             {
                 IsSafe = currentTileType == TileType.Node;

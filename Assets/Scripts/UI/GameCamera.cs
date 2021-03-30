@@ -12,7 +12,7 @@ public class GameCamera : MonoBehaviour
 
     private void OnEnable()
     {
-        LevelManager.OnLevelNotPlayable += (object sender, LevelManager.OnLevelNotPlayableEventArgs args) => ResizeCamera(args.width, args.height);
+        LevelManager.OnLevelReady += (object sender, LevelManager.OnLevelReadyEventArgs args) => ResizeCamera(args.width, args.height);
     }
 
     private void ResizeCamera(int width, int height)
