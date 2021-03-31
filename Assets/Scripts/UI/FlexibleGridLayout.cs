@@ -19,8 +19,8 @@ public class FlexibleGridLayout : LayoutGroup
 
     [SerializeField] private FitType fitType;
 
-    [SerializeField] private int rows;
-    [SerializeField] private int columns;
+    [SerializeField, EnableIf("fitType", FitType.FixedRows)] private int rows;
+    [SerializeField, EnableIf("fitType", FitType.FixedColumns)] private int columns;
 
     private Vector2 cellSize;
     [SerializeField] private Vector2 spacing;
@@ -32,7 +32,7 @@ public class FlexibleGridLayout : LayoutGroup
     {
         base.CalculateLayoutInputHorizontal();
 
-        if (fitType == FitType.Uniform || fitType == FitType.Width || fitType == FitType.Height)
+        if (fitType == FitType.Width || fitType == FitType.Height || fitType == FitType.Uniform)
         {
             fitX = true;
             fitY = true;
@@ -42,21 +42,17 @@ public class FlexibleGridLayout : LayoutGroup
             columns = Mathf.CeilToInt(sqrRt);
         }
 
-
         if (fitType == FitType.Width || fitType == FitType.FixedColumns)
-        {
             rows = Mathf.CeilToInt(transform.childCount / (float)columns);
-        }
+
         if (fitType == FitType.Height || fitType == FitType.FixedRows)
-        {
             columns = Mathf.CeilToInt(transform.childCount / (float)rows);
-        }
 
         float parentWidth = rectTransform.rect.width;
         float parentHeight = rectTransform.rect.height;
 
-        float cellWidth = (parentWidth / columns) - ((spacing.x / columns) * 2) - (padding.left / (float)columns) - (padding.right / (float)columns);
-        float cellHeight = (parentHeight / rows) - ((spacing.y / rows) * 2) - (padding.top / (float)rows) - (padding.bottom / (float)rows);
+        float cellWidth = (parentWidth / (float)columns) - ((spacing.x / (float)columns) * 2) - (padding.left / (float)columns) - (padding.right / (float)columns);
+        float cellHeight = (parentHeight / (float)rows) - ((spacing.y / (float)rows) * 2) - (padding.top / (float)rows) - (padding.bottom / (float)rows);
 
         cellSize.x = fitX ? cellWidth : cellSize.x;
         cellSize.y = fitY ? cellHeight : cellSize.y;
@@ -79,18 +75,9 @@ public class FlexibleGridLayout : LayoutGroup
         }
     }
 
-    public override void CalculateLayoutInputVertical()
-    {
+    public override void CalculateLayoutInputVertical() { }
 
-    }
+    public override void SetLayoutHorizontal() { }
 
-    public override void SetLayoutHorizontal()
-    {
-
-    }
-
-    public override void SetLayoutVertical()
-    {
-
-    }
+    public override void SetLayoutVertical() { }
 }
