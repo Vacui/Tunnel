@@ -11,6 +11,7 @@ public class Singletons : MonoBehaviour
     public LevelManager lvlManager { get; private set; }
     public LevelVisual lvlVisual { get; private set; }
     public LevelFog lvlFog { get; private set; }
+    public LevelGenerator lvlGenerator { get; private set; }
     public Player player { get; private set; }
 
     private void Awake()
@@ -22,11 +23,12 @@ public class Singletons : MonoBehaviour
         } else
             main = this;
 
-        LeanTween.init(1000);
+        LeanTween.init(2000);
 
         lvlManager = GetComponentInChildren<LevelManager>();
         lvlVisual = GetComponentInChildren<LevelVisual>();
         lvlFog = GetComponentInChildren<LevelFog>();
+        lvlGenerator = GetComponentInChildren<LevelGenerator>();
         player = GetComponentInChildren<Player>();
     }
 }

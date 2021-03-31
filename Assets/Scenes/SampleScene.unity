@@ -284,6 +284,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 1891032473}
+        m_MethodName: SetWidth
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &70155161
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,7 +955,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1900009249}
   m_Direction: 0
   m_MinValue: 5
-  m_MaxValue: 30
+  m_MaxValue: 20
   m_WholeNumbers: 1
   m_Value: 5
   m_OnValueChanged:
@@ -952,6 +963,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1089974747}
         m_MethodName: GetValueToString
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1891032473}
+        m_MethodName: SetHeight
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3909,7 +3931,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1064572450}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1891032473}
+        m_MethodName: ApplySettings
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1064572450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7351,8 +7384,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1891032471}
   - component: {fileID: 1891032472}
+  - component: {fileID: 1891032473}
   m_Layer: 5
-  m_Name: Content
+  m_Name: Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7405,6 +7439,20 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &1891032473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891032470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d766dd66b4770d442a394c31c8db40ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lvlWidth: 0
+  lvlHeight: 0
 --- !u!1 &1900009248
 GameObject:
   m_ObjectHideFlags: 0

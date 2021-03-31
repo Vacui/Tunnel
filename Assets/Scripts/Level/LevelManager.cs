@@ -96,6 +96,8 @@ public class LevelManager : MonoBehaviour
         {
             Debug.Log("0. Loading level...");
 
+            LeanTween.cancelAll();
+
             Debug.Log($"1. Initializing level...");
             grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE);
             grid.SetAllTiles(TileType.NULL);
