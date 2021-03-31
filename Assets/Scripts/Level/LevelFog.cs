@@ -4,13 +4,13 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class LevelFog : MonoBehaviour
 {
-    GridXY<TileVisibility> grid;
-    [SerializeField] Sprite sprUnknown;
+    private GridXY<TileVisibility> grid;
+    [SerializeField] private Sprite sprUnknown;
 
     [Header("Debug")]
-    [SerializeField] bool hideLevel = true;
-    [SerializeField] bool showDebugColors = false;
-    [SerializeField] bool showDebugLog = false;
+    [SerializeField] private bool hideLevel = true;
+    [SerializeField] private bool showDebugColors = false;
+    [SerializeField] private bool showDebugLog = false;
 
     private void Awake()
     {
