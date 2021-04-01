@@ -17,14 +17,6 @@ public static class MyUtils
         }
     }
 
-    public static void ClearLogConsole()
-    {
-        Assembly assembly = Assembly.GetAssembly(typeof(Editor));
-        Type logEntries = assembly.GetType("UnityEditor.LogEntries");
-        MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
-        clearConsoleMethod.Invoke(new object(), null);
-    }
-
     public static void SetObjectsActive(GameObject[] gameObjects, bool active)
     {
         if (gameObjects != null && gameObjects.Length > 0)
