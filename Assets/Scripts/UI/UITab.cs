@@ -15,14 +15,14 @@ public class UITab : UIElement
         Singletons.main.uiManager.Subscribe(useCustomName ? customName : name, this);
     }
 
-    public override void OnActive()
+    protected override void OnActive()
     {
         base.OnActive();
         MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
         MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
     }
 
-    public override void OnInactive()
+    protected override void OnInactive()
     {
         base.OnInactive();
         MyUtils.SetObjectsActive(objToShowOnActive, IsActive);

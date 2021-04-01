@@ -7,7 +7,7 @@ public abstract class UIElement : MonoBehaviour
     public bool IsActive
     {
         get { return isActive; }
-        set
+        private set
         {
             isActive = IsLocked ? false : value;
             if (isActive)
@@ -26,17 +26,17 @@ public abstract class UIElement : MonoBehaviour
     public bool IsLocked
     {
         get { return isLocked; }
-        set
+        private set
         {
             isLocked = value;
             if (isLocked)
             {
-                Lock();
+                OnLock();
                 OnLockEvent?.Invoke();
                 IsActive = false;
             } else
             {
-                Unlock();
+                OnUnlock();
                 OnUnlockEvent?.Invoke();
             }
         }
@@ -47,14 +47,21 @@ public abstract class UIElement : MonoBehaviour
     [SerializeField] private UnityEvent OnLockEvent;
     [SerializeField] private UnityEvent OnUnlockEvent;
 
+    public void Active() { IsActive = IsLocked ? false : true; }
+    protected virtual void OnActive() { }
+
+    public void Inactive() { IsActive = false; }
+    protected virtual void OnInactive() { }
 
     public void ToggleActive() { IsActive = !IsActive; }
-    public virtual void OnActive() { }
-    public virtual void OnInactive() { }
+
+    public void Lock() { IsLocked = true; }
+    protected virtual void OnLock() { }
+
+    public void Unlock() { IsLocked = false; }
+    protected virtual void OnUnlock() { }
 
     public void ToggleLock() { IsLocked = !IsLocked; }
-    public virtual void Lock() { }
-    public virtual void Unlock() { }
 
     protected virtual void Awake()
     {

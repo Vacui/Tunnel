@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
             if (name == originName)
                 ShowTab(name);
             else
-                tab.IsActive = false;
+                tab.Inactive();
         }
     }
 
@@ -33,13 +33,13 @@ public class UIManager : MonoBehaviour
             Debug.Log($"Showing tab {name}");
 
             if (history.Count > 0)
-                history.Last().IsActive = false;
+                history.Last().Inactive();
 
             if (name == originName)
                 history = new List<UITab>();
 
             history.Add(tabs[name]);
-            history.Last().IsActive = true;
+            history.Last().Active();
         }
     }
 
@@ -47,10 +47,10 @@ public class UIManager : MonoBehaviour
     {
         if (history.Count > 1)
         {
-            history.Last().IsActive = false;
+            history.Last().Inactive();
             history.RemoveLast();
         }
-        history.Last().IsActive = true;
+        history.Last().Active();
 
         Debug.Log("Going a tab back");
     }

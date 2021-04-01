@@ -10,10 +10,10 @@ public class UITabButton : UIElement, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         if (goBackButton || tabToShow != "")
-            IsActive = true;
+            Active();
     }
 
-    public override void OnActive()
+    protected override void OnActive()
     {
         base.OnActive();
         if (IsActive)
@@ -23,7 +23,7 @@ public class UITabButton : UIElement, IPointerClickHandler
             else
                 Singletons.main.uiManager.ShowTab(tabToShow);
 
-            IsActive = false;
+            Inactive();
         }
     }
 }
