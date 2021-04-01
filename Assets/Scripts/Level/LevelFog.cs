@@ -8,9 +8,9 @@ public class LevelFog : MonoBehaviour
     [SerializeField] private Sprite sprUnknown;
 
     [Header("Debug")]
-    [SerializeField] private bool hideLevel = true;
-    [SerializeField] private bool showDebugColors = false;
-    [SerializeField] private bool showDebugLog = false;
+    public bool hideLevel = true;
+    public bool showDebugColors = false;
+    public bool showDebugLog = false;
 
     private void Awake()
     {

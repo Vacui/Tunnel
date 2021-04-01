@@ -9,6 +9,7 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 1; i < width * height; i++)
             seed += "2-";
 
+        Singletons.main.lvlFog.hideLevel = false;
         Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seed.Trim('-')));
     }
 }
