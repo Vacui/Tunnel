@@ -1,32 +1,24 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
-public class UIElement : MonoBehaviour
+public abstract class UIElement : MonoBehaviour
 {
-    private bool needInitialize = true;
-
-    [SerializeField] private bool isVisible = true;
-    public bool IsVisible
-    {
-        get { return isVisible; }
-        set
-        {
-            needInitialize = false;
-            isVisible = value;
-            if (isVisible) Show();
-            else Hide();
-            MyUtils.SetObjectsActive(showOnVisible, isVisible);
-        }
-    }
-
-    [SerializeField] private bool isActive = false;
+    [SerializeField, Disable, EditorButton("ToggleActive", "Toggle Active", activityType: ButtonActivityType.Everything)] private bool isActive = false;
     public bool IsActive
     {
         get { return isActive; }
         set
         {
-            isActive = value;
-            if (isActive) Active();
-            else Inactive();            
+            isActive = IsLocked ? false : value;
+            if (isActive)
+            {
+                OnActive();
+                OnActiveEvent?.Invoke();
+            } else
+            {
+                OnInactive();
+                OnInactiveEvent?.Invoke();
+            }
         }
     }
 
@@ -36,60 +28,38 @@ public class UIElement : MonoBehaviour
         get { return isLocked; }
         set
         {
-            needInitialize = false;
             isLocked = value;
-            if (isLocked) Lock();
-            else Unlock();
+            if (isLocked)
+            {
+                Lock();
+                OnLockEvent?.Invoke();
+                IsActive = false;
+            } else
+            {
+                Unlock();
+                OnUnlockEvent?.Invoke();
+            }
         }
     }
 
-    [Header("Game Objects")]
-    [SerializeField] private GameObject[] showOnActive = new GameObject[0];
-    [SerializeField] private GameObject[] showOnVisible = new GameObject[0];
+    [SerializeField] private UnityEvent OnActiveEvent;
+    [SerializeField] private UnityEvent OnInactiveEvent;
+    [SerializeField] private UnityEvent OnLockEvent;
+    [SerializeField] private UnityEvent OnUnlockEvent;
+
+
+    public void ToggleActive() { IsActive = !IsActive; }
+    public virtual void OnActive() { }
+    public virtual void OnInactive() { }
+
+    public void ToggleLock() { IsLocked = !IsLocked; }
+    public virtual void Lock() { }
+    public virtual void Unlock() { }
 
     protected virtual void Awake()
     {
-        if (needInitialize)
-            SetValues(isVisible, isActive, isLocked);
-    }
-
-    public void SetValues(bool isVisible, bool isActive, bool isLocked)
-    {
-        needInitialize = false;
-        IsVisible = isVisible;
-        IsActive = isActive;
         IsLocked = isLocked;
     }
 
-    public void ToggleVisible() { IsVisible = !IsVisible; }
-    public virtual void Show()
-    {
-        isVisible = true;
-    }
-    public virtual void Hide()
-    {
-        isVisible = false;
-    }
-
-    public void ToggleActive() { IsActive = !IsActive; }
-    public virtual void Active()
-    {
-        isActive = true;
-        MyUtils.SetObjectsActive(showOnActive, isActive);
-    }
-    public virtual void Inactive()
-    {
-        isActive = false;
-        MyUtils.SetObjectsActive(showOnActive, isActive);
-    }
-
-    public void ToggleLock() { IsLocked = !IsLocked; }
-    public virtual void Lock()
-    {
-        isLocked = true;
-    }
-    public virtual void Unlock()
-    {
-        isLocked = false;
-    }
+    protected virtual void Start() { }
 }

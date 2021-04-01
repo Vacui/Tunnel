@@ -19,6 +19,9 @@ public class SliderButton : MonoBehaviour
 
     private void AddValue()
     {
-        slider.value += valueToAdd;
+        if (slider)
+            slider.value += valueToAdd;
+        else
+            Debug.LogWarning("Slider is null", gameObject);
     }
 }

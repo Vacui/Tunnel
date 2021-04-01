@@ -12,7 +12,9 @@ public class Singletons : MonoBehaviour
     public LevelVisual lvlVisual { get; private set; }
     public LevelFog lvlFog { get; private set; }
     public LevelGenerator lvlGenerator { get; private set; }
+    public UIManager uiManager { get; private set; }
     public Player player { get; private set; }
+    public GameCamera gameCamera { get; private set; }
 
     private void Awake()
     {
@@ -29,6 +31,8 @@ public class Singletons : MonoBehaviour
         lvlVisual = GetComponentInChildren<LevelVisual>();
         lvlFog = GetComponentInChildren<LevelFog>();
         lvlGenerator = GetComponentInChildren<LevelGenerator>();
+        uiManager = GetComponentInChildren<UIManager>();
         player = GetComponentInChildren<Player>();
+        gameCamera = FindObjectOfType<GameCamera>();
     }
 }

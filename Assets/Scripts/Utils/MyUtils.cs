@@ -45,6 +45,25 @@ public static class MyUtils
     }
 }
 
+public static class ListUtils
+{
+    public static void RemoveLast<T>(this List<T> list)
+    {
+        if (list != null && list.Count > 0)
+            list.RemoveAt(list.Count - 1);
+    }
+
+    public static T Last<T>(this List<T> list)
+    {
+        T result = default(T);
+
+        if (list.Count > 0)
+            result = list[list.Count - 1];
+
+        return result;
+    }
+}
+
 public static class UIUtils
 {
     public static TextMesh CreateWorldText(string text, Transform parent, Vector3 localPosition, Quaternion localRotation, Color fontColor, int fontSize = 40, TextAnchor textAnchor = TextAnchor.MiddleCenter)

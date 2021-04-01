@@ -45,10 +45,10 @@ public class Player : MonoBehaviour
     {
         if (IsSafe)
         {
-            if (Input.GetKeyDown(KeyCode.W)) MoveToCell(Direction.Up);
-            else if (Input.GetKeyDown(KeyCode.A)) MoveToCell(Direction.Left);
-            else if (Input.GetKeyDown(KeyCode.S)) MoveToCell(Direction.Down);
-            else if (Input.GetKeyDown(KeyCode.D)) MoveToCell(Direction.Right);
+            if (Input.GetKeyDown(KeyCode.UpArrow)) MoveToCell(Direction.Up);
+            else if (Input.GetKeyDown(KeyCode.LeftArrow)) MoveToCell(Direction.Left);
+            else if (Input.GetKeyDown(KeyCode.DownArrow)) MoveToCell(Direction.Down);
+            else if (Input.GetKeyDown(KeyCode.RightArrow)) MoveToCell(Direction.Right);
         }
     }
 

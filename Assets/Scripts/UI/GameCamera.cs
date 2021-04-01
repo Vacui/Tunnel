@@ -8,6 +8,7 @@ public class GameCamera : MonoBehaviour
     private void Awake()
     {
         gameCamera = GetComponent<Camera>();
+        ResetSize();
     }
 
     private void OnEnable()
@@ -22,5 +23,13 @@ public class GameCamera : MonoBehaviour
             gameCamera.orthographicSize = size - size * 0.3f;
         else
             gameCamera.orthographicSize = 7.7f;
+    }
+
+    /// <summary>
+    /// Reset the camera orthographic size to default value. USE WITH CAUTION!
+    /// </summary>
+    private void ResetSize()
+    {
+        gameCamera.orthographicSize = 5;
     }
 }

@@ -16,13 +16,16 @@ public class LevelVisual : MonoBehaviour
         grid = new GridXY<SpriteRenderer>();
         Singletons.main.lvlManager.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
         {
-            DeleteVisuals();
+            ResetVisuals();
             grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
         };
         Singletons.main.lvlManager.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) => ResetTileVisual(args.x, args.y);
     }
 
-    public void DeleteVisuals()
+    /// <summary>
+    /// Clear the game visuals. USE WITH CAUTION!
+    /// </summary>
+    private void ResetVisuals()
     {
         if (showDebugLog) Debug.Log("Deleting visuals");
         if (transformLevel)

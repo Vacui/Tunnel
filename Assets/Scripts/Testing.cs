@@ -47,12 +47,12 @@ public class Testing : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-            CurrentIndex++;
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-            CurrentIndex--;
-        if (Input.GetKeyDown(KeyCode.R))
-            CurrentIndex = currentIndex;
+        //if (Input.GetKeyDown(KeyCode.RightArrow))
+        //    CurrentIndex++;
+        //if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //    CurrentIndex--;
+        //if (Input.GetKeyDown(KeyCode.R))
+        //    CurrentIndex = currentIndex;
     }
 
     private void GenerateLevel(int size)
