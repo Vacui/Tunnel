@@ -4759,7 +4759,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 1
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -9790,42 +9790,37 @@ MonoBehaviour:
     design, skills. My focus is systems rather than enjoyment, this is the main reason
     I will challenge myself to randomly generate the levels.
 
-    
 
-    By clicking
-    PLAY you can try some levels or generate blank ones.
+    By clicking PLAY
+    you can try some levels or generate blank ones.
 
-    
 
-    I will prefer
-    if your feedback would focus particularly on these aspects, I''m highly interested
-    in your answer motivations too:
+    I will prefer if your feedback
+    would focus particularly on these aspects, I''m highly interested in your answer
+    motivations too:
 
-    - From a programming point of view, what
-    part of the game looks more appealing to you;
+    - From a programming point of view, what part of the game
+    looks more appealing to you;
 
-    - What systems would you
-    like to see introduced in the game;
+    - What systems would you like to see introduced
+    in the game;
 
-    - What additions/changes do you think
-    could improve the UI/UX.
+    - What additions/changes do you think could improve the UI/UX.
 
-    
 
-    Every suggestion and critique is accepted.
+    Every
+    suggestion and critique is accepted.
 
-    Thank
-    you :)
+    Thank you :)
 
-    
 
     Known bugs:
 
-    - The level 4 camera is zoomed out too
-    much;
+    -
+    The level 4 camera is zoomed out too much;
 
-    - Some blank tiles of level 4 are not correctly discovered once the
-    cluster is surrounded;'
+    - Some blank tiles of level 4
+    are not correctly discovered once the cluster is surrounded;'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

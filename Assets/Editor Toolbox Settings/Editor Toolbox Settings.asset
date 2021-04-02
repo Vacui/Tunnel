@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b97690dbca7025a4ebeae4ac93229110, type: 3}
   m_Name: Editor Toolbox Settings
   m_EditorClassIdentifier: 
-  useToolboxHierarchy: 0
+  useToolboxHierarchy: 1
   drawHorizontalLines: 1
   showSelectionsCount: 0
-  rowDataTypes: 00000000010000000200000003000000
+  rowDataTypes: 0000000001000000
   useToolboxFolders: 0
   largeIconScale: 0.8
   smallIconScale: 0.7
