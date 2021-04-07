@@ -15,9 +15,9 @@ MonoBehaviour:
   defaultVisual: {fileID: 21300000, guid: 4b7a177c737c93b4eb97179a0dd4111c, type: 3}
   arrayElementSkins:
   - type: 2
-    visual: {fileID: 21300000, guid: 8e1716fc614a3514a92c6536335afd7e, type: 3}
+    visual: {fileID: 21300000, guid: 71b952e09b3ab2c4dbec0619e39d951b, type: 3}
   - type: 3
-    visual: {fileID: 21300000, guid: c6f98eb340e35f846a8d0d2f5f5bf961, type: 3}
+    visual: {fileID: 21300000, guid: 1928c82eea58f8d4ca9536187fa4a7b4, type: 3}
   - type: 4
     visual: {fileID: 21300000, guid: 07384a6fdabf99747ba7fda3da453362, type: 3}
   - type: 5

@@ -12,15 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c9b9113eb38a54418b2f38bd61ddf71, type: 3}
   m_Name: Player Visuals
   m_EditorClassIdentifier: 
-  defaultVisual: {fileID: 21300000, guid: 7520a044cb9cc1943a953e09413381c6, type: 3}
+  defaultVisual: {fileID: 21300000, guid: 16f03740ad4f5484ea580ef3f117d5d9, type: 3}
   arrayElementSkins:
-  - type: 3
-    visual: {fileID: 21300000, guid: 708d9d3c719de2046a448016b3490f84, type: 3}
   - type: 4
-    visual: {fileID: 21300000, guid: 5b38ca23d5497a64da12c23b35da2917, type: 3}
+    visual: {fileID: 21300000, guid: 9994121416cd4af4ebf6764315aee4c9, type: 3}
   - type: 5
-    visual: {fileID: 21300000, guid: 0c67269294ee43d40b0bbf85e8400824, type: 3}
+    visual: {fileID: 21300000, guid: ed9a1c0430d87124990628a21b2eb28c, type: 3}
   - type: 6
-    visual: {fileID: 21300000, guid: 38b67759037fe3c47bfd0ee29cf24cd1, type: 3}
+    visual: {fileID: 21300000, guid: e180e33867e2aae4aa1b29dc34f78f2e, type: 3}
   - type: 7
-    visual: {fileID: 21300000, guid: 0552acd67928caf4d8ab9a34c4cbf261, type: 3}
+    visual: {fileID: 21300000, guid: 1e568ab79e2f5404094913537ffb34f6, type: 3}
