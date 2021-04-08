@@ -5,6 +5,10 @@ public class GameCamera : MonoBehaviour
 {
     private Camera gameCamera;
 
+    private const float MAX_SIZE = 14f;
+    private const float MIN_SIZE = 7.7f;
+
+
     private void Awake()
     {
         gameCamera = GetComponent<Camera>();
@@ -18,12 +22,8 @@ public class GameCamera : MonoBehaviour
 
     private void ResizeCamera(int width, int height)
     {
-        int size = Mathf.Clamp(Mathf.Max(width, height), 0, 20);
-        Debug.Log($"Sizing camera for level {width}x{height}");
-        if (size > 10)
-            gameCamera.orthographicSize = size - size * 0.3f;
-        else
-            gameCamera.orthographicSize = 7.7f;
+        int size = Mathf.Max(width, height);
+        gameCamera.orthographicSize = Mathf.Clamp(size - size * 0.3f, MIN_SIZE, MAX_SIZE);
     }
 
     /// <summary>
