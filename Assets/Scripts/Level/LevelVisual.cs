@@ -41,7 +41,7 @@ public class LevelVisual : MonoBehaviour
     {
         TileType typeTile = Singletons.main.lvlManager.grid.GetTile(x, y);
         if (showDebugLog) Debug.Log($"Updating Tile {x},{y} ({typeTile}) Visual");
-        SetTileVisual(x, y, skinTiles.GetVisual(typeTile), color);
+        SetTileVisual(x, y, skinTiles.GetVisualData(typeTile));
     }
     public void ResetTileVisual(int x, int y) { ResetTileVisual(x, y, Color.black); }
 
@@ -55,20 +55,13 @@ public class LevelVisual : MonoBehaviour
                 visualTile = SpawnVisuals(x, y);
                 grid.SetTile(x, y, visualTile);
             }
-
-            bool anim = visualTile.sprite != sprite;
+            
             visualTile.sprite = sprite;
             visualTile.color = color;
-
-            if (anim)
-            {
-                visualTile.transform.localScale = Vector3.one * 0.7f;
-                LeanTween.scale(visualTile.gameObject, Vector3.one, 0.5f);
-            } else
-                visualTile.transform.localScale = Vector3.one;
         }
     }
     public void SetTileVisual(int x, int y, Sprite sprite) { SetTileVisual(x, y, sprite, Color.black); }
+    public void SetTileVisual(int x, int y, ElementsVisuals.VisualData visualData) { SetTileVisual(x, y, visualData.sprite, visualData.color); }
 
     private SpriteRenderer SpawnVisuals(int x, int y)
     {

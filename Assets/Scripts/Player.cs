@@ -34,11 +34,30 @@ public class Player : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool showDebugLog = false;
 
+    EventHandler<GridCoordsEventArgs> playerSpawn = null;
+
     public Player(int x, int y)
     {
         this.x = x;
         this.y = y;
         MoveToStartCell(x, y);
+    }
+
+    private void OnEnable()
+    {
+        LevelManager.OnLevelNotReady += (object sender, EventArgs args) => HideVisual();
+
+        playerSpawn = delegate(object sender, GridCoordsEventArgs args) {
+            ShowVisual();
+            MoveToStartCell(args.x, args.y);
+        };
+        LevelManager.OnLevelPlayable += playerSpawn;
+    }
+
+    private void OnDisable()
+    {
+        LevelManager.OnLevelNotReady += (object sender, EventArgs args) => HideVisual();
+        LevelManager.OnLevelPlayable -= playerSpawn;
     }
 
     private void Update()
@@ -51,6 +70,9 @@ public class Player : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.RightArrow)) MoveToCell(Direction.Right);
         }
     }
+
+    private void HideVisual() { GetComponent<SpriteRenderer>().enabled = false; }
+    private void ShowVisual() { GetComponent<SpriteRenderer>().enabled = true; }
 
     private void MoveToCell(int x, int y, bool teleport)
     {
@@ -71,7 +93,10 @@ public class Player : MonoBehaviour
                     transform.localPosition = nextPos;
 
                     if (visuals != null)
-                        GetComponent<SpriteRenderer>().sprite = visuals.GetVisual(Singletons.main.lvlManager.grid.GetTile(x, y));
+                    {
+                        ElementsVisuals.VisualData visualData = visuals.GetVisualData(Singletons.main.lvlManager.grid.GetTile(x, y));
+                        GetComponent<SpriteRenderer>().sprite = visualData.sprite;
+                    }
 
                     if (teleport)
                         CheckCurrentTile();

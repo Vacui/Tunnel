@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -73,12 +74,16 @@ public class LevelManager : MonoBehaviour
 
     public const float CELLSIZE = 1.1f;
 
+    public static event EventHandler OnLevelNotReady;
+
+    public static event EventHandler OnLevelNotPlayable;
+
     public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
     public class OnLevelReadyEventArgs: EventArgs
     {
         public int width, height;
     }
-    public static event Action OnLevelPlayable;
+    public static event EventHandler<GridCoordsEventArgs> OnLevelPlayable;
 
     public GridXY<TileType> grid { get; private set; }
 
@@ -97,48 +102,43 @@ public class LevelManager : MonoBehaviour
             Debug.Log("0. Loading level...");
 
             LeanTween.cancelAll();
+            StopAllCoroutines();
+
+            Debug.Log("Level is not ready!");
+            OnLevelNotReady?.Invoke(this, null);
 
             Debug.Log($"1. Initializing level...");
             grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE);
             grid.SetAllTiles(TileType.NULL);
 
-            Vector2Int startPos = GenerateLevel(lvlSeed.cells);
+            Debug.Log("Level is not playable!");
+            OnLevelNotPlayable?.Invoke(this, null);
 
+            Debug.Log("2. Generating level...");
+            Vector2Int startPos = Vector2Int.one * -1;
+
+            TileType type;
+            for (int i = 0; i < lvlSeed.cells.Count; i++)
+            {
+                grid.CellNumToCell(i, out int x, out int y);
+                type = (TileType)lvlSeed.cells[i];
+                grid.SetTile(x, y, type);
+                if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
+                if (type == TileType.Player)
+                {
+                    startPos.x = x;
+                    startPos.y = y;
+                }
+            }
+
+            Debug.Log("Level is ready!");
+            OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
             if (startPos.x >= 0 && startPos.y >= 0)
             {
-                Debug.Log("Level is ready!");
-
-                OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
-
-                Singletons.main.player.MoveToStartCell(startPos.x, startPos.y);
-
-                OnLevelPlayable?.Invoke();
+                Debug.Log("Level is playable!");
+                OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });
             }
         } else
             Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
-    }
-
-    public Vector2Int GenerateLevel(List<int> cells)
-    {
-        Debug.Log("2. Generating level...");
-        Vector2Int startPos = Vector2Int.one * -1;
-
-        TileType type;
-
-        Debug.Log("2.1. Setting tile types...");
-        for (int i = 0; i < cells.Count; i++)
-        {
-            grid.CellNumToCell(i, out int x, out int y);
-            type = (TileType)cells[i];
-            grid.SetTile(x, y, type != TileType.Player ? type : TileType.Node);
-            if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
-            if (type == TileType.Player)
-            {
-                startPos.x = x;
-                startPos.y = y;
-            }
-        }
-
-        return startPos;
     }
 }

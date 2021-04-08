@@ -10,18 +10,18 @@ public class GetElementVisual : MonoBehaviour
 
     private void Awake()
     {
-        GetElementVisualToSprite();
+        GetElementVisualSprite();
     }
 
 #if (UNITY_EDITOR)
     private void Update()
     {
-        GetElementVisualToSprite();
+        GetElementVisualSprite();
     }
 #endif
 
-    private void GetElementVisualToSprite()
+    private void GetElementVisualSprite()
     {
-        if (visuals != null) GetComponent<Image>().sprite = visuals.GetVisual(tileType);
+        if (visuals != null) GetComponent<Image>().sprite = visuals.GetVisualData(tileType).sprite;
     }
 }

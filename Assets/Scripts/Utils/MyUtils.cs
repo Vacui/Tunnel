@@ -168,8 +168,19 @@ public static class TileTypeUtils
 {
     public static Direction ToDirection(this TileType tileType)
     {
-        int directionIndex = tileType == TileType.Node ? 1 : (int)tileType - 2;
-        return (Direction)directionIndex;
+        Direction result = Direction.NULL;
+        switch (tileType)
+        {
+            case TileType.NULL: result = Direction.NULL; break;
+            case TileType.Player: result = Direction.All; break;
+            case TileType.Node: result = Direction.All; break;
+            case TileType.Goal: result = Direction.NULL; break;
+            case TileType.Up: result = Direction.Up; break;
+            case TileType.Right: result = Direction.Right; break;
+            case TileType.Down: result = Direction.Down; break;
+            case TileType.Left: result = Direction.Left; break;
+        }
+        return result;
     }
 }
 

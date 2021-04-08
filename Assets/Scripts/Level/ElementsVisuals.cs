@@ -5,38 +5,53 @@ using UnityEngine;
 public class ElementsVisuals : ScriptableObject
 {
     [System.Serializable]
-    public class ElementVisual
+    public class Visual
     {
         public TileType type;
-        public Sprite visual;
+        public VisualData data;
     }
 
-    [SerializeField] private Sprite defaultVisual;
-    [SerializeField, ReorderableList] private ElementVisual[] arrayElementSkins;
-    private Dictionary<TileType, Sprite> dictionaryTileSkins;
+    [System.Serializable]
+    public class VisualData
+    {
+        public VisualData(Sprite sprite, Color color)
+        {
+            this.sprite = sprite;
+            this.color = color;
+        }
+
+        public Sprite sprite;
+        public Color color;
+    }
+
+    [SerializeField] private VisualData defaultVisual;
+    [SerializeField, ReorderableList] private Visual[] arrayElementSkins;
+    private Dictionary<TileType, VisualData> dictionaryTileSkins;
 
     private void GenerateDictionary()
     {
-        dictionaryTileSkins = new Dictionary<TileType, Sprite>();
+        dictionaryTileSkins = new Dictionary<TileType, VisualData>();
         dictionaryTileSkins.Add(TileType.NULL, defaultVisual); ;
-        ElementVisual tileSkin;
+        Visual tileSkin;
         for (int i = 0; i < arrayElementSkins.Length; i++)
         {
             tileSkin = arrayElementSkins[i];
             if (!dictionaryTileSkins.ContainsKey(tileSkin.type))
-                dictionaryTileSkins.Add(tileSkin.type, tileSkin.visual);
+                dictionaryTileSkins.Add(tileSkin.type, tileSkin.data);
         }
     }
 
-    public Sprite GetVisual(TileType type)
+    public VisualData GetVisualData(TileType type)
     {
+        VisualData result = null;
+
         if (dictionaryTileSkins == null)
             GenerateDictionary();
-
-        Sprite result = dictionaryTileSkins[TileType.NULL];
-
+        
         if (dictionaryTileSkins.ContainsKey(type))
             result = dictionaryTileSkins[type];
+        else
+            result = dictionaryTileSkins[TileType.NULL];
 
         return result;
     }

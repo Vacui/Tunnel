@@ -158,8 +158,8 @@ public class LevelFog : MonoBehaviour
         for (int i = 0; i < neighbours.Count && result; i++)
         {
             neighbour = neighbours[i];
-            if (grid.CellIsValid(neighbour.x, neighbour.y))
-                if (!cellsChecked.Contains(neighbour))
+            if (!cellsChecked.Contains(neighbour))
+                if (grid.CellIsValid(neighbour.x, neighbour.y))
                     if (Singletons.main.lvlManager.grid.GetTile(neighbour.x, neighbour.y) == TileType.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
                         result = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
         }
