@@ -24,8 +24,8 @@ public class Player : MonoBehaviour
 
     [Header("Movement")]
     private Direction dirCurrent = Direction.NULL;
-    [SerializeField] private /*const*/ float SCALE_SIZE = 1.2f;
-    [SerializeField] private /*const*/ float SCALE_SPEED = 0.5f;
+    private const float SCALE_SIZE = 1.2f;
+    private const float SCALE_SPEED = 0.1f;
     private int currentScaleTweenId;
 
     [Header("Visual")]
