@@ -33,13 +33,22 @@ public class GameCamera : MonoBehaviour
         int size = Mathf.Max(width, height);
         vCam.m_Lens.OrthographicSize = Mathf.Clamp(size - size * 0.3f, MIN_SIZE, MAX_SIZE);
         followPlayer = width > MAX_WIDTH || height > MAX_HEIGHT;
-        camConfiner.points = new Vector2[4]
-        {
-            Singletons.main.lvlManager.grid.CellToWorld(-1, -1) + new Vector2(-offset.x, offset.y),
-            Singletons.main.lvlManager.grid.CellToWorld(width, -1) + new Vector2(offset.x, offset.y),
-            Singletons.main.lvlManager.grid.CellToWorld(width, height) + new Vector2(offset.x, -offset.y),
-            Singletons.main.lvlManager.grid.CellToWorld(-1, height) + new Vector2(-offset.x, -offset.y)
-        };
+        if (followPlayer)
+            camConfiner.points = new Vector2[4]
+            {
+                Singletons.main.lvlManager.grid.CellToWorld(-1, -1) + new Vector2(-offset.x, offset.y),
+                Singletons.main.lvlManager.grid.CellToWorld(width, -1) + new Vector2(offset.x, offset.y),
+                Singletons.main.lvlManager.grid.CellToWorld(width, height) + new Vector2(offset.x, -offset.y),
+                Singletons.main.lvlManager.grid.CellToWorld(-1, height) + new Vector2(-offset.x, -offset.y)
+            };
+        else
+            camConfiner.points = new Vector2[4]
+            {
+                new Vector2(-1, -1),
+                new Vector2(1, -1),
+                new Vector2(1, 1),
+                new Vector2(-1, 1)
+            };
         GetComponent<CinemachineConfiner>().InvalidatePathCache();
     }
 

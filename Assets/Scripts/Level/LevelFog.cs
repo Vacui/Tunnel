@@ -9,7 +9,7 @@ public class LevelFog : MonoBehaviour
 
     [Header("Debug")]
     [EditorButton("DisableFog", "Show Level", ButtonActivityType.Everything), EditorButton("EnableFog", "Hide Level", ButtonActivityType.Everything)]
-    public bool hideLevel = true;
+    [SerializeField] bool enableFog = true;
     public bool showDebugColors = false;
     public bool showDebugLog = false;
 
@@ -20,11 +20,11 @@ public class LevelFog : MonoBehaviour
         Singletons.main.lvlManager.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
         {
             grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
-            grid.SetAllTiles(hideLevel ? TileVisibility.Invisible : TileVisibility.Visible);
+            grid.SetAllTiles(enableFog ? TileVisibility.Invisible : TileVisibility.Visible);
         };
         Singletons.main.lvlManager.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) =>
         {
-            if (hideLevel)
+            if (enableFog)
             {
                 HideTile(args.x, args.y);
                 if (args.value == TileType.Goal)
@@ -81,16 +81,19 @@ public class LevelFog : MonoBehaviour
 
     private void DisableFog()
     {
+        enableFog = false;
         for (int x = 0; x < grid.width; x++)
             for (int y = 0; y < grid.height; y++)
                 SetTileVisual(x, y, TileVisibility.Visible);
     }
     private void EnableFog()
     {
+        enableFog = true;
         for (int x = 0; x < grid.width; x++)
             for (int y = 0; y < grid.height; y++)
                 SetTileVisual(x, y, grid.GetTile(x, y));
     }
+    public void SetFog(bool value) { if (value) EnableFog(); else DisableFog(); }
 
     private void CheckNullTiles()
     {

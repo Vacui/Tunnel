@@ -13,7 +13,6 @@ public class LoadSeed : MonoBehaviour
 
     private void Load()
     {
-        Singletons.main.lvlFog.hideLevel = true;
         Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seed));
     }
 }

@@ -6,4 +6,9 @@ public class GameAction : MonoBehaviour
     {
         Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed("1/1/1"));
     }
+
+    public void ToggleFog(bool value)
+    {
+        Singletons.main.lvlFog.SetFog(value);
+    }
 }

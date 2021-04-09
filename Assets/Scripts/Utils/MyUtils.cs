@@ -18,7 +18,8 @@ public static class MyUtils
     {
         if (gameObjects != null && gameObjects.Length > 0)
             foreach (GameObject gameObject in gameObjects)
-                gameObject?.SetActive(active);
+                if (gameObject)
+                    gameObject?.SetActive(active);
     }
 
     public static List<Vector2Int> GatherNeighbours(int x = 0, int y = 0, int radius = 1, bool avoidCenter = false, bool avoidCorners = false)
