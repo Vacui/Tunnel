@@ -147,6 +147,7 @@ public class Player : MonoBehaviour
 
     public void MoveToStartCell(int x, int y)
     {
+        dirCurrent = Direction.NULL;
         MoveToCell(x, y, true);
     }
 
