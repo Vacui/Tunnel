@@ -8,6 +8,7 @@ public class LevelFog : MonoBehaviour
     [SerializeField] private Sprite sprUnknown;
 
     [Header("Debug")]
+    [EditorButton("DisableFog", "Show Level", ButtonActivityType.Everything), EditorButton("EnableFog", "Hide Level", ButtonActivityType.Everything)]
     public bool hideLevel = true;
     public bool showDebugColors = false;
     public bool showDebugLog = false;
@@ -34,20 +35,7 @@ public class LevelFog : MonoBehaviour
 
         grid.OnGridObjectChanged += (object sender, GridXY<TileVisibility>.GridObjectChangedEventArgs args) =>
         {
-            Color visualColor = Color.black;
-            if (showDebugColors)
-                if (args.value == TileVisibility.Visible)
-                    visualColor = new Color(0.1529f, 0.6823f, 0.3764f, 1.0f); //green
-                else if (args.value == TileVisibility.ReadyToVisible)
-                    visualColor = new Color(0.9019f, 0.4941f, 0.1333f, 1.0f); //orange
-                else if (args.value == TileVisibility.Invisible)
-                    visualColor = new Color(0.7529f, 0.2235f, 0.1686f, 1.0f); //red
-
-            if (args.value == TileVisibility.Visible)
-                Singletons.main.lvlVisual.ResetTileVisual(args.x, args.y, visualColor);
-            else
-                Singletons.main.lvlVisual.SetTileVisual(args.x, args.y, sprUnknown, visualColor);
-
+            SetTileVisual(args.x, args.y, args.value);
             CheckTilesVisibilityAround(args.x, args.y);
         };
 
@@ -73,6 +61,36 @@ public class LevelFog : MonoBehaviour
     }
     private void DiscoverTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Visible); }
     private void HideTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Invisible); }
+
+    private void SetTileVisual(int x, int y, TileVisibility visibility)
+    {
+        Color visualColor = Color.black;
+        if (showDebugColors)
+            if (visibility == TileVisibility.Visible)
+                visualColor = new Color(0.1529f, 0.6823f, 0.3764f, 1.0f); //green
+            else if (visibility == TileVisibility.ReadyToVisible)
+                visualColor = new Color(0.9019f, 0.4941f, 0.1333f, 1.0f); //orange
+            else if (visibility == TileVisibility.Invisible)
+                visualColor = new Color(0.7529f, 0.2235f, 0.1686f, 1.0f); //red
+
+        if (visibility == TileVisibility.Visible)
+            Singletons.main.lvlVisual.ResetTileVisual(x, y, visualColor);
+        else
+            Singletons.main.lvlVisual.SetTileVisual(x, y, sprUnknown, visualColor);
+    }
+
+    private void DisableFog()
+    {
+        for (int x = 0; x < grid.width; x++)
+            for (int y = 0; y < grid.height; y++)
+                SetTileVisual(x, y, TileVisibility.Visible);
+    }
+    private void EnableFog()
+    {
+        for (int x = 0; x < grid.width; x++)
+            for (int y = 0; y < grid.height; y++)
+                SetTileVisual(x, y, grid.GetTile(x, y));
+    }
 
     private void CheckNullTiles()
     {
