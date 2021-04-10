@@ -95,6 +95,17 @@ public class LevelManager : MonoBehaviour
         grid = new GridXY<TileType>();
     }
 
+    private void OnEnable()
+    {
+        Player.OnPlayerStoppedMove += (object sender, GridCoordsEventArgs args) =>
+        {
+            if (grid != null)
+                if (grid.CellIsValid(args.x, args.y))
+                    if (grid.GetTile(args.x, args.y) == TileType.Goal)
+                        Singletons.main.uiManager.ShowTab("win");
+        };
+    }
+
     public void LoadLevel(Seed lvlSeed)
     {
         if (lvlSeed != null && lvlSeed.isValid)

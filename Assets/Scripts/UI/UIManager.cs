@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
 
     public void Subscribe(string name, UITab tab)
     {
+        name = name.Trim().ToLower();
         if (!tabs.ContainsKey(name))
         {
             tabs.Add(name, tab);
@@ -28,6 +29,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowTab(string name)
     {
+        name = name.Trim().ToLower();
         if (name != "" && tabs.ContainsKey(name) && tabs[name])
         {
             Debug.Log($"Showing tab {name}");

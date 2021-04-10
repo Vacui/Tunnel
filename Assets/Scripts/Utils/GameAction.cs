@@ -9,6 +9,6 @@ public class GameAction : MonoBehaviour
 
     public void ToggleFog(bool value)
     {
-        Singletons.main.lvlFog.SetFog(value);
+        Singletons.main.lvlFog.FogIsEnabled = value;
     }
 }

@@ -9,7 +9,24 @@ public class LevelFog : MonoBehaviour
 
     [Header("Debug")]
     [EditorButton("DisableFog", "Show Level", ButtonActivityType.Everything), EditorButton("EnableFog", "Hide Level", ButtonActivityType.Everything)]
-    [SerializeField] bool enableFog = true;
+    private bool fogIsEnabled = true;
+    public bool FogIsEnabled
+    {
+        get { return fogIsEnabled; }
+        set
+        {
+            fogIsEnabled = value;
+            for (int x = 0; x < grid.width; x++)
+                for (int y = 0; y < grid.height; y++)
+                {
+                    if (fogIsEnabled)
+                        SetTileVisual(x, y, grid.GetTile(x, y));
+                    else
+                        SetTileVisual(x, y, TileVisibility.Visible);
+                }
+        }
+    }
+
     public bool showDebugColors = false;
     public bool showDebugLog = false;
 
@@ -20,11 +37,11 @@ public class LevelFog : MonoBehaviour
         Singletons.main.lvlManager.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
         {
             grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
-            grid.SetAllTiles(enableFog ? TileVisibility.Invisible : TileVisibility.Visible);
+            grid.SetAllTiles(fogIsEnabled ? TileVisibility.Invisible : TileVisibility.Visible);
         };
         Singletons.main.lvlManager.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) =>
         {
-            if (enableFog)
+            if (fogIsEnabled)
             {
                 HideTile(args.x, args.y);
                 if (args.value == TileType.Goal)
@@ -35,7 +52,8 @@ public class LevelFog : MonoBehaviour
 
         grid.OnGridObjectChanged += (object sender, GridXY<TileVisibility>.GridObjectChangedEventArgs args) =>
         {
-            SetTileVisual(args.x, args.y, args.value);
+            if (FogIsEnabled)
+                SetTileVisual(args.x, args.y, args.value);
             CheckTilesVisibilityAround(args.x, args.y);
         };
 
@@ -78,22 +96,6 @@ public class LevelFog : MonoBehaviour
         else
             Singletons.main.lvlVisual.SetTileVisual(x, y, sprUnknown, visualColor);
     }
-
-    private void DisableFog()
-    {
-        enableFog = false;
-        for (int x = 0; x < grid.width; x++)
-            for (int y = 0; y < grid.height; y++)
-                SetTileVisual(x, y, TileVisibility.Visible);
-    }
-    private void EnableFog()
-    {
-        enableFog = true;
-        for (int x = 0; x < grid.width; x++)
-            for (int y = 0; y < grid.height; y++)
-                SetTileVisual(x, y, grid.GetTile(x, y));
-    }
-    public void SetFog(bool value) { if (value) EnableFog(); else DisableFog(); }
 
     private void CheckNullTiles()
     {
