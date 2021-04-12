@@ -14,15 +14,9 @@ public class GetLevelExploration : MonoBehaviour
         UpdateText(Singletons.main.lvlFog.LevelExplorationPercentage);
     }
 
-    private void OnEnable()
-    {
-        Singletons.main.lvlFog.DiscoveredTile += UpdateTextDelegate;
-    }
+    private void OnEnable() { Singletons.main.lvlFog.DiscoveredTile += UpdateTextDelegate; }
 
-    private void OnDisable()
-    {
-        Singletons.main.lvlFog.DiscoveredTile -= UpdateTextDelegate;
-    }
+    private void OnDisable() { Singletons.main.lvlFog.DiscoveredTile -= UpdateTextDelegate; }
 
     private void UpdateText(float percentage)
     {

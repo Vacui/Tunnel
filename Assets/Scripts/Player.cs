@@ -5,8 +5,12 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public static event EventHandler<GridCoordsEventArgs> OnPlayerStartedMove;
-    
+
+
     public static event EventHandler<GridCoordsEventArgs> OnPlayerStoppedMove;
+
+    public static event EventHandler<OnPlayerInputEventArgs> OnPlayerInput;
+    public class OnPlayerInputEventArgs : EventArgs { public int moves; }
 
     [SerializeField, Disable] private int x = -1;
     [SerializeField, Disable] private int y = -1;
@@ -23,7 +27,16 @@ public class Player : MonoBehaviour
     }
 
     [Header("Movement")]
-    private Direction dirCurrent = Direction.NULL;
+    [SerializeField, Disable] private int moves;
+    public int Moves
+    {
+        get { return moves; }
+        private set {
+            moves = value;
+            OnPlayerInput?.Invoke(this, new OnPlayerInputEventArgs { moves = value });
+        }
+    }
+    private Direction dirCurrent = Direction.NULL;    
     private const float SCALE_SIZE = 1.2f;
     private const float SCALE_SPEED = 0.1f;
     private int currentScaleTweenId;
@@ -64,10 +77,17 @@ public class Player : MonoBehaviour
     {
         if (IsSafe)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow)) MoveToCell(Direction.Up);
-            else if (Input.GetKeyDown(KeyCode.LeftArrow)) MoveToCell(Direction.Left);
-            else if (Input.GetKeyDown(KeyCode.DownArrow)) MoveToCell(Direction.Down);
-            else if (Input.GetKeyDown(KeyCode.RightArrow)) MoveToCell(Direction.Right);
+            Direction moveDirection = Direction.NULL;
+            if (Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Direction.Up;
+            else if (Input.GetKeyDown(KeyCode.LeftArrow)) moveDirection = Direction.Left;
+            else if (Input.GetKeyDown(KeyCode.DownArrow)) moveDirection = Direction.Down;
+            else if (Input.GetKeyDown(KeyCode.RightArrow)) moveDirection = Direction.Right;
+
+            if (moveDirection != Direction.NULL)
+            {
+                Moves++;
+                MoveToCell(moveDirection);
+            }
         }
     }
 
@@ -147,6 +167,7 @@ public class Player : MonoBehaviour
 
     public void MoveToStartCell(int x, int y)
     {
+        Moves = 0;
         dirCurrent = Direction.NULL;
         MoveToCell(x, y, true);
     }
