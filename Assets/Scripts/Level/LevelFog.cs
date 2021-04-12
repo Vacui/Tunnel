@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -6,6 +7,17 @@ public class LevelFog : MonoBehaviour
 {
     private GridXY<TileVisibility> grid;
     [SerializeField] private Sprite sprUnknown;
+
+    [SerializeField, Disable] private int tilesTotal;
+    [SerializeField, Disable] private int tilesHidden;
+    public float LevelExplorationPercentage { get { return (tilesTotal - tilesHidden) / (float)tilesTotal; } }
+
+    public event EventHandler<DiscoveredTileEventArgs> DiscoveredTile;
+    public class DiscoveredTileEventArgs : EventArgs
+    {
+        public int x, y;
+        public float levelExplorationPercentage;
+    }
 
     [Header("Debug")]
     [EditorButton("DisableFog", "Show Level", ButtonActivityType.Everything), EditorButton("EnableFog", "Hide Level", ButtonActivityType.Everything)]
@@ -27,8 +39,8 @@ public class LevelFog : MonoBehaviour
         }
     }
 
-    public bool showDebugColors = false;
-    public bool showDebugLog = false;
+    [SerializeField] private bool showDebugColors = false;
+    [SerializeField] private bool showDebugLog = false;
 
     private void Awake()
     {
@@ -36,6 +48,8 @@ public class LevelFog : MonoBehaviour
         
         Singletons.main.lvlManager.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
         {
+            tilesTotal = args.width * args.height;
+            tilesHidden = tilesTotal;
             grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
             grid.SetAllTiles(fogIsEnabled ? TileVisibility.Invisible : TileVisibility.Visible);
         };
@@ -73,6 +87,11 @@ public class LevelFog : MonoBehaviour
     {
         if (grid.CellIsValid(x, y) && (visibility == TileVisibility.Invisible || grid.GetTile(x, y) != visibility))
         {
+            if (visibility == TileVisibility.Visible)
+            {
+                tilesHidden--;
+                DiscoveredTile?.Invoke(this, new DiscoveredTileEventArgs { x = x, y = y, levelExplorationPercentage = LevelExplorationPercentage });
+            }
             if(showDebugLog) Debug.Log($"Setting Tile {x},{y} Visibility ({visibility})");
             grid.SetTile(x, y, visibility);
         }

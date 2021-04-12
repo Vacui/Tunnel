@@ -31,10 +31,7 @@ public class UIGoBackButton : MonoBehaviour, IPointerClickHandler
     private void UpdateText()
     {
         if (text != null && updateText)
-        {
-            Debug.Log("Updating text!");
             text.text = Singletons.main.uiManager.History.Last(1).GetName();
-        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
