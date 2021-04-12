@@ -43,12 +43,13 @@ public static class ListUtils
             list.RemoveAt(list.Count - 1);
     }
 
-    public static T Last<T>(this List<T> list)
+    public static T Last<T>(this List<T> list, int offset = 0)
     {
+        offset = Mathf.Clamp(offset, 0, list.Count - 1);
         T result = default(T);
 
         if (list.Count > 0)
-            result = list[list.Count - 1];
+            result = list[list.Count - 1 - offset];
 
         return result;
     }

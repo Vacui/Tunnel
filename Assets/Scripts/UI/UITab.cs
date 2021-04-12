@@ -12,7 +12,7 @@ public class UITab : UIElement
     protected override void Start()
     {
         base.Start();
-        Singletons.main.uiManager.Subscribe(useCustomName ? customName : name, this);
+        Singletons.main.uiManager.Subscribe(GetName(), this);
     }
 
     protected override void OnActive()
@@ -28,4 +28,6 @@ public class UITab : UIElement
         MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
         MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
     }
+
+    public string GetName() { return useCustomName ? customName : name; }
 }

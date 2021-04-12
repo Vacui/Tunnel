@@ -42,7 +42,7 @@ public abstract class UIElement : MonoBehaviour
         }
     }
 
-    [SerializeField] private UnityEvent OnActiveEvent;
+    public UnityEvent OnActiveEvent;
     [SerializeField] private UnityEvent OnInactiveEvent;
     [SerializeField] private UnityEvent OnLockEvent;
     [SerializeField] private UnityEvent OnUnlockEvent;

@@ -22,8 +22,6 @@ public class UITabButton : UIElement, IPointerClickHandler
                 Singletons.main.uiManager.GoBack();
             else
                 Singletons.main.uiManager.ShowTab(tabToShow);
-
-            Inactive();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -79,10 +78,8 @@ public class LevelManager : MonoBehaviour
     public static event EventHandler OnLevelNotPlayable;
 
     public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
-    public class OnLevelReadyEventArgs: EventArgs
-    {
-        public int width, height;
-    }
+    public class OnLevelReadyEventArgs : EventArgs { public int width, height; }
+
     public static event EventHandler<GridCoordsEventArgs> OnLevelPlayable;
 
     public GridXY<TileType> grid { get; private set; }

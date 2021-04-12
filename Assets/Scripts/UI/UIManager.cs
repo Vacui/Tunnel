@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] string originName;
     Dictionary<string, UITab> tabs;
     [SerializeField, Disable] List<UITab> history;
+    public List<UITab> History { get { return history; } }
 
     private void Awake()
     {
