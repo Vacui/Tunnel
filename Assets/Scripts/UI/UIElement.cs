@@ -1,72 +1,76 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-public abstract class UIElement : MonoBehaviour
+namespace UI
 {
-    [SerializeField, Disable, EditorButton("ToggleActive", "Toggle Active", activityType: ButtonActivityType.Everything)] private bool isActive = false;
-    public bool IsActive
+    [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
+    public abstract class UIElement : MonoBehaviour
     {
-        get { return isActive; }
-        private set
+        [SerializeField, Disable, EditorButton("ToggleActive", "Toggle Active", activityType: ButtonActivityType.Everything)] private bool isActive = false;
+        public bool IsActive
         {
-            isActive = IsLocked ? false : value;
-            if (isActive)
+            get { return isActive; }
+            private set
             {
-                OnActive();
-                OnActiveEvent?.Invoke();
-            } else
-            {
-                OnInactive();
-                OnInactiveEvent?.Invoke();
+                isActive = IsLocked ? false : value;
+                if (isActive)
+                {
+                    OnActive();
+                    OnActiveEvent?.Invoke();
+                } else
+                {
+                    OnInactive();
+                    OnInactiveEvent?.Invoke();
+                }
             }
         }
-    }
 
-    [SerializeField] private bool isLocked = false;
-    public bool IsLocked
-    {
-        get { return isLocked; }
-        private set
+        [SerializeField] private bool isLocked = false;
+        public bool IsLocked
         {
-            isLocked = value;
-            if (isLocked)
+            get { return isLocked; }
+            private set
             {
-                OnLock();
-                OnLockEvent?.Invoke();
-                IsActive = false;
-            } else
-            {
-                OnUnlock();
-                OnUnlockEvent?.Invoke();
+                isLocked = value;
+                if (isLocked)
+                {
+                    OnLock();
+                    OnLockEvent?.Invoke();
+                    IsActive = false;
+                } else
+                {
+                    OnUnlock();
+                    OnUnlockEvent?.Invoke();
+                }
             }
         }
+
+        public UnityEvent OnActiveEvent;
+        [SerializeField] private UnityEvent OnInactiveEvent;
+        [SerializeField] private UnityEvent OnLockEvent;
+        [SerializeField] private UnityEvent OnUnlockEvent;
+
+        public void Active() { IsActive = IsLocked ? false : true; }
+        protected virtual void OnActive() { }
+
+        public void Inactive() { IsActive = false; }
+        protected virtual void OnInactive() { }
+
+        public void ToggleActive() { IsActive = !IsActive; }
+
+        public void Lock() { IsLocked = true; }
+        protected virtual void OnLock() { }
+
+        public void Unlock() { IsLocked = false; }
+        protected virtual void OnUnlock() { }
+
+        public void ToggleLock() { IsLocked = !IsLocked; }
+
+        protected virtual void Awake()
+        {
+            IsLocked = isLocked;
+        }
+
+        protected virtual void Start() { }
     }
-
-    public UnityEvent OnActiveEvent;
-    [SerializeField] private UnityEvent OnInactiveEvent;
-    [SerializeField] private UnityEvent OnLockEvent;
-    [SerializeField] private UnityEvent OnUnlockEvent;
-
-    public void Active() { IsActive = IsLocked ? false : true; }
-    protected virtual void OnActive() { }
-
-    public void Inactive() { IsActive = false; }
-    protected virtual void OnInactive() { }
-
-    public void ToggleActive() { IsActive = !IsActive; }
-
-    public void Lock() { IsLocked = true; }
-    protected virtual void OnLock() { }
-
-    public void Unlock() { IsLocked = false; }
-    protected virtual void OnUnlock() { }
-
-    public void ToggleLock() { IsLocked = !IsLocked; }
-
-    protected virtual void Awake()
-    {
-        IsLocked = isLocked;
-    }
-
-    protected virtual void Start() { }
 }

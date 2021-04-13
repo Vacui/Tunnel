@@ -1,12 +1,14 @@
 ﻿using TMPro;
 using UnityEngine;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(TextMeshProUGUI))]
-public class GetValue : MonoBehaviour
+namespace UI
 {
-    public void GetValueToString(float value)
+    [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent, ExecuteInEditMode, RequireComponent(typeof(TextMeshProUGUI))]
+    public class GetValue : MonoBehaviour
     {
-        GetComponent<TextMeshProUGUI>().text = value.ToString();
+        public void GetValueToString(float value)
+        {
+            GetComponent<TextMeshProUGUI>().text = value.ToString();
+        }
     }
 }

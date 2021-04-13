@@ -344,6 +344,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originName: main
   history: []
+  navbarPrefab: {fileID: 956751437373258731, guid: 1c3dd034f4d41be4c82b37a11c4ad83b,
+    type: 3}
 --- !u!1 &4446971310126300829
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,7 +486,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sprUnknown: {fileID: 21300000, guid: ec6c02ae2b965c14f9c854aa2e6ee005, type: 3}
-  enableFog: 1
+  tilesTotal: 0
+  tilesHidden: 0
   showDebugColors: 0
   showDebugLog: 0
 --- !u!1 &6710982860856610780
@@ -627,5 +630,6 @@ MonoBehaviour:
   x: 0
   y: 0
   isSafe: 0
+  moves: 0
   visuals: {fileID: 11400000, guid: c53f75edb399bf049be26d7945ed571f, type: 2}
   showDebugLog: 0

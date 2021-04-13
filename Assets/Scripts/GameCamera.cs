@@ -1,4 +1,5 @@
 ﻿using Cinemachine;
+using Level;
 using UnityEngine;
 
 [RequireComponent(typeof(CinemachineVirtualCamera))]

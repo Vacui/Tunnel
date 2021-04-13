@@ -2,6 +2,8 @@
  * link: https://www.youtube.com/watch?v=tcatvGLvCDc
  * */
 
+using Level;
+using UI;
 using UnityEngine;
 
 public class Singletons : MonoBehaviour

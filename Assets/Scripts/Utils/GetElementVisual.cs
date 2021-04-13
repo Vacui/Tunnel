@@ -1,27 +1,29 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(Image))]
-public class GetElementVisual : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private ElementsVisuals visuals;
-    [SerializeField] private TileType tileType;
-
-    private void Awake()
+    [DisallowMultipleComponent, ExecuteInEditMode, RequireComponent(typeof(Image))]
+    public class GetElementVisual : MonoBehaviour
     {
-        GetElementVisualSprite();
-    }
+        [SerializeField] private ElementsVisuals visuals;
+        [SerializeField] private TileType tileType;
+
+        private void Awake()
+        {
+            GetElementVisualSprite();
+        }
 
 #if (UNITY_EDITOR)
-    private void Update()
-    {
-        GetElementVisualSprite();
-    }
+        private void Update()
+        {
+            GetElementVisualSprite();
+        }
 #endif
 
-    private void GetElementVisualSprite()
-    {
-        if (visuals != null) GetComponent<Image>().sprite = visuals.GetVisualData(tileType).sprite;
+        private void GetElementVisualSprite()
+        {
+            if (visuals != null) GetComponent<Image>().sprite = visuals.GetVisualData(tileType).sprite;
+        }
     }
 }

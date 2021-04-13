@@ -4,7 +4,7 @@ public class GameAction : MonoBehaviour
 {
     public void ResetGame()
     {
-        Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed("1/1/1"));
+        Singletons.main.lvlManager.LoadLevel(new Level.LevelManager.Seed("1/1/1"));
     }
 
     public void ToggleFog(bool value)

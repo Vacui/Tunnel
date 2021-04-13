@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UIElementButton : MonoBehaviour, IPointerClickHandler
+namespace UI
 {
-    [SerializeField] private string elementToShow;
-
-    public void OnPointerClick(PointerEventData eventData)
+    [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
+    public class UIElementButton : MonoBehaviour, IPointerClickHandler
     {
-        if (elementToShow != "")
-            Singletons.main.uiManager.ShowTab(elementToShow);
+        [SerializeField] private string elementToShow;
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (elementToShow != "")
+                Singletons.main.uiManager.ShowTab(elementToShow);
+        }
     }
 }

@@ -1,28 +1,32 @@
 ﻿using UnityEngine;
 
-public class LevelSettings : MonoBehaviour
+namespace Level
 {
-    const int DEFAULT_WIDTH = 5;
-    const int DEFAULT_HEIGHT = 5;
-    [SerializeField, Disable] int lvlWidth;
-    [SerializeField, Disable] int lvlHeight;
-
-    private void Awake()
+    [DisallowMultipleComponent]
+    public class LevelSettings : MonoBehaviour
     {
-        ResetValues();
-    }
+        const int DEFAULT_WIDTH = 5;
+        const int DEFAULT_HEIGHT = 5;
+        [SerializeField, Disable] int lvlWidth;
+        [SerializeField, Disable] int lvlHeight;
 
-    public void ResetValues()
-    {
-        lvlWidth = DEFAULT_WIDTH;
-        lvlHeight = DEFAULT_HEIGHT;
-    }
+        private void Awake()
+        {
+            ResetValues();
+        }
 
-    public void SetWidth(float value) { lvlWidth = Mathf.RoundToInt(value); }
-    public void SetHeight(float value) { lvlHeight = Mathf.RoundToInt(value); }
+        public void ResetValues()
+        {
+            lvlWidth = DEFAULT_WIDTH;
+            lvlHeight = DEFAULT_HEIGHT;
+        }
 
-    public void ApplySettings()
-    {
-        Singletons.main.lvlGenerator.GenerateLevel(lvlWidth, lvlHeight);
+        public void SetWidth(float value) { lvlWidth = Mathf.RoundToInt(value); }
+        public void SetHeight(float value) { lvlHeight = Mathf.RoundToInt(value); }
+
+        public void ApplySettings()
+        {
+            Singletons.main.lvlGenerator.GenerateLevel(lvlWidth, lvlHeight);
+        }
     }
 }

@@ -1,27 +1,30 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class SliderButton : MonoBehaviour
+namespace UI
 {
-    [SerializeField] Slider slider;
-    [SerializeField] float valueToAdd;
-
-    private void OnEnable()
+    [RequireComponent(typeof(RectTransform)), RequireComponent(typeof(Button)), DisallowMultipleComponent]
+    public class SliderButton : MonoBehaviour
     {
-        GetComponent<Button>().onClick.AddListener(AddValue);
-    }
+        [SerializeField] Slider slider;
+        [SerializeField] float valueToAdd;
 
-    private void OnDisable()
-    {
-        GetComponent<Button>().onClick.RemoveListener(AddValue);
-    }
+        private void OnEnable()
+        {
+            GetComponent<Button>().onClick.AddListener(AddValue);
+        }
 
-    private void AddValue()
-    {
-        if (slider)
-            slider.value += valueToAdd;
-        else
-            Debug.LogWarning("Slider is null", gameObject);
+        private void OnDisable()
+        {
+            GetComponent<Button>().onClick.RemoveListener(AddValue);
+        }
+
+        private void AddValue()
+        {
+            if (slider)
+                slider.value += valueToAdd;
+            else
+                Debug.LogWarning("Slider is null", gameObject);
+        }
     }
 }

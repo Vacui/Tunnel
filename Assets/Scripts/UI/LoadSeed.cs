@@ -1,18 +1,22 @@
-﻿using UnityEngine;
+﻿using Level;
+using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public class LoadSeed : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private string seed;
-
-    private void Awake()
+    [RequireComponent(typeof(RectTransform)), RequireComponent(typeof(Button)), DisallowMultipleComponent]
+    public class LoadSeed : MonoBehaviour
     {
-        GetComponent<Button>().onClick.AddListener(Load);
-    }
+        [SerializeField] private string seed;
 
-    private void Load()
-    {
-        Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seed));
+        private void Awake()
+        {
+            GetComponent<Button>().onClick.AddListener(Load);
+        }
+
+        private void Load()
+        {
+            Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seed));
+        }
     }
 }

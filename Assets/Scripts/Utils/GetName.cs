@@ -1,30 +1,32 @@
 ﻿using TMPro;
 using UnityEngine;
 
-[ExecuteInEditMode]
-[RequireComponent(typeof(TextMeshProUGUI))]
-public class GetName : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Transform parent;
-
-    private void Awake()
+    [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent, ExecuteInEditMode, RequireComponent(typeof(TextMeshProUGUI))]
+    public class GetName : MonoBehaviour
     {
-        if (parent == null)
+        [SerializeField] private Transform parent;
+
+        private void Awake()
         {
-            parent = transform.parent;
-            GetParentNameToString();
+            if (parent == null)
+            {
+                parent = transform.parent;
+                GetParentNameToString();
+            }
         }
-    }
 
 #if (UNITY_EDITOR)
-    private void Update()
-    {
-        GetParentNameToString();
-    }
+        private void Update()
+        {
+            GetParentNameToString();
+        }
 #endif
 
-    private void GetParentNameToString()
-    {
-        if (parent != null) GetComponent<TextMeshProUGUI>().text = parent.name;
+        private void GetParentNameToString()
+        {
+            if (parent != null) GetComponent<TextMeshProUGUI>().text = parent.name;
+        }
     }
 }

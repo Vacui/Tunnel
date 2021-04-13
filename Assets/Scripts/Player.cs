@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Level;
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]

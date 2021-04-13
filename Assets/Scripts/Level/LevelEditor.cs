@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 
-public class LevelEditor : MonoBehaviour
+namespace Level
 {
+    [DisallowMultipleComponent]
+    public class LevelEditor : MonoBehaviour
+    {
 
+    }
 }
