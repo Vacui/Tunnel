@@ -5,6 +5,25 @@ using UnityEngine;
 
 namespace Level
 {
+    public static class SeedUtils
+    {
+        public static string ToSeedString(this GridXY<TileType> grid)
+        {
+            string result = "";
+            if (grid.width > 0 && grid.height > 0)
+            {
+                result = $"{grid.width}/{grid.height}/";
+
+                for (int x = 0; x < grid.width; x++)
+                    for (int y = 0; y < grid.height; y++)
+                        result += $"{((x != 0 || y != 0) ? "-" : "")}{(int)grid.GetTile(x, y)}";
+            }
+            return result;
+        }
+        public static LevelManager.Seed ToSeed(this GridXY<TileType> grid) { return new LevelManager.Seed(grid.ToSeedString()); }
+    }
+
+
     [DisallowMultipleComponent]
     public class LevelManager : MonoBehaviour
     {

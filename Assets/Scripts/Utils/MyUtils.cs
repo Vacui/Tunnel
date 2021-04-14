@@ -34,6 +34,32 @@ public static class MyUtils
                             neighbours.Add(new Vector2Int(x + xT, y + yT));
         return neighbours;
     }
+
+    public static int RandomWithExceptions(int start, int end, List<int> exceptions)
+    {
+        bool ok = false;
+        int result = 0;
+
+        if (exceptions != null)
+        {
+
+            int limit = Mathf.Max(start, end) - Mathf.Min(start, end);
+            int tests = 0;
+            while (!ok && tests < limit)
+            {
+                result = Random.Range(start, end);
+                ok = !exceptions.Contains(result);
+                tests++;
+            }
+        } else
+        {
+            ok = true;
+            result = Random.Range(start, end);
+        }
+
+        if (ok) return result;
+        else throw new KeyNotFoundException();
+    }
 }
 
 public static class ListUtils
