@@ -158,7 +158,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 1641.62, y: -10}
-  m_SizeDelta: {x: 115.32, y: 40}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &24994544
 MonoBehaviour:
@@ -299,7 +299,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 1777.33, y: -10}
-  m_SizeDelta: {x: 115.71, y: 40}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &31273141
 MonoBehaviour:
@@ -882,7 +882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
+  isActive: 1
   isLocked: 0
   OnActiveEvent:
     m_PersistentCalls:
@@ -1355,7 +1355,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 632185739}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1602,7 +1602,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: game
-  text: {fileID: 0}
 --- !u!114 &267344879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1848,7 +1847,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: game
-  text: {fileID: 0}
 --- !u!114 &291949901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2361,7 +2359,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: play
-  text: {fileID: 0}
 --- !u!1 &385513294
 GameObject:
   m_ObjectHideFlags: 0
@@ -2395,10 +2392,10 @@ RectTransform:
   m_Father: {fileID: 31273140}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -20}
-  m_SizeDelta: {x: 50, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &385513296
 MonoBehaviour:
@@ -2743,7 +2740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &508302514
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3111,7 +3108,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &632185739
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3123,10 +3120,10 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1210674348}
   - {fileID: 1633828975}
   - {fileID: 1315686565}
   - {fileID: 195659995}
+  - {fileID: 1210674348}
   m_Father: {fileID: 120956573}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3267,7 +3264,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: game
-  text: {fileID: 0}
 --- !u!114 &637232676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3502,10 +3498,10 @@ RectTransform:
   m_Father: {fileID: 24994543}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 86.16, y: -20}
-  m_SizeDelta: {x: 58.32, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &677745117
 MonoBehaviour:
@@ -3794,7 +3790,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &698150602
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3941,7 +3937,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: 
-  text: {fileID: 0}
 --- !u!1 &744779338
 GameObject:
   m_ObjectHideFlags: 0
@@ -4455,7 +4450,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 1900, y: -10}
-  m_SizeDelta: {x: 102.67, y: 40}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &907875918
 MonoBehaviour:
@@ -5037,7 +5032,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 1506.3, y: -10}
-  m_SizeDelta: {x: 81.91, y: 40}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1045215114
 MonoBehaviour:
@@ -5244,7 +5239,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: game
-  text: {fileID: 0}
 --- !u!1 &1082207066
 GameObject:
   m_ObjectHideFlags: 0
@@ -5278,10 +5272,10 @@ RectTransform:
   m_Father: {fileID: 1045215113}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -20}
-  m_SizeDelta: {x: 50, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1082207068
 MonoBehaviour:
@@ -5614,10 +5608,10 @@ RectTransform:
   m_Father: {fileID: 1210674348}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -20}
-  m_SizeDelta: {x: 50, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1097330228
 MonoBehaviour:
@@ -6158,15 +6152,15 @@ GameObject:
   - component: {fileID: 1210674353}
   - component: {fileID: 1210674352}
   - component: {fileID: 1210674351}
-  - component: {fileID: 1210674350}
   - component: {fileID: 1210674349}
+  - component: {fileID: 1210674350}
   m_Layer: 5
-  m_Name: Toggle Fog
+  m_Name: Fog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1210674348
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6181,12 +6175,12 @@ RectTransform:
   - {fileID: 1097330227}
   - {fileID: 1946207157}
   m_Father: {fileID: 632185739}
-  m_RootOrder: 0
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 412.52002, y: -30}
-  m_SizeDelta: {x: 179.63, y: 40}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -300, y: 0}
+  m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1210674349
 MonoBehaviour:
@@ -6209,9 +6203,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1210674347}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c1e5ebbef6cf474bb9c09347f6cecbd, type: 3}
+  m_Script: {fileID: 11500000, guid: ec054182e423a2f48bfdb7e253c1e28b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 744779338}
 --- !u!114 &1210674351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6297,8 +6292,8 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1210674350}
-        m_MethodName: SetObjInactive
+      - m_Target: {fileID: 1210674349}
+        m_MethodName: ToggleFog
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6308,8 +6303,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1210674349}
-        m_MethodName: ToggleFog
+      - m_Target: {fileID: 1210674350}
+        m_MethodName: SetInactive
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6996,7 +6991,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 632185739}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7166,7 +7161,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1403343831
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7336,10 +7331,10 @@ RectTransform:
   m_Father: {fileID: 907875917}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -20}
-  m_SizeDelta: {x: 50, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1499498813
 MonoBehaviour:
@@ -7488,7 +7483,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: 
-  text: {fileID: 0}
 --- !u!1 &1509130192
 GameObject:
   m_ObjectHideFlags: 0
@@ -7523,10 +7517,10 @@ RectTransform:
   m_Father: {fileID: 1045215113}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 69.455, y: -20}
-  m_SizeDelta: {x: 24.91, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1509130194
 MonoBehaviour:
@@ -7894,10 +7888,10 @@ RectTransform:
   m_Father: {fileID: 24994543}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -20}
-  m_SizeDelta: {x: 50, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1566602484
 MonoBehaviour:
@@ -8133,7 +8127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
+  isActive: 0
   isLocked: 0
   OnActiveEvent:
     m_PersistentCalls:
@@ -8207,7 +8201,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 632185739}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8423,7 +8417,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1686642950
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8776,10 +8770,10 @@ RectTransform:
   m_Father: {fileID: 907875917}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 79.835, y: -20}
-  m_SizeDelta: {x: 45.67, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1754231207
 MonoBehaviour:
@@ -9661,10 +9655,10 @@ RectTransform:
   m_Father: {fileID: 31273140}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 86.354996, y: -20}
-  m_SizeDelta: {x: 58.71, y: 40}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1878899006
 MonoBehaviour:
@@ -10116,7 +10110,6 @@ GameObject:
   - component: {fileID: 1946207162}
   - component: {fileID: 1946207161}
   - component: {fileID: 1946207160}
-  - component: {fileID: 1946207159}
   - component: {fileID: 1946207158}
   m_Layer: 5
   m_Name: Text (TMP)
@@ -10139,10 +10132,10 @@ RectTransform:
   m_Father: {fileID: 1210674348}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 55, y: 0}
-  m_SizeDelta: {x: 124.63, y: 40}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1946207158
 MonoBehaviour:
@@ -10158,26 +10151,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
---- !u!114 &1946207159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1946207156}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 9999
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1
 --- !u!114 &1946207160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10210,7 +10183,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Toggle Fog
+  m_text: Fog
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10237,13 +10210,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17
-  m_fontSizeBase: 17
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 21
+  m_fontStyle: 17
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -10604,7 +10577,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: game
-  text: {fileID: 0}
 --- !u!1 &1999462601
 GameObject:
   m_ObjectHideFlags: 0
@@ -11168,7 +11140,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goBackButton: 0
   tabToShow: play
-  text: {fileID: 0}
 --- !u!114 &2077214110
 MonoBehaviour:
   m_ObjectHideFlags: 0
