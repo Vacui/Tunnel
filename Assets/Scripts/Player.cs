@@ -187,7 +187,7 @@ public class Player : MonoBehaviour
             TileType currentTileType = Singletons.main.lvlManager.grid.GetTile(x, y);
             if (currentTileType != TileType.NULL)
             {
-                IsSafe = currentTileType == TileType.Node;
+                IsSafe = currentTileType.ToDirection() == Direction.All;
                 if (!IsSafe)
                     MoveToCurrentDirection();
                 else
