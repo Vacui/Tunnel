@@ -60,6 +60,21 @@ public static class MyUtils
         if (ok) return result;
         else throw new KeyNotFoundException();
     }
+
+    public static Vector3 GetMouseWorldPositionWithZ(Vector3 screenPosition, Camera worldCamera)
+    {
+        return worldCamera.ScreenToWorldPoint(screenPosition);
+    }
+    public static Vector3 GetMouseWorldPositionWithZ()
+    {
+        return GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
+    }
+    public static Vector3 GetMouseWorldPosition()
+    {
+        Vector3 vec = GetMouseWorldPositionWithZ();
+        vec.z = 0f;
+        return vec;
+    }
 }
 
 public static class ListUtils

@@ -13,6 +13,7 @@ public class Singletons : MonoBehaviour
     public LevelManager lvlManager { get; private set; }
     public LevelVisual lvlVisual { get; private set; }
     public LevelFog lvlFog { get; private set; }
+    public LevelEditor lvlEditor { get; private set; }
     public LevelGenerator lvlGenerator { get; private set; }
     public UIManager uiManager { get; private set; }
     public Player player { get; private set; }
@@ -32,6 +33,7 @@ public class Singletons : MonoBehaviour
         lvlManager = GetComponentInChildren<LevelManager>();
         lvlVisual = GetComponentInChildren<LevelVisual>();
         lvlFog = GetComponentInChildren<LevelFog>();
+        lvlEditor = GetComponentInChildren<LevelEditor>();
         lvlGenerator = GetComponentInChildren<LevelGenerator>();
         uiManager = GetComponentInChildren<UIManager>();
         player = GetComponentInChildren<Player>();

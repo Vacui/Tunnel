@@ -121,6 +121,13 @@ public class GridXY<T>
         return new Vector2(x, y) * new Vector2(1,-1) * cellSize + originPosition;
     }
 
+    public void WorldToCell(Vector2 world, out int x, out int y)
+    {
+        x = Mathf.RoundToInt((world.x - originPosition.x) / (1 * cellSize));
+        y = Mathf.RoundToInt((world.y - originPosition.y) / (-1 * cellSize));
+        if (!CellIsValid(x, y)) x = y = -1;
+    }
+
     public string GetTileToString(int x, int y)
     {
         string result = "";

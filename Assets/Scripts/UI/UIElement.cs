@@ -46,9 +46,9 @@ namespace UI
         }
 
         public UnityEvent OnActiveEvent;
-        [SerializeField] private UnityEvent OnInactiveEvent;
-        [SerializeField] private UnityEvent OnLockEvent;
-        [SerializeField] private UnityEvent OnUnlockEvent;
+        [SerializeField, ReorderableList] private UnityEvent OnInactiveEvent;
+        [SerializeField, ReorderableList] private UnityEvent OnLockEvent;
+        [SerializeField, ReorderableList] private UnityEvent OnUnlockEvent;
 
         public void Active() { IsActive = IsLocked ? false : true; }
         protected virtual void OnActive() { }

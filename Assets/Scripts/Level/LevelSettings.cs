@@ -5,10 +5,11 @@ namespace Level
     [DisallowMultipleComponent]
     public class LevelSettings : MonoBehaviour
     {
+        [Header("Settings")]
         const int DEFAULT_WIDTH = 5;
         const int DEFAULT_HEIGHT = 5;
-        [SerializeField, Disable] int lvlWidth;
-        [SerializeField, Disable] int lvlHeight;
+        [SerializeField, Disable] private int lvlWidth;
+        [SerializeField, Disable] private int lvlHeight;
 
         private void Awake()
         {

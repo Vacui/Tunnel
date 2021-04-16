@@ -7,7 +7,7 @@ public class GameAction : MonoBehaviour
         Singletons.main.lvlManager.LoadLevel(new Level.LevelManager.Seed("1/1/1"));
     }
 
-    public void ToggleFog(bool value)
+    public void SetLevelFogVisibility(bool value)
     {
         Singletons.main.lvlFog.FogIsEnabled = value;
     }
