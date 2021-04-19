@@ -11,7 +11,7 @@ namespace Level
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() && selectedTileType != TileType.NULL)
+            if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             {
                 Vector3 mouseWorldPosition = MyUtils.GetMouseWorldPosition();
                 Debug.Log(mouseWorldPosition);

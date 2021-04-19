@@ -17,11 +17,11 @@ namespace UI
                 if (isActive)
                 {
                     OnActive();
-                    onActiveEvent?.Invoke();
+                    if (activeEvents.HasFlag(UIElementEvents.Active)) onActiveEvent?.Invoke();
                 } else
                 {
                     OnInactive();
-                    onInactiveEvent?.Invoke();
+                    if (activeEvents.HasFlag(UIElementEvents.Inactive)) onInactiveEvent?.Invoke();
                 }
             }
         }
@@ -36,28 +36,31 @@ namespace UI
                 if (isLocked)
                 {
                     OnLock();
-                    onLockEvent?.Invoke();
+                    if(activeEvents.HasFlag(UIElementEvents.Lock)) onLockEvent?.Invoke();
                     IsActive = false;
                 } else
                 {
                     OnUnlock();
-                    onUnlockEvent?.Invoke();
+                    if (activeEvents.HasFlag(UIElementEvents.Unlock)) onUnlockEvent?.Invoke();
                 }
             }
         }
 
         [Header("Events")]
-        [SerializeField, ReorderableList] private UnityEvent onActiveEvent;
+        [SerializeField, ReorderableList, ShowIf(nameof(activeEvents), UIElementEvents.Active)] private UnityEvent onActiveEvent;
         public UnityEvent OnActiveEvent { get { return onActiveEvent; } private set { onActiveEvent = value; } }
 
-        [SerializeField, ReorderableList] private UnityEvent onInactiveEvent;
+        [SerializeField, ReorderableList, ShowIf(nameof(activeEvents), UIElementEvents.Inactive)] private UnityEvent onInactiveEvent;
         public UnityEvent OnInactiveEvent { get { return onInactiveEvent; } private set { onInactiveEvent = value; } }
 
-        [SerializeField, ReorderableList] private UnityEvent onLockEvent;
+        [SerializeField, ReorderableList, ShowIf(nameof(activeEvents), UIElementEvents.Lock)] private UnityEvent onLockEvent;
         public UnityEvent OnLockEvent { get { return onLockEvent; } private set { onLockEvent = value; } }
 
-        [SerializeField, ReorderableList] private UnityEvent onUnlockEvent;
+        [SerializeField, ReorderableList, ShowIf(nameof(activeEvents), UIElementEvents.Unlock)] private UnityEvent onUnlockEvent;
         public UnityEvent OnUnlockEvent { get { return onUnlockEvent; } private set { onUnlockEvent = value; } }
+
+        [System.Flags] private enum UIElementEvents { Nothing = 0, Active = 1, Inactive = 2, Lock = 4, Unlock = 8 }
+        [SerializeField, EnumFlag] private UIElementEvents activeEvents = UIElementEvents.Active | UIElementEvents.Inactive | UIElementEvents.Lock | UIElementEvents.Unlock;
 
         public void Active() { IsActive = IsLocked ? false : true; }
         protected virtual void OnActive() { }
