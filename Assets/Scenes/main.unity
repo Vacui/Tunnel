@@ -984,8 +984,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -1523,8 +1523,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -1898,8 +1898,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -2614,8 +2614,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -3012,8 +3012,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -3777,8 +3777,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -4624,8 +4624,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -7036,8 +7036,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -7672,8 +7672,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 4
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -8770,8 +8770,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f2171fe30c639a4bbb3d8bb732abc59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -12358,8 +12358,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -12869,8 +12869,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 1
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -13431,8 +13431,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be81a7f767b47034198eebe6bc3393ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isActive: 0
-  isLocked: 0
+  activeOn: 0
+  lockOn: 0
   onActiveEvent:
     m_PersistentCalls:
       m_Calls:
@@ -13514,7 +13514,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1686642950
 RectTransform:
   m_ObjectHideFlags: 0

@@ -7,7 +7,9 @@ namespace UI
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
     public abstract class UIElement : MonoBehaviour
     {
-        [SerializeField, Disable, EditorButton("ToggleActive", "Toggle Active", activityType: ButtonActivityType.Everything)] private bool isActive = false;
+        [System.Flags] public enum ScriptLifetimePhase { Nothing = 0, Awake = 1, Start = 2, OnEnable = 4, OnDisable = 8 }
+
+        private bool isActive = false;
         public bool IsActive
         {
             get { return isActive; }
@@ -25,8 +27,9 @@ namespace UI
                 }
             }
         }
+        [SerializeField, EnumFlag, EditorButton("ToggleActive", "Toggle Active", activityType: ButtonActivityType.Everything)] private ScriptLifetimePhase activeOn;
 
-        [SerializeField] private bool isLocked = false;
+        private bool isLocked = false;
         public bool IsLocked
         {
             get { return isLocked; }
@@ -45,6 +48,7 @@ namespace UI
                 }
             }
         }
+        [SerializeField, EnumFlag] private ScriptLifetimePhase lockOn;
 
         [Header("Events")]
         [SerializeField, ReorderableList, ShowIf(nameof(activeEvents), UIElementEvents.Active)] private UnityEvent onActiveEvent;
@@ -78,9 +82,26 @@ namespace UI
 
         public void ToggleLock() { IsLocked = !IsLocked; }
 
-        protected virtual void Awake() { IsLocked = isLocked; }
+        protected virtual void Awake() {
+            if (lockOn.HasFlag(ScriptLifetimePhase.Awake)) Lock();
+            if (activeOn.HasFlag(ScriptLifetimePhase.Awake)) Active();
+        }
 
-        protected virtual void Start() { }
+        protected virtual void Start() {
+            if (lockOn.HasFlag(ScriptLifetimePhase.Start)) Lock();
+            if (activeOn.HasFlag(ScriptLifetimePhase.Start)) Active();
+        }
+
+        protected virtual void OnEnable() {
+            if (lockOn.HasFlag(ScriptLifetimePhase.OnEnable)) Lock();
+            if (activeOn.HasFlag(ScriptLifetimePhase.OnEnable)) Active();
+        }
+
+        protected virtual void OnDisable()
+        {
+            if (lockOn.HasFlag(ScriptLifetimePhase.OnDisable)) Lock();
+            if (activeOn.HasFlag(ScriptLifetimePhase.OnDisable)) Active();
+        }
 
         protected virtual void Update() { }
     }

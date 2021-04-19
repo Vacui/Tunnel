@@ -15,6 +15,11 @@ namespace UI
             if (group != null) group.Subscribe(this);
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+        }
+
         protected override void OnActive()
         {
             base.OnActive();
