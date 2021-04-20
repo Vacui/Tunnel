@@ -21,12 +21,12 @@ namespace Level
             else Destroy(this);
 
             grid = new GridXY<SpriteRenderer>();
-            LevelManager.main.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
+            LevelManager.main.grid.OnGridCreated += (sender, args) =>
             {
                 ResetVisuals();
                 grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
             };
-            LevelManager.main.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) => ResetTileVisual(args.x, args.y);
+            LevelManager.main.grid.OnGridObjectChanged += (sender, args) => ResetTileVisual(args.x, args.y);
         }
 
         /// <summary>

@@ -34,6 +34,7 @@ namespace Level
             public int Width { get { return width; } }
             int height;
             public int Height { get { return height; } }
+            public int Size { get { return width * height; } }
             public List<int> cells { get; private set; }
             public string SeedOriginal { get; private set; }
 
@@ -98,6 +99,8 @@ namespace Level
         public const float CELLSIZE = 1.1f;
 
         public GridXY<TileType> grid { get; private set; }
+        public enum LevelState { NotReady, NotPlayable, Ready, Playable }
+        public LevelState LvlState { get; private set; }
 
         public static event EventHandler OnLevelNotReady;
         public static event EventHandler OnLevelNotPlayable;
@@ -107,8 +110,6 @@ namespace Level
 
         [Header("Events")]
         [SerializeField] private UnityEvent OnWin;
-
-        
 
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
@@ -122,7 +123,7 @@ namespace Level
 
         private void OnEnable()
         {
-            Player.OnPlayerStoppedMove += (object sender, GridCoordsEventArgs args) =>
+            Player.OnPlayerStoppedMove += (sender, args) =>
             {
                 if (grid != null)
                     if (grid.CellIsValid(args.x, args.y))
@@ -141,6 +142,7 @@ namespace Level
                 StopAllCoroutines();
 
                 Debug.Log("Level is not ready!");
+                LvlState = LevelState.NotReady;
                 OnLevelNotReady?.Invoke(this, null);
 
                 Debug.Log($"1. Initializing level...");
@@ -148,10 +150,13 @@ namespace Level
                 grid.SetAllTiles(TileType.NULL);
 
                 Debug.Log("Level is not playable!");
+                LvlState = LevelState.NotPlayable;
                 OnLevelNotPlayable?.Invoke(this, null);
 
                 Debug.Log("2. Generating level...");
                 Vector2Int startPos = Vector2Int.one * -1;
+
+                bool hasStart = false, hasEnd = lvlSeed.Size == 1;
 
                 TileType type;
                 for (int i = 0; i < lvlSeed.cells.Count; i++)
@@ -164,14 +169,18 @@ namespace Level
                     {
                         startPos.x = x;
                         startPos.y = y;
-                    }
+                        hasStart = true;
+                    } else
+                        hasEnd = hasEnd || type == TileType.Goal;
                 }
 
                 Debug.Log("Level is ready!");
+                LvlState = LevelState.Ready;
                 OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
-                if (startPos.x >= 0 && startPos.y >= 0)
+                if (hasStart && hasEnd)
                 {
                     Debug.Log("Level is playable!");
+                    LvlState = LevelState.Playable;
                     OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });
                 }
             } else

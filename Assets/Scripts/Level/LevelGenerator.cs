@@ -19,7 +19,7 @@ namespace Level
             string newLevelSeed = $"{width}/{height}/1";
             for (int i = 1; i < (width * height)-1; i++)
                 newLevelSeed += "-2";
-            newLevelSeed += "-3";
+            newLevelSeed += "-0";
 
             //GridXY<TileType> newLevel = new GridXY<TileType>();
             //newLevel.CreateGridXY(width, height, LevelManager.CELLSIZE, new Vector2(width / 2.0f - 0.5f, height / 2.0f - 0.5f) * new Vector2(-1, 1) * LevelManager.CELLSIZE);

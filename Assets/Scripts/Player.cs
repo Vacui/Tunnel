@@ -12,6 +12,17 @@ public class Player : MonoBehaviour
     public static event EventHandler<OnPlayerInputEventArgs> OnPlayerInput;
     public class OnPlayerInputEventArgs : EventArgs { public int moves; }
 
+    [SerializeField, Disable] bool isActive = true;
+    public bool IsActive
+    {
+        get { return isActive; }
+        private set {
+            isActive = value;
+            if (isActive) ShowVisual();
+            else HideVisual();
+        }
+    }
+
     [SerializeField, Disable] private int x = -1;
     [SerializeField, Disable] private int y = -1;
     [SerializeField, Disable] private bool isSafe = true;
@@ -53,14 +64,15 @@ public class Player : MonoBehaviour
     {
         if (main == null) main = this;
         else Destroy(this);
+        IsActive = false;
     }
 
     private void OnEnable()
     {
-        LevelManager.OnLevelNotReady += (object sender, EventArgs args) => HideVisual();
+        LevelManager.OnLevelNotReady += (sender, args) => { IsActive = false; };
 
         playerSpawn = delegate(object sender, GridCoordsEventArgs args) {
-            ShowVisual();
+            IsActive = true;
             MoveToStartCell(args.x, args.y);
         };
         LevelManager.OnLevelPlayable += playerSpawn;
@@ -68,13 +80,13 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
-        LevelManager.OnLevelNotReady += (object sender, EventArgs args) => HideVisual();
+        LevelManager.OnLevelNotReady += (sender, args) => { IsActive = false; };
         LevelManager.OnLevelPlayable -= playerSpawn;
     }
 
     private void Update()
     {
-        if (IsSafe)
+        if (IsSafe && IsActive)
         {
             Direction moveDirection = Direction.NULL;
             if (Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Direction.Up;
@@ -166,6 +178,7 @@ public class Player : MonoBehaviour
 
     public void MoveToStartCell(int x, int y)
     {
+        IsActive = true;
         Moves = 0;
         dirCurrent = Direction.NULL;
         MoveToCell(x, y, true);
