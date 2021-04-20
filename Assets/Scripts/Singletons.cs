@@ -15,7 +15,7 @@ public class Singletons : MonoBehaviour
     public LevelFog lvlFog { get; private set; }
     public LevelEditor lvlEditor { get; private set; }
     public LevelGenerator lvlGenerator { get; private set; }
-    public UIManager uiManager { get; private set; }
+    //public TabGroup uiManager { get; private set; }
     public Player player { get; private set; }
     public GameCamera gameCamera { get; private set; }
 
@@ -35,7 +35,7 @@ public class Singletons : MonoBehaviour
         lvlFog = GetComponentInChildren<LevelFog>();
         lvlEditor = GetComponentInChildren<LevelEditor>();
         lvlGenerator = GetComponentInChildren<LevelGenerator>();
-        uiManager = GetComponentInChildren<UIManager>();
+        //uiManager = GetComponentInChildren<TabGroup>();
         player = GetComponentInChildren<Player>();
         gameCamera = FindObjectOfType<GameCamera>();
     }

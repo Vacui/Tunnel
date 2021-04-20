@@ -5,6 +5,7 @@ namespace UI
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
     public class Tab : UIElement
     {
+        [SerializeField] private TabGroup group;
         [SerializeField] private Navbar.NavbarShowSettings navbarSettings;
 
         [SerializeField] private bool useCustomName = false;
@@ -16,7 +17,7 @@ namespace UI
         protected override void Start()
         {
             base.Start();
-            Singletons.main.uiManager.Subscribe(GetName(), this);
+            if (group != null) group.Subscribe(GetName(), this);
         }
 
         protected override void OnActive()
@@ -24,7 +25,7 @@ namespace UI
             base.OnActive();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
-            Navbar.Show(navbarSettings);
+            Navbar.main.Show(navbarSettings);
         }
 
         protected override void OnInactive()

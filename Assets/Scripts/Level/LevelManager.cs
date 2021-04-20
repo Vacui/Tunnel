@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Level
 {
@@ -94,16 +95,18 @@ namespace Level
 
         public const float CELLSIZE = 1.1f;
 
+        public GridXY<TileType> grid { get; private set; }
+
         public static event EventHandler OnLevelNotReady;
-
         public static event EventHandler OnLevelNotPlayable;
-
         public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
         public class OnLevelReadyEventArgs : EventArgs { public int width, height; }
-
         public static event EventHandler<GridCoordsEventArgs> OnLevelPlayable;
 
-        public GridXY<TileType> grid { get; private set; }
+        [Header("Events")]
+        [SerializeField] private UnityEvent OnWin;
+
+        
 
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
@@ -120,7 +123,7 @@ namespace Level
                 if (grid != null)
                     if (grid.CellIsValid(args.x, args.y))
                         if (grid.GetTile(args.x, args.y) == TileType.Goal)
-                            Singletons.main.uiManager.ShowTab("win");
+                            OnWin?.Invoke();
             };
         }
 

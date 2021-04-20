@@ -6,7 +6,7 @@ namespace UI
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
     public class Navbar : MonoBehaviour
     {
-        private static Navbar instance = null;
+        public static Navbar main;
 
         [System.Serializable]
         public enum NavbarShowSettings
@@ -28,15 +28,17 @@ namespace UI
 
         private void Awake()
         {
-            if (instance) Destroy(this);
-            else instance = this;
+            if (main == null) main = this;
+            else Destroy(this);
+
+            Show(false, false, false);
         }
 
-        public static void Show(NavbarShowSettings showSettings)
+        public void Show(NavbarShowSettings showSettings)
         {
             switch (showSettings)
             {
-                case NavbarShowSettings.Hide: Hide(); break;
+                case NavbarShowSettings.Hide: Show(false, false, false); break;
                 case NavbarShowSettings.Show: Show(true, true, true); break;
                 case NavbarShowSettings.OnlyBackBtn: Show(true, false, false); break;
                 case NavbarShowSettings.OnlyTitle: Show(false, true, false); break;
@@ -45,25 +47,12 @@ namespace UI
             }
         }
 
-        private static void Show(bool backBtn, bool title, bool menuBtn)
+        private void Show(bool backBtn, bool title, bool menuBtn)
         {
-            if (instance)
-            {
-                MyUtils.SetObjectActive(instance.backBtn, backBtn);
-                MyUtils.SetObjectActive(instance.title, title);
-                MyUtils.SetObjectActive(instance.menuBtn, menuBtn);
-                instance.OnShow?.Invoke();
-            }
-        }
-
-        public static void Hide()
-        {
-            if (instance)
-            {
-                MyUtils.SetObjectActive(instance.backBtn, false);
-                MyUtils.SetObjectActive(instance.title, false);
-                MyUtils.SetObjectActive(instance.menuBtn, false);
-            }
+            MyUtils.SetObjectActive(this.backBtn, backBtn);
+            MyUtils.SetObjectActive(this.title, title);
+            MyUtils.SetObjectActive(this.menuBtn, menuBtn);
+            OnShow?.Invoke();
         }
     }
 }

@@ -3,22 +3,18 @@ using UnityEngine;
 
 namespace UI
 {
-    [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
-    public class UIManager : MonoBehaviour
+    [RequireComponent(typeof(RectTransform))]
+    public class TabGroup : MonoBehaviour
     {
-        public static System.Action ShowedTab;
-
         [SerializeField] string originName;
         Dictionary<string, Tab> tabs;
         [SerializeField, Disable] List<Tab> history;
         public List<Tab> History { get { return history; } }
-        [SerializeField] private Navbar navbarPrefab;
 
         private void Awake()
         {
             tabs = new Dictionary<string, Tab>();
             history = new List<Tab>();
-            if (navbarPrefab) Instantiate(navbarPrefab);
         }
 
         public void Subscribe(string name, Tab tab)
@@ -49,7 +45,6 @@ namespace UI
 
                 history.Add(tabs[name]);
                 history.Last().Active();
-                ShowedTab?.Invoke();
             }
         }
 
@@ -61,7 +56,6 @@ namespace UI
                 history.RemoveLast();
             }
             history.Last().Active();
-            ShowedTab?.Invoke();
 
             Debug.Log("Going a tab back");
         }

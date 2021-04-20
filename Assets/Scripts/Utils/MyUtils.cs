@@ -87,11 +87,16 @@ public static class ListUtils
 
     public static T Last<T>(this List<T> list, int offset = 0)
     {
-        offset = Mathf.Clamp(offset, 0, list.Count - 1);
-        T result = default(T);
+        T result = default;
 
-        if (list.Count > 0)
-            result = list[list.Count - 1 - offset];
+        if (list != null && list.Count > 0)
+        {
+            offset = Mathf.Clamp(offset, 0, list.Count - 1);
+
+
+            if (list.Count > 0)
+                result = list[list.Count - 1 - offset];
+        }
 
         return result;
     }
