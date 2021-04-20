@@ -13,7 +13,7 @@ namespace UI
         {
             text = GetComponent<TextMeshProUGUI>();
             UpdateTextDelegate = (object sender, Player.OnPlayerInputEventArgs args) => UpdateText(args.moves);
-            UpdateText(Singletons.main.player.Moves);
+            UpdateText(Player.main.Moves);
         }
 
         private void OnEnable() { Player.OnPlayerInput += UpdateTextDelegate; }

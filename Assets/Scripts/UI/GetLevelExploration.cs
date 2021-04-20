@@ -14,12 +14,12 @@ namespace UI
         {
             text = GetComponent<TextMeshProUGUI>();
             UpdateTextDelegate = (object sender, LevelFog.DiscoveredTileEventArgs args) => UpdateText(args.levelExplorationPercentage);
-            UpdateText(Singletons.main.lvlFog.LevelExplorationPercentage);
+            UpdateText(LevelFog.main.LevelExplorationPercentage);
         }
 
-        private void OnEnable() { Singletons.main.lvlFog.DiscoveredTile += UpdateTextDelegate; }
+        private void OnEnable() { LevelFog.main.DiscoveredTile += UpdateTextDelegate; }
 
-        private void OnDisable() { Singletons.main.lvlFog.DiscoveredTile -= UpdateTextDelegate; }
+        private void OnDisable() { LevelFog.main.DiscoveredTile -= UpdateTextDelegate; }
 
         private void UpdateText(float percentage)
         {

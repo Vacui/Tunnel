@@ -5,11 +5,10 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class Player : MonoBehaviour
 {
+    public static Player main;
+
     public static event EventHandler<GridCoordsEventArgs> OnPlayerStartedMove;
-
-
     public static event EventHandler<GridCoordsEventArgs> OnPlayerStoppedMove;
-
     public static event EventHandler<OnPlayerInputEventArgs> OnPlayerInput;
     public class OnPlayerInputEventArgs : EventArgs { public int moves; }
 
@@ -50,11 +49,10 @@ public class Player : MonoBehaviour
 
     EventHandler<GridCoordsEventArgs> playerSpawn = null;
 
-    public Player(int x, int y)
+    private void Awake()
     {
-        this.x = x;
-        this.y = y;
-        MoveToStartCell(x, y);
+        if (main == null) main = this;
+        else Destroy(this);
     }
 
     private void OnEnable()
@@ -97,15 +95,15 @@ public class Player : MonoBehaviour
 
     private void MoveToCell(int x, int y, bool teleport)
     {
-        if (Singletons.main.lvlManager.grid != null)
+        if (LevelManager.main.grid != null)
         {
-            if (Singletons.main.lvlManager.grid.CellIsValid(x, y))
+            if (LevelManager.main.grid.CellIsValid(x, y))
             {
-                if (Singletons.main.lvlManager.grid.GetTile(x, y) != TileType.NULL)
+                if (LevelManager.main.grid.GetTile(x, y) != TileType.NULL)
                 {
                     if (showDebugLog) Debug.Log($"Moving to tile {x},{y}", gameObject);
 
-                    Vector2 nextPos = Singletons.main.lvlManager.grid.CellToWorld(x, y);
+                    Vector2 nextPos = LevelManager.main.grid.CellToWorld(x, y);
 
                     this.x = x;
                     this.y = y;
@@ -115,7 +113,7 @@ public class Player : MonoBehaviour
 
                     if (visuals != null)
                     {
-                        ElementsVisuals.VisualData visualData = visuals.GetVisualData(Singletons.main.lvlManager.grid.GetTile(x, y));
+                        ElementsVisuals.VisualData visualData = visuals.GetVisualData(LevelManager.main.grid.GetTile(x, y));
                         GetComponent<SpriteRenderer>().sprite = visualData.sprite;
                     }
 
@@ -144,7 +142,7 @@ public class Player : MonoBehaviour
 
     private void MoveToCell(Direction dir)
     {
-        Direction dirCurrentTile = Singletons.main.lvlManager.grid.GetTile(x, y).ToDirection();
+        Direction dirCurrentTile = LevelManager.main.grid.GetTile(x, y).ToDirection();
         if (dir != Direction.NULL)
         {
             if (dirCurrentTile == Direction.All || dirCurrentTile == dir)
@@ -182,9 +180,9 @@ public class Player : MonoBehaviour
     private void CheckCurrentTile()
     {
         if (showDebugLog) Debug.Log("Checking current tile", gameObject);
-        if (Singletons.main.lvlManager.grid.CellIsValid(x, y))
+        if (LevelManager.main.grid.CellIsValid(x, y))
         {
-            TileType currentTileType = Singletons.main.lvlManager.grid.GetTile(x, y);
+            TileType currentTileType = LevelManager.main.grid.GetTile(x, y);
             if (currentTileType != TileType.NULL)
             {
                 IsSafe = currentTileType.ToDirection() == Direction.All;

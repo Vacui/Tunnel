@@ -23,7 +23,7 @@ namespace UI
         protected override void OnActive()
         {
             base.OnActive();
-            Singletons.main.lvlEditor.SelectTile(tileType);
+            Level.LevelEditor.main.SelectTile(tileType);
         }
     }
 }

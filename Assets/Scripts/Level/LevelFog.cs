@@ -7,6 +7,8 @@ namespace Level
     [DisallowMultipleComponent]
     public class LevelFog : MonoBehaviour
     {
+        public static LevelFog main;
+
         private GridXY<TileVisibility> grid;
         [SerializeField] private Sprite sprUnknown;
 
@@ -22,22 +24,17 @@ namespace Level
         }
 
         [Header("Debug")]
-        [EditorButton("DisableFog", "Show Level", ButtonActivityType.Everything), EditorButton("EnableFog", "Hide Level", ButtonActivityType.Everything)]
-        private bool fogIsEnabled = true;
+        [SerializeField, Disable] private bool fogIsEnabled = true;
         public bool FogIsEnabled
         {
             get { return fogIsEnabled; }
             set
             {
+                Debug.Log($"Fog is {value}");
                 fogIsEnabled = value;
                 for (int x = 0; x < grid.width; x++)
                     for (int y = 0; y < grid.height; y++)
-                    {
-                        if (fogIsEnabled)
-                            SetTileVisual(x, y, grid.GetTile(x, y));
-                        else
-                            SetTileVisual(x, y, TileVisibility.Visible);
-                    }
+                        SetTileVisual(x, y, fogIsEnabled ? grid.GetTile(x, y) : TileVisibility.Visible);
             }
         }
 
@@ -46,16 +43,19 @@ namespace Level
 
         private void Awake()
         {
+            if (main == null) main = this;
+            else Destroy(this);
+
             grid = new GridXY<TileVisibility>();
 
-            Singletons.main.lvlManager.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
+            LevelManager.main.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
             {
                 tilesTotal = args.width * args.height;
                 tilesHidden = tilesTotal;
                 grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
                 grid.SetAllTiles(fogIsEnabled ? TileVisibility.Invisible : TileVisibility.Visible);
             };
-            Singletons.main.lvlManager.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) =>
+            LevelManager.main.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) =>
             {
                 if (fogIsEnabled)
                 {
@@ -113,9 +113,9 @@ namespace Level
                     visualColor = new Color(0.7529f, 0.2235f, 0.1686f, 1.0f); //red
 
             if (visibility == TileVisibility.Visible)
-                Singletons.main.lvlVisual.ResetTileVisual(x, y, visualColor);
+                LevelVisual.main.ResetTileVisual(x, y, visualColor);
             else
-                Singletons.main.lvlVisual.SetTileVisual(x, y, sprUnknown, visualColor);
+                LevelVisual.main.SetTileVisual(x, y, sprUnknown, visualColor);
         }
 
         private void CheckNullTiles()
@@ -131,7 +131,7 @@ namespace Level
 
             if (grid.CellIsValid(x, y))
             {
-                if (Singletons.main.lvlManager.grid.GetTile(x, y) == TileType.NULL && grid.GetTile(x, y) == TileVisibility.Invisible)
+                if (LevelManager.main.grid.GetTile(x, y) == TileType.NULL && grid.GetTile(x, y) == TileVisibility.Invisible)
                 {
                     if (showDebugLog) Debug.Log($"Is Tile {x},{y} ReadyToVisible?");
                     isReadyToVisible = true;
@@ -144,9 +144,9 @@ namespace Level
                     for (int i = 0; i < neighbours.Count && isReadyToVisible; i++)
                     {
                         neighbour = neighbours[i];
-                        if (Singletons.main.lvlManager.grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y))
+                        if (LevelManager.main.grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y))
                         {
-                            type = Singletons.main.lvlManager.grid.GetTile(neighbour.x, neighbour.y);
+                            type = LevelManager.main.grid.GetTile(neighbour.x, neighbour.y);
                             visibility = grid.GetTile(neighbour.x, neighbour.y);
                             isReadyToVisible = visibility == TileVisibility.Visible || type == TileType.NULL;
                             if (showDebugLog) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
@@ -164,7 +164,7 @@ namespace Level
 
         private void CheckTilesVisibilityAround(int x, int y)
         {
-            TileType type = Singletons.main.lvlManager.grid.GetTile(x, y);
+            TileType type = LevelManager.main.grid.GetTile(x, y);
             TileVisibility visibility = grid.GetTile(x, y);
 
             if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
@@ -204,7 +204,7 @@ namespace Level
                 neighbour = neighbours[i];
                 if (!cellsChecked.Contains(neighbour))
                     if (grid.CellIsValid(neighbour.x, neighbour.y))
-                        if (Singletons.main.lvlManager.grid.GetTile(neighbour.x, neighbour.y) == TileType.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
+                        if (LevelManager.main.grid.GetTile(neighbour.x, neighbour.y) == TileType.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
                             result = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
             }
 

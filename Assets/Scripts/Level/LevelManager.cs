@@ -93,6 +93,8 @@ namespace Level
             }
         }
 
+        public static LevelManager main;
+
         public const float CELLSIZE = 1.1f;
 
         public GridXY<TileType> grid { get; private set; }
@@ -114,6 +116,8 @@ namespace Level
         private void Awake()
         {
             grid = new GridXY<TileType>();
+            if (main == null) main = this;
+            else Destroy(this);
         }
 
         private void OnEnable()
@@ -173,5 +177,6 @@ namespace Level
             } else
                 Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
         }
+        public void LoadLevel(string seed) { LoadLevel(new Seed(seed)); }
     }
 }

@@ -5,6 +5,14 @@ namespace Level
     [DisallowMultipleComponent]
     public class LevelGenerator : MonoBehaviour
     {
+        public static LevelGenerator main;
+
+        private void Awake()
+        {
+            if (main == null) main = this;
+            else Destroy(this);
+        }
+
         public void GenerateLevel(int width, int height)
         {
             Debug.Log($"Generating level {width}x{height}");
@@ -27,7 +35,7 @@ namespace Level
 
             Debug.Log($"Generated seed: {newLevelSeed}");
 
-            Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(newLevelSeed));
+            LevelManager.main.LoadLevel(newLevelSeed);
         }
     }
 }

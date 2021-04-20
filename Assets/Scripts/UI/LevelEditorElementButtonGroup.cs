@@ -9,7 +9,7 @@ namespace UI
 
         public void Subscribe(LevelEditorElementButton button)
         {
-            button.OnActiveEvent.AddListener(() => ClickOnElement(button));
+            button.OnActiveEvent += () => ClickOnElement(button);
         }
 
         private void ClickOnElement(LevelEditorElementButton button)

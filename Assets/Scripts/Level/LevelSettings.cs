@@ -27,7 +27,7 @@ namespace Level
 
         public void ApplySettings()
         {
-            Singletons.main.lvlGenerator.GenerateLevel(lvlWidth, lvlHeight);
+            LevelGenerator.main.GenerateLevel(lvlWidth, lvlHeight);
         }
     }
 }

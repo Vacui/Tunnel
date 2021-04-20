@@ -37,10 +37,10 @@ public class GameCamera : MonoBehaviour
         if (followPlayer)
             camConfiner.points = new Vector2[4]
             {
-                Singletons.main.lvlManager.grid.CellToWorld(-1, -1) + new Vector2(-offset.x, offset.y),
-                Singletons.main.lvlManager.grid.CellToWorld(width, -1) + new Vector2(offset.x, offset.y),
-                Singletons.main.lvlManager.grid.CellToWorld(width, height) + new Vector2(offset.x, -offset.y),
-                Singletons.main.lvlManager.grid.CellToWorld(-1, height) + new Vector2(-offset.x, -offset.y)
+                LevelManager.main.grid.CellToWorld(-1, -1) + new Vector2(-offset.x, offset.y),
+                LevelManager.main.grid.CellToWorld(width, -1) + new Vector2(offset.x, offset.y),
+                LevelManager.main.grid.CellToWorld(width, height) + new Vector2(offset.x, -offset.y),
+                LevelManager.main.grid.CellToWorld(-1, height) + new Vector2(-offset.x, -offset.y)
             };
         else
             camConfiner.points = new Vector2[4]

@@ -16,7 +16,7 @@ namespace UI
 
         private void Load()
         {
-            Singletons.main.lvlManager.LoadLevel(new LevelManager.Seed(seed));
+            LevelManager.main.LoadLevel(seed);
         }
     }
 }

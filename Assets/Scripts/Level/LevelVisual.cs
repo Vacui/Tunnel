@@ -5,6 +5,8 @@ namespace Level
     [DisallowMultipleComponent]
     public class LevelVisual : MonoBehaviour
     {
+        public static LevelVisual main;
+
         public GridXY<SpriteRenderer> grid { get; private set; }
         [SerializeField] private ElementsVisuals skinTiles;
 
@@ -15,13 +17,16 @@ namespace Level
 
         private void Awake()
         {
+            if (main == null) main = this;
+            else Destroy(this);
+
             grid = new GridXY<SpriteRenderer>();
-            Singletons.main.lvlManager.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
+            LevelManager.main.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
             {
                 ResetVisuals();
                 grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
             };
-            Singletons.main.lvlManager.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) => ResetTileVisual(args.x, args.y);
+            LevelManager.main.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) => ResetTileVisual(args.x, args.y);
         }
 
         /// <summary>
@@ -41,7 +46,7 @@ namespace Level
 
         public void ResetTileVisual(int x, int y, Color color)
         {
-            TileType typeTile = Singletons.main.lvlManager.grid.GetTile(x, y);
+            TileType typeTile = LevelManager.main.grid.GetTile(x, y);
             if (showDebugLog) Debug.Log($"Updating Tile {x},{y} ({typeTile}) Visual");
             SetTileVisual(x, y, skinTiles.GetVisualData(typeTile));
         }
