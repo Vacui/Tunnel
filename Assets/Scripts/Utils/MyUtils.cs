@@ -1,8 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public static class MyUtils
 {
+    // origin: https://www.codegrepper.com/code-examples/csharp/how+to+clear+console+through+script+unity
+    public static void ClearLogConsole()
+    {
+        Assembly assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+        Type logEntries = assembly.GetType("UnityEditor.LogEntries");
+        MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
+        clearConsoleMethod.Invoke(new object(), null);
+    }
+
     public static void AddBlankRange(this List<string> list, int count)
     {
         if (count > 0)
@@ -47,14 +58,14 @@ public static class MyUtils
             int tests = 0;
             while (!ok && tests < limit)
             {
-                result = Random.Range(start, end);
+                result = UnityEngine.Random.Range(start, end);
                 ok = !exceptions.Contains(result);
                 tests++;
             }
         } else
         {
             ok = true;
-            result = Random.Range(start, end);
+            result = UnityEngine.Random.Range(start, end);
         }
 
         if (ok) return result;

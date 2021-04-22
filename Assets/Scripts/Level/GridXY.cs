@@ -70,21 +70,6 @@ public class GridXY<T>
             throw new NullReferenceException();
         return result;
     }
-    public T GetTile(int cellNum)
-    {
-        CellNumToCell(cellNum, out int x, out int y);
-        return GetTile(x, y);
-    }
-    public T GetTile(int x, int y, Direction dir)
-    {
-        T result = default(T);
-        if(dir != Direction.NULL)
-        {
-            dir.ToOffset(out int offsetX, out int offsetY);
-            result = GetTile(x + offsetX, y + offsetY);
-        }
-        return result;
-    }
 
     public void SetTile(int x, int y, T value)
     {
@@ -93,11 +78,6 @@ public class GridXY<T>
             tiles[x, y] = value;
             OnGridObjectChanged?.Invoke(this, new GridObjectChangedEventArgs { x = x, y = y, value = value });
         }
-    }
-    public void SetTile(int cellNum, T value)
-    {
-        CellNumToCell(cellNum, out int x, out int y);
-        SetTile(x, y, value);
     }
 
     public bool CellIsValid(int x, int y)
@@ -109,11 +89,6 @@ public class GridXY<T>
     {
         x = cellNum % width;
         y = cellNum / width;
-    }
-    public Vector2Int CellNumToCell(int cellNum)
-    {
-        CellNumToCell(cellNum, out int x, out int y);
-        return new Vector2Int(x, y);
     }
 
     public Vector2 CellToWorld(int x, int y)

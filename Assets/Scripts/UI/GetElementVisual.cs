@@ -23,7 +23,7 @@ namespace UI
 
         private void GetElementVisualSprite()
         {
-            if (visuals != null) GetComponent<Image>().sprite = visuals.GetVisualData(tileType).sprite;
+            //if (visuals != null) GetComponent<Image>().sprite = visuals.GetVisualData(tileType).sprite;
         }
     }
 }

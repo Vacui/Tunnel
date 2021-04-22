@@ -125,8 +125,8 @@ public class Player : MonoBehaviour
 
                     if (visuals != null)
                     {
-                        ElementsVisuals.VisualData visualData = visuals.GetVisualData(LevelManager.main.grid.GetTile(x, y));
-                        GetComponent<SpriteRenderer>().sprite = visualData.sprite;
+                        //ElementsVisuals.VisualData visualData = visuals.GetVisualData(LevelManager.main.grid.GetTile(x, y));
+                        //GetComponent<SpriteRenderer>().sprite = visualData.sprite;
                     }
 
                     if (teleport)
