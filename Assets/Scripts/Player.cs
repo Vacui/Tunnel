@@ -1,221 +1,195 @@
 ﻿using Level;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
-public class Player : MonoBehaviour
+namespace PlayerLogic
 {
-    public static Player main;
-
-    public static event EventHandler<GridCoordsEventArgs> OnPlayerStartedMove;
-    public static event EventHandler<GridCoordsEventArgs> OnPlayerStoppedMove;
-    public static event EventHandler<OnPlayerInputEventArgs> OnPlayerInput;
-    public class OnPlayerInputEventArgs : EventArgs { public int moves; }
-
-    [SerializeField, Disable] bool isActive = true;
-    public bool IsActive
+    [DisallowMultipleComponent]
+    public class Player : MonoBehaviour
     {
-        get { return isActive; }
-        private set {
-            isActive = value;
-            if (isActive) ShowVisual();
-            else HideVisual();
-        }
-    }
+        public static Player main;
 
-    [SerializeField, Disable] private int x = -1;
-    [SerializeField, Disable] private int y = -1;
-    [SerializeField, Disable] private bool isSafe = true;
-    private bool IsSafe
-    {
-        get { return isSafe; }
-        set
+        public static event EventHandler<GridCoordsEventArgs> StartedMove;
+        public static event EventHandler<GridCoordsEventArgs> Moved;
+        public static event EventHandler<GridCoordsEventArgs> StoppedMove;
+        public static event EventHandler<PlayerInputEventArgs> Input;
+        public class PlayerInputEventArgs : EventArgs { public int moves; }
+
+        //[SerializeField, Disable] bool isActive = true;
+        //public bool IsActive
+        //{
+        //    get { return isActive; }
+        //    private set
+        //    {
+        //        isActive = value;
+        //        if (isActive) ShowVisual();
+        //        else HideVisual();
+        //    }
+        //}
+
+        [SerializeField, Disable] private int x = -1;
+        [SerializeField, Disable] private int y = -1;
+        [SerializeField, Disable] private bool isSafe = true;
+        private bool IsSafe
         {
-            isSafe = value;
-            if(isSafe)
-                OnPlayerStoppedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
-        }
-    }
-
-    [Header("Movement")]
-    [SerializeField, Disable] private int moves;
-    public int Moves
-    {
-        get { return moves; }
-        private set {
-            moves = value;
-            OnPlayerInput?.Invoke(this, new OnPlayerInputEventArgs { moves = value });
-        }
-    }
-    private Direction dirCurrent = Direction.NULL;    
-    private const float SCALE_SIZE = 1.2f;
-    private const float SCALE_SPEED = 0.1f;
-    private int currentScaleTweenId;
-
-    [Header("Visual")]
-    [SerializeField] private ElementsVisuals visuals;
-
-    [Header("Debug")]
-    [SerializeField] private bool showDebugLog = false;
-
-    EventHandler<GridCoordsEventArgs> playerSpawn = null;
-
-    private void Awake()
-    {
-        if (main == null) main = this;
-        else Destroy(this);
-        IsActive = false;
-    }
-
-    private void OnEnable()
-    {
-        LevelManager.OnLevelNotReady += (sender, args) => { IsActive = false; };
-
-        playerSpawn = delegate(object sender, GridCoordsEventArgs args) {
-            IsActive = true;
-            MoveToStartCell(args.x, args.y);
-        };
-        LevelManager.OnLevelPlayable += playerSpawn;
-    }
-
-    private void OnDisable()
-    {
-        LevelManager.OnLevelNotReady += (sender, args) => { IsActive = false; };
-        LevelManager.OnLevelPlayable -= playerSpawn;
-    }
-
-    private void Update()
-    {
-        if (IsSafe && IsActive)
-        {
-            Direction moveDirection = Direction.NULL;
-            if (Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Direction.Up;
-            else if (Input.GetKeyDown(KeyCode.LeftArrow)) moveDirection = Direction.Left;
-            else if (Input.GetKeyDown(KeyCode.DownArrow)) moveDirection = Direction.Down;
-            else if (Input.GetKeyDown(KeyCode.RightArrow)) moveDirection = Direction.Right;
-
-            if (moveDirection != Direction.NULL)
+            get { return isSafe; }
+            set
             {
-                Moves++;
-                MoveToCell(moveDirection);
+                isSafe = value;
+                if (isSafe)
+                    StoppedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
             }
         }
-    }
 
-    private void HideVisual() { GetComponent<SpriteRenderer>().enabled = false; }
-    private void ShowVisual() { GetComponent<SpriteRenderer>().enabled = true; }
-
-    private void MoveToCell(int x, int y, bool teleport)
-    {
-        if (LevelManager.main.grid != null)
+        [Header("Movement")]
+        [SerializeField, Disable] private int moves;
+        public int Moves
         {
-            if (LevelManager.main.grid.CellIsValid(x, y))
+            get { return moves; }
+            private set
             {
-                if (LevelManager.main.grid.GetTile(x, y) != TileType.NULL)
+                moves = value;
+                Input?.Invoke(this, new PlayerInputEventArgs { moves = value });
+            }
+        }
+        private Direction dirCurrent = Direction.NULL;
+        public static Queue<Vector3Int> movement;
+
+        [Header("Debug")]
+        [SerializeField] private bool showDebugLog = false;
+
+        EventHandler<GridCoordsEventArgs> playerSpawn = null;
+
+        private void Awake()
+        {
+            if (main == null) main = this;
+            else Destroy(this);
+            //IsActive = false;
+            movement = new Queue<Vector3Int>();
+        }
+
+        private void OnEnable()
+        {
+            //LevelManager.OnLevelNotReady += (sender, args) => { IsActive = false; };
+
+            playerSpawn = delegate (object sender, GridCoordsEventArgs args)
+            {
+                //IsActive = true;
+                MoveToStartCell(args.x, args.y);
+            };
+            LevelManager.OnLevelPlayable += playerSpawn;
+        }
+
+        private void OnDisable()
+        {
+            //LevelManager.OnLevelNotReady += (sender, args) => { IsActive = false; };
+            LevelManager.OnLevelPlayable -= playerSpawn;
+        }
+
+        private void Update()
+        {
+            if (IsSafe/* && IsActive*/)
+            {
+                Direction moveDirection = Direction.NULL;
+                if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Direction.Up;
+                else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow)) moveDirection = Direction.Left;
+                else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow)) moveDirection = Direction.Down;
+                else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow)) moveDirection = Direction.Right;
+
+                if (moveDirection != Direction.NULL)
                 {
-                    if (showDebugLog) Debug.Log($"Moving to tile {x},{y}", gameObject);
+                    Moves++;
+                    MoveToCell(moveDirection);
+                }
+            }
+        }
 
-                    Vector2 nextPos = LevelManager.main.grid.CellToWorld(x, y);
-
-                    this.x = x;
-                    this.y = y;
-
-                    CancelMovementTween();
-                    transform.localPosition = nextPos;
-
-                    if (visuals != null)
+        private void MoveToCell(int x, int y, bool teleport)
+        {
+            if (LevelManager.main.grid != null)
+            {
+                if (LevelManager.main.grid.CellIsValid(x, y))
+                {
+                    if (LevelManager.main.grid.GetTile(x, y) != TileType.NULL)
                     {
-                        //ElementsVisuals.VisualData visualData = visuals.GetVisualData(LevelManager.main.grid.GetTile(x, y));
-                        //GetComponent<SpriteRenderer>().sprite = visualData.sprite;
-                    }
+                        if (showDebugLog) Debug.Log($"Moving to tile {x},{y}", gameObject);
 
-                    if (teleport)
+                        this.x = x;
+                        this.y = y;
+                        movement.Enqueue(new Vector3Int(x, y, 0));
+                        if (movement.Count <= 1)
+                            StartedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                        else
+                            Moved?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
                         CheckCurrentTile();
-                    else
+                    } else
                     {
-                        transform.localScale = Vector3.one * SCALE_SIZE;
-                        currentScaleTweenId = LeanTween.scale(gameObject, Vector3.one, SCALE_SPEED).setOnComplete(() => CheckCurrentTile()).id;
+                        Debug.LogWarning($"Can't move to NULL tile {x},{y}.", gameObject);
+                        IsSafe = true;
                     }
-
-
-                    OnPlayerStartedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
                 } else
                 {
-                    Debug.LogWarning($"Can't move to NULL tile {x},{y}.", gameObject);
+                    Debug.LogWarning($"Can't move to non valid cell {x},{y}.", gameObject);
                     IsSafe = true;
+                }
+            }
+        }
+
+        private void MoveToCell(Direction dir)
+        {
+            Direction dirCurrentTile = LevelManager.main.grid.GetTile(x, y).ToDirection();
+            if (dir != Direction.NULL)
+            {
+                if (dirCurrentTile == Direction.All || dirCurrentTile == dir)
+                {
+                    dirCurrent = dir;
+                    dirCurrent.ToOffset(out int offsetX, out int offsetY);
+
+                    MoveToCell(x + offsetX, y + offsetY, false);
+                } else
+                {
+                    if (showDebugLog) Debug.Log($"Character can't exit tile with direction {dirCurrentTile} to {dir}.", gameObject);
+                    if (!IsSafe)
+                        MoveToCell(dirCurrentTile);
                 }
             } else
             {
-                Debug.LogWarning($"Can't move to non valid cell {x},{y}.", gameObject);
+                Debug.LogWarning($"Character can't move in a null direction.", gameObject);
                 IsSafe = true;
             }
         }
-    }
 
-    private void MoveToCell(Direction dir)
-    {
-        Direction dirCurrentTile = LevelManager.main.grid.GetTile(x, y).ToDirection();
-        if (dir != Direction.NULL)
+        public void MoveToStartCell(int x, int y)
         {
-            if (dirCurrentTile == Direction.All || dirCurrentTile == dir)
-            {
-                dirCurrent = dir;
-                dirCurrent.ToOffset(out int offsetX, out int offsetY);
-
-                MoveToCell(x + offsetX, y + offsetY, false);
-            } else
-            {
-                if(showDebugLog) Debug.Log($"Character can't exit tile with direction {dirCurrentTile} to {dir}.", gameObject);
-                if (!IsSafe)
-                    MoveToCell(dirCurrentTile);
-            }
-        } else
-        {
-            Debug.LogWarning($"Character can't move in a null direction.", gameObject);
-            IsSafe = true;
+            //IsActive = true;
+            Moves = 0;
+            dirCurrent = Direction.NULL;
+            MoveToCell(x, y, true);
         }
-    }
 
-    public void MoveToStartCell(int x, int y)
-    {
-        IsActive = true;
-        Moves = 0;
-        dirCurrent = Direction.NULL;
-        MoveToCell(x, y, true);
-    }
-
-    private void MoveToCurrentDirection()
-    {
-        if (showDebugLog) Debug.Log($"Moving To Current Direction {dirCurrent}.", gameObject);
-        MoveToCell(dirCurrent);
-    }
-
-    private void CheckCurrentTile()
-    {
-        if (showDebugLog) Debug.Log("Checking current tile", gameObject);
-        if (LevelManager.main.grid.CellIsValid(x, y))
+        private void MoveToCurrentDirection()
         {
-            TileType currentTileType = LevelManager.main.grid.GetTile(x, y);
-            if (currentTileType != TileType.NULL)
+            if (showDebugLog) Debug.Log($"Moving To Current Direction {dirCurrent}.", gameObject);
+            MoveToCell(dirCurrent);
+        }
+
+        public void CheckCurrentTile()
+        {
+            if (showDebugLog) Debug.Log("Checking current tile", gameObject);
+            if (LevelManager.main.grid.CellIsValid(x, y))
             {
-                IsSafe = currentTileType.ToDirection() == Direction.All;
-                if (!IsSafe)
-                    MoveToCurrentDirection();
-                else
-                    CancelMovementTween();
-            } else
-            {
-                Debug.LogError($"NULL tile type {x},{y}.", gameObject);
-                IsSafe = true;
+                TileType currentTileType = LevelManager.main.grid.GetTile(x, y);
+                if (currentTileType != TileType.NULL)
+                {
+                    IsSafe = currentTileType.ToDirection() == Direction.All;
+                    if (!IsSafe) MoveToCurrentDirection();
+                } else
+                {
+                    Debug.LogError($"NULL tile type {x},{y}.", gameObject);
+                    IsSafe = true;
+                }
             }
         }
-    }
-
-    private void CancelMovementTween()
-    {
-        if (showDebugLog) Debug.Log("Cancelling movement tween.", gameObject);
-        if (currentScaleTweenId > 0 && LeanTween.isTweening(currentScaleTweenId))
-            LeanTween.cancel(currentScaleTweenId);
-        transform.localScale = Vector3.one;
     }
 }

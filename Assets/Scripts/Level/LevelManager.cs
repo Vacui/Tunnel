@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PlayerLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -94,9 +95,9 @@ namespace Level
             }
         }
 
-        public static LevelManager main;
+        public static LevelManager main { get; private set; }
 
-        public const float CELLSIZE = 1.1f;
+        public const float CELLSIZE = 1f;
 
         public GridXY<TileType> grid { get; private set; }
         public enum LevelState { NotReady, NotPlayable, Ready, Playable }
@@ -116,14 +117,14 @@ namespace Level
 
         private void Awake()
         {
-            grid = new GridXY<TileType>();
             if (main == null) main = this;
             else Destroy(this);
+            grid = new GridXY<TileType>();
         }
 
         private void OnEnable()
         {
-            Player.OnPlayerStoppedMove += (sender, args) =>
+            Player.StoppedMove += (sender, args) =>
             {
                 if (grid != null)
                     if (grid.CellIsValid(args.x, args.y))
@@ -146,8 +147,7 @@ namespace Level
                 OnLevelNotReady?.Invoke(this, null);
 
                 Debug.Log($"1. Initializing level...");
-                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE);
-                grid.SetAllTiles(TileType.NULL);
+                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, Vector3.zero /*new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE*/, TileType.NULL);
 
                 Debug.Log("Level is not playable!");
                 LvlState = LevelState.NotPlayable;

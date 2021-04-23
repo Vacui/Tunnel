@@ -20,7 +20,7 @@ public class Testing : MonoBehaviour
             }
         }
     }
-    public bool useAutoLevelGeneration;
+    private bool useAutoLevelGeneration;
 
     private string[] seeds = new string[]{
         "1/1/1",
@@ -40,6 +40,22 @@ public class Testing : MonoBehaviour
         //"14/11/5-4-8-0-4-4-4-4-8---0-4-8-3--3-3-----6-4-0-3--3-3--6-9-4-4-4-0-4-4-4-9-4-7-0---6-4-4-8----5-7---3-0-4-4-4-4-9-4-0-4-7-5-4-8-3-3-5-4-8--3-----3--3-3-3-3--3--0-4-4-4-4-0-4-7-3-3-0--3--3--0-4-4-4-4-8-3-3-3--3--3--3--5-4-8-3-2-6-9-4-7--3--6-4-7--3-3---6-4-4-4-0-4-4-4-4-4-7-1",
         //"14/11/--------5-2-4-4-4-8-5-4-4-0-4-4-4-4-9-9-4-0-4-7-3---3-----3-6-8-3---3-5-4-9-4-0-4-8-3--3-6-4-8-3-3--3--3--3-6-8-0-4-8-3-3-1-4-9-4-9-8-3--3-3--3-3-6-4-4-9-8-3-3-6-4-9-9-4-0-3--5-4-7-3-3-0-4-4-9-7---3-5-9-4-4-0-3-3-0-4-9-4-4-8-3-3-3----3-3-3--3---3-3-0-6-4-0-4-7-6-7--6-4-4-0-7"
     };
+
+    [System.Flags]
+    public enum TestEnum
+    {
+        None = 0,
+        Enum1 = 1,
+        Enum2 = 2,
+        Enum3 = 4
+    }
+
+    [EnumFlag(EnumStyle.Button)] public TestEnum var0;
+
+    [SerializeField, EnableIf(nameof(var0), TestEnum.None, TestMethod = ComparisionTestMethod.Equal)] private bool varN;
+    [SerializeField, EnableIf(nameof(var0), TestEnum.Enum1 | TestEnum.Enum2, TestMethod = ComparisionTestMethod.Mask)] private bool var1;
+    [SerializeField, EnableIf(nameof(var0), TestEnum.Enum2, TestMethod = ComparisionTestMethod.Mask)] private bool var2;
+    [SerializeField, EnableIf(nameof(var0), TestEnum.Enum3, TestMethod = ComparisionTestMethod.Equal)] private bool var3;
 
     private void Start()
     {

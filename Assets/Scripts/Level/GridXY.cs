@@ -16,8 +16,8 @@ public class GridCreationEventArgs : EventArgs
 
 public class GridXY<T>
 {
-    public event EventHandler<GridObjectChangedEventArgs> OnGridObjectChanged;
-    public class GridObjectChangedEventArgs : EventArgs
+    public event EventHandler<TileChangedEventArgs> OnTileChanged;
+    public class TileChangedEventArgs : EventArgs
     {
         public int x, y;
         public T value;
@@ -29,11 +29,11 @@ public class GridXY<T>
     private float cellSize;
     private Vector2 originPosition;
     private T[,] tiles;
-    private T defaultTileValue;
+    private T nullTileValue;
 
     public GridXY() { }
 
-    public void CreateGridXY(int width, int height, float cellSize, Vector3 originPosition)
+    public void CreateGridXY(int width, int height, float cellSize, Vector3 originPosition, T nullTileValue, T initializeValue)
     {
         if (width > 0)
         {
@@ -45,30 +45,33 @@ public class GridXY<T>
                     this.height = height;
                     this.cellSize = cellSize;
                     this.originPosition = originPosition;
+                    this.nullTileValue = nullTileValue;
                     tiles = new T[width, height];
                     OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height, cellSize = cellSize, originPosition = originPosition });
+                    SetAllTiles(initializeValue);
                 }
             }
         }
+    }
+    public void CreateGridXY(int width, int height, float cellSize, Vector3 originPosition, T nullTileValue)
+    {
+        CreateGridXY(width, height, cellSize, originPosition, nullTileValue, nullTileValue);
     }
 
     public void SetAllTiles(T value)
     {
         if (tiles != null)
             for (int x = 0; x < width; x++)
-                for (int z = 0; z < height; z++)
-                    tiles[x, z] = value;
+                for (int y = 0; y < height; y++)
+                    SetTile(x, y, value);
     }
 
     public T GetTile(int x, int y)
     {
-        T result = default(T);
         if (CellIsValid(x, y))
-        {
-            result = tiles[x, y];
-        } else
-            throw new NullReferenceException();
-        return result;
+            return tiles[x, y];
+        else
+            return nullTileValue;
     }
 
     public void SetTile(int x, int y, T value)
@@ -76,7 +79,7 @@ public class GridXY<T>
         if (CellIsValid(x, y))
         {
             tiles[x, y] = value;
-            OnGridObjectChanged?.Invoke(this, new GridObjectChangedEventArgs { x = x, y = y, value = value });
+            OnTileChanged?.Invoke(this, new TileChangedEventArgs { x = x, y = y, value = value });
         }
     }
 

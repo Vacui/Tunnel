@@ -7,9 +7,4 @@ public class GameAction : MonoBehaviour
     {
         LevelManager.main.LoadLevel("1/1/1");
     }
-
-    public void SetLevelFogVisibility(bool value)
-    {
-        LevelFog.main.FogIsEnabled = value;
-    }
 }

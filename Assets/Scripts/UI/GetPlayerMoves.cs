@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using PlayerLogic;
+using TMPro;
 using UnityEngine;
 
 namespace UI
@@ -7,18 +8,18 @@ namespace UI
     public class GetPlayerMoves : MonoBehaviour
     {
         private TextMeshProUGUI text;
-        private System.EventHandler<Player.OnPlayerInputEventArgs> UpdateTextDelegate;
+        private System.EventHandler<Player.PlayerInputEventArgs> UpdateTextDelegate;
 
         private void Awake()
         {
             text = GetComponent<TextMeshProUGUI>();
-            UpdateTextDelegate = (object sender, Player.OnPlayerInputEventArgs args) => UpdateText(args.moves);
+            UpdateTextDelegate = (object sender, Player.PlayerInputEventArgs args) => UpdateText(args.moves);
             UpdateText(Player.main.Moves);
         }
 
-        private void OnEnable() { Player.OnPlayerInput += UpdateTextDelegate; }
+        private void OnEnable() { Player.Input += UpdateTextDelegate; }
 
-        private void OnDisable() { Player.OnPlayerInput -= UpdateTextDelegate; }
+        private void OnDisable() { Player.Input -= UpdateTextDelegate; }
 
         private void UpdateText(int moves)
         {

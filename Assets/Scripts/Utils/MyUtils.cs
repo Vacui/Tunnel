@@ -193,9 +193,9 @@ public static class DirectionUtils
         offsetY = 0;
         switch (dir)
         {
-            case Direction.Up: offsetY--; break;
+            case Direction.Up: offsetY++; break;
             case Direction.Right: offsetX++; break;
-            case Direction.Down: offsetY++; break;
+            case Direction.Down: offsetY--; break;
             case Direction.Left: offsetX--; break;
         }
     }
@@ -209,19 +209,33 @@ public static class DirectionUtils
 
         return result;
     }
+
+    public static Direction Rotate(this Direction direction, int angle)
+    {
+        switch (direction)
+        {
+            case Direction.NULL: return Direction.NULL;
+            case Direction.All: return Direction.All;
+            default:
+                int dir = (int)direction;
+                dir += angle / 90;
+                if (dir > 5) dir -= 4;
+                return (Direction)dir;
+        }
+    }
 }
 
 [System.Serializable]
 public enum TileType
 {
-    NULL,
-    Player,
-    Node,
-    Goal,
-    Up,
-    Right,
-    Down,
-    Left 
+    NULL = 0,
+    Player = 1,
+    Node = 2,
+    Goal = 3,
+    Up = 4,
+    Right = 5,
+    Down = 6,
+    Left = 7 
 }
 
 public static class TileTypeUtils
@@ -234,7 +248,7 @@ public static class TileTypeUtils
             case TileType.NULL: result = Direction.NULL; break;
             case TileType.Player: result = Direction.All; break;
             case TileType.Node: result = Direction.All; break;
-            case TileType.Goal: result = Direction.NULL; break;
+            case TileType.Goal: result = Direction.All; break;
             case TileType.Up: result = Direction.Up; break;
             case TileType.Right: result = Direction.Right; break;
             case TileType.Down: result = Direction.Down; break;

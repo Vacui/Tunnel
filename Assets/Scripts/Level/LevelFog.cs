@@ -1,17 +1,23 @@
-﻿using System;
+﻿using PlayerLogic;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Level
 {
-    [DisallowMultipleComponent]
+    [DisallowMultipleComponent, RequireComponent(typeof(Tilemap))]
     public class LevelFog : MonoBehaviour
     {
-        public static LevelFog main;
+        public static LevelFog main { get; private set; }
 
         private GridXY<TileVisibility> grid;
-        [SerializeField] private Sprite sprUnknown;
 
+        [Header("Visuals")]
+        private Tilemap tilemap;
+        [SerializeField] private TileBase visual;
+
+        [Header("Stats")]
         [SerializeField, Disable] private int tilesTotal;
         [SerializeField, Disable] private int tilesHidden;
         public float LevelExplorationPercentage { get { return (tilesTotal - tilesHidden) / (float)tilesTotal; } }
@@ -23,22 +29,6 @@ namespace Level
             public float levelExplorationPercentage;
         }
 
-        [Header("Debug")]
-        [SerializeField, Disable] private bool fogIsEnabled = true;
-        public bool FogIsEnabled
-        {
-            get { return fogIsEnabled; }
-            set
-            {
-                Debug.Log($"Fog is {value}");
-                fogIsEnabled = value;
-                for (int x = 0; x < grid.width; x++)
-                    for (int y = 0; y < grid.height; y++)
-                        SetTileVisual(x, y, fogIsEnabled ? grid.GetTile(x, y) : TileVisibility.Visible);
-            }
-        }
-
-        [SerializeField] private bool showDebugColors = false;
         [SerializeField] private bool showDebugLog = false;
 
         private void Awake()
@@ -46,37 +36,34 @@ namespace Level
             if (main == null) main = this;
             else Destroy(this);
 
+            tilemap = GetComponent<Tilemap>();
             grid = new GridXY<TileVisibility>();
 
-            LevelManager.main.grid.OnGridCreated += (object sender, GridCreationEventArgs args) =>
+            LevelManager.main.grid.OnGridCreated += (sender, args) =>
             {
                 tilesTotal = args.width * args.height;
                 tilesHidden = tilesTotal;
-                grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
-                grid.SetAllTiles(fogIsEnabled ? TileVisibility.Invisible : TileVisibility.Visible);
+                tilemap.ClearAllTiles();
+                grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition, TileVisibility.Invisible);
             };
-            LevelManager.main.grid.OnGridObjectChanged += (object sender, GridXY<TileType>.GridObjectChangedEventArgs args) =>
+            LevelManager.main.grid.OnTileChanged += (sender, args) =>
             {
-                if (fogIsEnabled)
-                {
-                    HideTile(args.x, args.y);
-                    if (args.value == TileType.Goal)
-                        DiscoverTile(args.x, args.y);
-                } else
+                HideTile(args.x, args.y);
+                if (args.value == TileType.Goal)
                     DiscoverTile(args.x, args.y);
             };
 
-            grid.OnGridObjectChanged += (object sender, GridXY<TileVisibility>.GridObjectChangedEventArgs args) =>
+            grid.OnTileChanged += (sender, args) =>
             {
-                if (FogIsEnabled)
-                    SetTileVisual(args.x, args.y, args.value);
+                tilemap.SetTile(new Vector3Int(args.x, args.y, 0), args.value == TileVisibility.Invisible ? visual : null);
                 CheckTilesVisibilityAround(args.x, args.y);
             };
 
-            LevelManager.OnLevelReady += (object sender, LevelManager.OnLevelReadyEventArgs args) => CheckNullTiles();
+            LevelManager.OnLevelReady += (sender, args) => CheckNullTiles();
 
-            Player.OnPlayerStartedMove += (object sender, GridCoordsEventArgs args) => DiscoverTile(args.x, args.y);
-            Player.OnPlayerStoppedMove += (object sender, GridCoordsEventArgs args) =>
+            Player.StartedMove += (sender, args) => DiscoverTile(args.x, args.y);
+            Player.Moved += (sender, args) => DiscoverTile(args.x, args.y);
+            Player.StoppedMove += (sender, args) =>
             {
                 DiscoverTile(args.x + 1, args.y);
                 DiscoverTile(args.x - 1, args.y);
@@ -100,23 +87,6 @@ namespace Level
         }
         private void DiscoverTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Visible); }
         private void HideTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Invisible); }
-
-        private void SetTileVisual(int x, int y, TileVisibility visibility)
-        {
-            Color visualColor = Color.black;
-            if (showDebugColors)
-                if (visibility == TileVisibility.Visible)
-                    visualColor = new Color(0.1529f, 0.6823f, 0.3764f, 1.0f); //green
-                else if (visibility == TileVisibility.ReadyToVisible)
-                    visualColor = new Color(0.9019f, 0.4941f, 0.1333f, 1.0f); //orange
-                else if (visibility == TileVisibility.Invisible)
-                    visualColor = new Color(0.7529f, 0.2235f, 0.1686f, 1.0f); //red
-
-            if (visibility == TileVisibility.Visible)
-                LevelVisual.main.ResetTileVisual(x, y, visualColor);
-            else
-                LevelVisual.main.SetTileVisual(x, y, sprUnknown, visualColor);
-        }
 
         private void CheckNullTiles()
         {
