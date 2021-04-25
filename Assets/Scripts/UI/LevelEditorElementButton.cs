@@ -6,7 +6,7 @@ namespace UI
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
     public class LevelEditorElementButton : UIElementButton, IPointerClickHandler
     {
-        [SerializeField] private TileType tileType;
+        [SerializeField] private Element tileType;
         [SerializeField] private LevelEditorElementButtonGroup group;
 
         protected override void Awake()

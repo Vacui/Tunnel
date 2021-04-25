@@ -1,17 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GridCoordsEventArgs : EventArgs
 {
     public int x, y;
-}
-
-public class GridCreationEventArgs : EventArgs
-{
-    public int width;
-    public int height;
-    public float cellSize;
-    public Vector2 originPosition;
 }
 
 public class GridXY<T>
@@ -23,39 +16,35 @@ public class GridXY<T>
         public T value;
     }
     public event EventHandler<GridCreationEventArgs> OnGridCreated;
+    public class GridCreationEventArgs : EventArgs
+    {
+        public int width;
+        public int height;
+    }
 
     public int height { get; private set; }
     public int width { get; private set; }
-    private float cellSize;
-    private Vector2 originPosition;
     private T[,] tiles;
     private T nullTileValue;
+    private bool updateAlways;
 
     public GridXY() { }
 
-    public void CreateGridXY(int width, int height, float cellSize, Vector3 originPosition, T nullTileValue, T initializeValue)
+    public void CreateGridXY(int width, int height, bool updateAlways = false, T initializeValue = default, T nullTileValue = default)
     {
         if (width > 0)
         {
             if (height > 0)
             {
-                if (cellSize > 0)
-                {
-                    this.width = width;
-                    this.height = height;
-                    this.cellSize = cellSize;
-                    this.originPosition = originPosition;
-                    this.nullTileValue = nullTileValue;
-                    tiles = new T[width, height];
-                    OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height, cellSize = cellSize, originPosition = originPosition });
-                    SetAllTiles(initializeValue);
-                }
+                this.width = width;
+                this.height = height;
+                this.nullTileValue = nullTileValue;
+                this.updateAlways = updateAlways;
+                tiles = new T[width, height];
+                OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height });
+                SetAllTiles(initializeValue);
             }
         }
-    }
-    public void CreateGridXY(int width, int height, float cellSize, Vector3 originPosition, T nullTileValue)
-    {
-        CreateGridXY(width, height, cellSize, originPosition, nullTileValue, nullTileValue);
     }
 
     public void SetAllTiles(T value)
@@ -76,7 +65,7 @@ public class GridXY<T>
 
     public void SetTile(int x, int y, T value)
     {
-        if (CellIsValid(x, y))
+        if (CellIsValid(x, y) && (!EqualityComparer<T>.Default.Equals(tiles[x, y], value) || updateAlways))
         {
             tiles[x, y] = value;
             OnTileChanged?.Invoke(this, new TileChangedEventArgs { x = x, y = y, value = value });
@@ -94,16 +83,9 @@ public class GridXY<T>
         y = cellNum / width;
     }
 
-    public Vector2 CellToWorld(int x, int y)
-    {
-        return new Vector2(x, y) * new Vector2(1,-1) * cellSize + originPosition;
-    }
-
     public void WorldToCell(Vector2 world, out int x, out int y)
     {
-        x = Mathf.RoundToInt((world.x - originPosition.x) / (1 * cellSize));
-        y = Mathf.RoundToInt((world.y - originPosition.y) / (-1 * cellSize));
-        if (!CellIsValid(x, y)) x = y = -1;
+        throw new NotImplementedException();
     }
 
     public string GetTileToString(int x, int y)

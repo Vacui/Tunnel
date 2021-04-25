@@ -10,10 +10,10 @@ namespace Level
         public class LevelEditorHistoryElement
         {
             public Vector2 cell;
-            public TileType prevType;
-            public TileType newType;
+            public Element prevType;
+            public Element newType;
 
-            public LevelEditorHistoryElement(Vector2 cell, TileType prevType, TileType newType)
+            public LevelEditorHistoryElement(Vector2 cell, Element prevType, Element newType)
             {
                 this.cell = cell;
                 this.prevType = prevType;
@@ -23,11 +23,11 @@ namespace Level
 
         public static LevelEditor main;
 
-        private TileType selectedTileType = TileType.NULL;
+        private Element selectedTileType = Element.NULL;
 
         public List<LevelEditorHistoryElement> history;
 
-        public void SelectTile(TileType type) { selectedTileType = type; Debug.Log($"Selecting Tile {type}"); }
+        public void SelectTile(Element type) { selectedTileType = type; Debug.Log($"Selecting Tile {type}"); }
 
         private void Awake()
         {

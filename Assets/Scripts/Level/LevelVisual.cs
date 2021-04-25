@@ -26,24 +26,31 @@ namespace Level
             Tilemap = GetComponent<Tilemap>();
 
             LevelManager.main.grid.OnGridCreated += (sender, args) => Tilemap.ClearAllTiles();
-            LevelManager.main.grid.OnTileChanged += (sender, args) => UpdateVisual(args.x, args.y);
+            //LevelManager.main.grid.OnTileChanged += (sender, args) => UpdateVisual(args.x, args.y);
+
+            LevelFog.HiddenTile += (sender, args) =>
+            {
+                if (showDebugLog) Debug.Log($"Hiding Visual Tile {args.x},{args.y}");
+                Tilemap.SetTile(new Vector3Int(args.x, args.y, 0), null);
+            };
+            LevelFog.DiscoveredTile += (sender, args) => UpdateVisual(args.x, args.y);
         }
 
         public void UpdateVisual(int x, int y)
         {
-            TileType typeTile = LevelManager.main.grid.GetTile(x, y);
-            if (showDebugLog) Debug.Log($"Updating Tile {x},{y} ({typeTile}) Visual");
-            Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(typeTile));
+            Element element = LevelManager.main.grid.GetTile(x, y);
+            if (showDebugLog) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
+            Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }
 
-        private TileBase GetTileBase(TileType type)
+        private TileBase GetTileBase(Element type)
         {
             switch (type)
             {
-                case TileType.NULL: return null;
-                case TileType.Player: return t_start;
-                case TileType.Goal: return t_end;
-                case TileType.Node: return t_node;
+                case Element.NULL: return null;
+                case Element.Start: return t_start;
+                case Element.End: return t_end;
+                case Element.Node: return t_node;
                 default: return t_tunnel;
             }
         }

@@ -21,7 +21,7 @@ namespace Level
             LevelManager.main.grid.OnGridCreated += (sender, args) =>
             {
                 tilemap.ClearAllTiles();
-                grid.CreateGridXY(args.width + 2, args.height + 2, args.cellSize, args.originPosition, false);
+                grid.CreateGridXY(args.width + 2, args.height + 2, false, false);
             };
         }
     }

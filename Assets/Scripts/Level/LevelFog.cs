@@ -11,24 +11,37 @@ namespace Level
     {
         public static LevelFog main { get; private set; }
 
+        public enum TileVisibility
+        {
+            NULL,
+            Invisible,
+            ReadyToVisible,
+            Visible
+        }
+
         private GridXY<TileVisibility> grid;
 
         [Header("Visuals")]
         private Tilemap tilemap;
-        [SerializeField] private TileBase visual;
+        [SerializeField, NotNull] private TileBase visual;
+        [SerializeField, NotNull] private Sprite clusterTileVisual;
+        [SerializeField] private float scaleTime = 1;
+        [SerializeField] private float clusterDiscoverySpeed = 0.3f;
 
         [Header("Stats")]
         [SerializeField, Disable] private int tilesTotal;
         [SerializeField, Disable] private int tilesHidden;
         public float LevelExplorationPercentage { get { return (tilesTotal - tilesHidden) / (float)tilesTotal; } }
 
-        public event EventHandler<DiscoveredTileEventArgs> DiscoveredTile;
-        public class DiscoveredTileEventArgs : EventArgs
+        public static event EventHandler<ChangedTileVisibilityEventArgs> HiddenTile;
+        public static event EventHandler<ChangedTileVisibilityEventArgs> DiscoveredTile;
+        public class ChangedTileVisibilityEventArgs : EventArgs
         {
             public int x, y;
             public float levelExplorationPercentage;
         }
 
+        [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
 
         private void Awake()
@@ -39,54 +52,51 @@ namespace Level
             tilemap = GetComponent<Tilemap>();
             grid = new GridXY<TileVisibility>();
 
+            grid.OnTileChanged += (sender, args) =>
+            {
+                if (showDebugLog) Debug.Log($"Setting Visibility Tile {args.x},{args.y} ({args.value})");
+                switch (args.value)
+                {
+                    case TileVisibility.Invisible:
+                        tilesHidden++;
+                        HiddenTile?.Invoke(this, new ChangedTileVisibilityEventArgs { x = args.x, y = args.y, levelExplorationPercentage = LevelExplorationPercentage });
+                        break;
+                    case TileVisibility.Visible:
+                        tilesHidden--;
+                        DiscoveredTile?.Invoke(this, new ChangedTileVisibilityEventArgs { x = args.x, y = args.y, levelExplorationPercentage = LevelExplorationPercentage });
+                        break;
+                }
+                tilemap.SetTile(new Vector3Int(args.x, args.y, 0), args.value != TileVisibility.Visible ? visual : null);
+                CheckTilesVisibilityAround(args.x, args.y);
+            };
+
             LevelManager.main.grid.OnGridCreated += (sender, args) =>
             {
                 tilesTotal = args.width * args.height;
-                tilesHidden = tilesTotal;
                 tilemap.ClearAllTiles();
-                grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition, TileVisibility.Invisible);
+                grid.CreateGridXY(args.width, args.height);
             };
             LevelManager.main.grid.OnTileChanged += (sender, args) =>
             {
                 HideTile(args.x, args.y);
-                if (args.value == TileType.Goal)
+                if (args.value == Element.End)
                     DiscoverTile(args.x, args.y);
-            };
-
-            grid.OnTileChanged += (sender, args) =>
-            {
-                tilemap.SetTile(new Vector3Int(args.x, args.y, 0), args.value == TileVisibility.Invisible ? visual : null);
-                CheckTilesVisibilityAround(args.x, args.y);
             };
 
             LevelManager.OnLevelReady += (sender, args) => CheckNullTiles();
 
-            Player.StartedMove += (sender, args) => DiscoverTile(args.x, args.y);
             Player.Moved += (sender, args) => DiscoverTile(args.x, args.y);
             Player.StoppedMove += (sender, args) =>
             {
+                Debug.Log("Player stopped move");
                 DiscoverTile(args.x + 1, args.y);
                 DiscoverTile(args.x - 1, args.y);
                 DiscoverTile(args.x, args.y + 1);
                 DiscoverTile(args.x, args.y - 1);
             };
         }
-
-        private void SetTileVisibility(int x, int y, TileVisibility visibility)
-        {
-            if (grid.CellIsValid(x, y) && (visibility == TileVisibility.Invisible || grid.GetTile(x, y) != visibility))
-            {
-                if (visibility == TileVisibility.Visible)
-                {
-                    tilesHidden--;
-                    DiscoveredTile?.Invoke(this, new DiscoveredTileEventArgs { x = x, y = y, levelExplorationPercentage = LevelExplorationPercentage });
-                }
-                if (showDebugLog) Debug.Log($"Setting Tile {x},{y} Visibility ({visibility})");
-                grid.SetTile(x, y, visibility);
-            }
-        }
-        private void DiscoverTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Visible); }
-        private void HideTile(int x, int y) { SetTileVisibility(x, y, TileVisibility.Invisible); }
+        private void DiscoverTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Visible); }
+        private void HideTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Invisible); }
 
         private void CheckNullTiles()
         {
@@ -101,12 +111,12 @@ namespace Level
 
             if (grid.CellIsValid(x, y))
             {
-                if (LevelManager.main.grid.GetTile(x, y) == TileType.NULL && grid.GetTile(x, y) == TileVisibility.Invisible)
+                if (LevelManager.main.grid.GetTile(x, y) == Element.NULL && grid.GetTile(x, y) == TileVisibility.Invisible)
                 {
                     if (showDebugLog) Debug.Log($"Is Tile {x},{y} ReadyToVisible?");
                     isReadyToVisible = true;
 
-                    TileType type;
+                    Element type;
                     TileVisibility visibility;
 
                     List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, false);
@@ -118,7 +128,7 @@ namespace Level
                         {
                             type = LevelManager.main.grid.GetTile(neighbour.x, neighbour.y);
                             visibility = grid.GetTile(neighbour.x, neighbour.y);
-                            isReadyToVisible = visibility == TileVisibility.Visible || type == TileType.NULL;
+                            isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
                             if (showDebugLog) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
                         }
                     }
@@ -134,25 +144,23 @@ namespace Level
 
         private void CheckTilesVisibilityAround(int x, int y)
         {
-            TileType type = LevelManager.main.grid.GetTile(x, y);
+            Element type = LevelManager.main.grid.GetTile(x, y);
             TileVisibility visibility = grid.GetTile(x, y);
 
             if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
 
-            if (type != TileType.NULL && visibility == TileVisibility.Visible)
+            if (type != Element.NULL && visibility == TileVisibility.Visible)
             {
                 List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, false);
                 foreach (Vector2Int neighbour in neighbours)
                     IsNullTileReadyToVisible(neighbour.x, neighbour.y);
-            } else if (type == TileType.NULL && visibility == TileVisibility.ReadyToVisible)
+            } else if (type == Element.NULL && visibility == TileVisibility.ReadyToVisible)
             {
                 if (showDebugLog) Debug.Log("Checking for cluster completion");
 
                 List<Vector2Int> cellsChecked = new List<Vector2Int>() { };
-                bool clusterIsOk = CheckClusterTileVisibility(x, y, ref cellsChecked);
-                if (clusterIsOk)
-                    foreach (Vector2Int cell in cellsChecked)
-                        DiscoverTile(cell.x, cell.y);
+                if (CheckClusterTileVisibility(x, y, ref cellsChecked))
+                    DiscoverNextClusterTile(0, cellsChecked);
             }
         }
 
@@ -174,11 +182,34 @@ namespace Level
                 neighbour = neighbours[i];
                 if (!cellsChecked.Contains(neighbour))
                     if (grid.CellIsValid(neighbour.x, neighbour.y))
-                        if (LevelManager.main.grid.GetTile(neighbour.x, neighbour.y) == TileType.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
+                        if (LevelManager.main.grid.GetTile(neighbour.x, neighbour.y) == Element.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
                             result = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
             }
 
             return result;
+        }
+
+        private void DiscoverNextClusterTile(int index, List<Vector2Int> cells)
+        {
+            if (index < cells.Count)
+            {
+                int x = cells[index].x;
+                int y = cells[index].y;
+                SpriteRenderer clusterTile = new GameObject().AddComponent<SpriteRenderer>();
+                clusterTile.transform.position = tilemap.CellToWorld(new Vector3Int(x, y, 0));
+                clusterTile.sprite = clusterTileVisual;
+                clusterTile.color = tilemap.color;
+                clusterTile.transform.localScale = Vector3.one;
+                DiscoverTile(x, y);
+                LeanTween.scale(clusterTile.gameObject, Vector3.zero, scaleTime).setOnComplete(() => Destroy(clusterTile.gameObject));
+                if (index + 1 < cells.Count)
+                    LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); });
+            }
+        }
+
+        private void OnDisable()
+        {
+            grid.SetAllTiles(TileVisibility.Visible);
         }
     }
 }

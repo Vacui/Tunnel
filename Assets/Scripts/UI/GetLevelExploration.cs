@@ -8,18 +8,24 @@ namespace UI
     public class GetLevelExploration : MonoBehaviour
     {
         private TextMeshProUGUI text;
-        private System.EventHandler<LevelFog.DiscoveredTileEventArgs> UpdateTextDelegate;
+        private System.EventHandler<LevelFog.ChangedTileVisibilityEventArgs> UpdateTextDelegate;
 
         private void Awake()
         {
             text = GetComponent<TextMeshProUGUI>();
-            UpdateTextDelegate = (object sender, LevelFog.DiscoveredTileEventArgs args) => UpdateText(args.levelExplorationPercentage);
+            UpdateTextDelegate = (object sender, LevelFog.ChangedTileVisibilityEventArgs args) => UpdateText(args.levelExplorationPercentage);
             UpdateText(LevelFog.main.LevelExplorationPercentage);
         }
 
-        private void OnEnable() { LevelFog.main.DiscoveredTile += UpdateTextDelegate; }
+        private void OnEnable() {
+            LevelFog.HiddenTile += UpdateTextDelegate;
+            LevelFog.DiscoveredTile += UpdateTextDelegate;
+        }
 
-        private void OnDisable() { LevelFog.main.DiscoveredTile -= UpdateTextDelegate; }
+        private void OnDisable() {
+            LevelFog.HiddenTile -= UpdateTextDelegate;
+            LevelFog.DiscoveredTile += UpdateTextDelegate;
+        }
 
         private void UpdateText(float percentage)
         {

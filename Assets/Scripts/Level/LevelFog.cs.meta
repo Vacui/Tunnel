@@ -5,7 +5,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - sprUnknown: {fileID: 21300000, guid: ec6c02ae2b965c14f9c854aa2e6ee005, type: 3}
-  executionOrder: 0
+  executionOrder: 350
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

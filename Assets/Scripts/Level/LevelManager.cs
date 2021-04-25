@@ -5,11 +5,111 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
+public enum Direction
+{
+    NULL,
+    All,
+    Up,
+    Right,
+    Down,
+    Left
+}
+
+public static class DirectionUtils
+{
+    public static bool IsNull(this Direction dir)
+    {
+        return dir == Direction.NULL;
+    }
+
+    public static Direction Opposite(this Direction dir)
+    {
+        switch (dir)
+        {
+            default:
+            case Direction.Up: return Direction.Down;
+            case Direction.Right: return Direction.Left;
+            case Direction.Down: return Direction.Up;
+            case Direction.Left: return Direction.Right;
+        }
+    }
+
+    public static void ToOffset(this Direction dir, out int offsetX, out int offsetY)
+    {
+        offsetX = 0;
+        offsetY = 0;
+        switch (dir)
+        {
+            case Direction.Up: offsetY++; break;
+            case Direction.Right: offsetX++; break;
+            case Direction.Down: offsetY--; break;
+            case Direction.Left: offsetX--; break;
+        }
+    }
+
+    public static float ToAngle(this Direction dir)
+    {
+        float result = -1;
+
+        if (dir != Direction.NULL)
+            result = (int)dir * 90;
+
+        return result;
+    }
+
+    public static Direction Rotate(this Direction direction, int angle)
+    {
+        switch (direction)
+        {
+            case Direction.NULL: return Direction.NULL;
+            case Direction.All: return Direction.All;
+            default:
+                int dir = (int)direction;
+                dir += angle / 90;
+                if (dir > 5) dir -= 4;
+                return (Direction)dir;
+        }
+    }
+}
+
+[Serializable]
+public enum Element
+{
+    NULL = 0,
+    Start = 1,
+    End = 2,
+    Node = 3,
+    Up = 4,
+    Right = 5,
+    Down = 6,
+    Left = 7
+}
+
+public static class ElementUtils
+{
+    public static Direction ToDirection(this Element tileType)
+    {
+        Direction result = Direction.NULL;
+        switch (tileType)
+        {
+            case Element.NULL: result = Direction.NULL; break;
+            case Element.Start: result = Direction.All; break;
+            case Element.Node: result = Direction.All; break;
+            case Element.End: result = Direction.All; break;
+            case Element.Up: result = Direction.Up; break;
+            case Element.Right: result = Direction.Right; break;
+            case Element.Down: result = Direction.Down; break;
+            case Element.Left: result = Direction.Left; break;
+        }
+        return result;
+    }
+}
+
 namespace Level
 {
     public static class SeedUtils
     {
-        public static string ToSeedString(this GridXY<TileType> grid)
+        public static string ToSeedString(this GridXY<Element> grid)
         {
             string result = "";
             if (grid.width > 0 && grid.height > 0)
@@ -22,7 +122,7 @@ namespace Level
             }
             return result;
         }
-        public static LevelManager.Seed ToSeed(this GridXY<TileType> grid) { return new LevelManager.Seed(grid.ToSeedString()); }
+        public static LevelManager.Seed ToSeed(this GridXY<Element> grid) { return new LevelManager.Seed(grid.ToSeedString()); }
     }
 
 
@@ -99,7 +199,7 @@ namespace Level
 
         public const float CELLSIZE = 1f;
 
-        public GridXY<TileType> grid { get; private set; }
+        public GridXY<Element> grid { get; private set; }
         public enum LevelState { NotReady, NotPlayable, Ready, Playable }
         public LevelState LvlState { get; private set; }
 
@@ -119,7 +219,7 @@ namespace Level
         {
             if (main == null) main = this;
             else Destroy(this);
-            grid = new GridXY<TileType>();
+            grid = new GridXY<Element>();
         }
 
         private void OnEnable()
@@ -128,7 +228,7 @@ namespace Level
             {
                 if (grid != null)
                     if (grid.CellIsValid(args.x, args.y))
-                        if (grid.GetTile(args.x, args.y) == TileType.Goal)
+                        if (grid.GetTile(args.x, args.y) == Element.End)
                             OnWin?.Invoke();
             };
         }
@@ -147,7 +247,7 @@ namespace Level
                 OnLevelNotReady?.Invoke(this, null);
 
                 Debug.Log($"1. Initializing level...");
-                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, Vector3.zero /*new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE*/, TileType.NULL);
+                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, true);
 
                 Debug.Log("Level is not playable!");
                 LvlState = LevelState.NotPlayable;
@@ -158,20 +258,20 @@ namespace Level
 
                 bool hasStart = false, hasEnd = lvlSeed.Size == 1;
 
-                TileType type;
+                Element type;
                 for (int i = 0; i < lvlSeed.cells.Count; i++)
                 {
                     grid.CellNumToCell(i, out int x, out int y);
-                    type = (TileType)lvlSeed.cells[i];
+                    type = (Element)lvlSeed.cells[i];
                     grid.SetTile(x, y, type);
                     if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
-                    if (type == TileType.Player)
+                    if (type == Element.Start)
                     {
                         startPos.x = x;
                         startPos.y = y;
                         hasStart = true;
                     } else
-                        hasEnd = hasEnd || type == TileType.Goal;
+                        hasEnd = hasEnd || type == Element.End;
                 }
 
                 Debug.Log("Level is ready!");
