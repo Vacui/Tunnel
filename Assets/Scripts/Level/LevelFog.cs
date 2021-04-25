@@ -1,5 +1,6 @@
 ﻿using PlayerLogic;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -88,7 +89,6 @@ namespace Level
             Player.Moved += (sender, args) => DiscoverTile(args.x, args.y);
             Player.StoppedMove += (sender, args) =>
             {
-                Debug.Log("Player stopped move");
                 DiscoverTile(args.x + 1, args.y);
                 DiscoverTile(args.x - 1, args.y);
                 DiscoverTile(args.x, args.y + 1);
@@ -197,16 +197,22 @@ namespace Level
             {
                 int x = cells[index].x;
                 int y = cells[index].y;
-                SpriteRenderer clusterTile = new GameObject().AddComponent<SpriteRenderer>();
-                clusterTile.transform.position = tilemap.CellToWorld(new Vector3Int(x, y, 0));
-                clusterTile.sprite = clusterTileVisual;
-                clusterTile.color = tilemap.color;
-                clusterTile.transform.localScale = Vector3.one;
                 DiscoverTile(x, y);
-                LeanTween.scale(clusterTile.gameObject, Vector3.zero, scaleTime).setDestroyOnComplete(true);
+                StartCoroutine(SpawnClusterTileSprite(x, y));
                 if (index + 1 < cells.Count)
                     LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); });
             }
+        }
+
+        IEnumerator SpawnClusterTileSprite(int x, int y)
+        {
+            SpriteRenderer clusterTile = new GameObject().AddComponent<SpriteRenderer>();
+            clusterTile.transform.position = tilemap.CellToWorld(new Vector3Int(x, y, 0));
+            clusterTile.sprite = clusterTileVisual;
+            clusterTile.color = tilemap.color;
+            clusterTile.transform.localScale = Vector3.one;
+            LeanTween.scale(clusterTile.gameObject, Vector3.zero, scaleTime).setDestroyOnComplete(true);
+            yield return true;
         }
 
         private void OnDisable() { grid.SetAllTiles(TileVisibility.Visible); }
