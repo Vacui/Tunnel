@@ -5,12 +5,14 @@ namespace UI
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
     public class Tab : UIElement
     {
+        [Header("Tab Settings")]
         [SerializeField] private TabGroup group;
         [SerializeField] private Navbar.NavbarShowSettings navbarSettings;
-
         [SerializeField] private bool useCustomName = false;
         [SerializeField, EnableIf("useCustomName", true)] private string customName = "";
 
+        [Header("On Active")]
+        [SerializeField] private bool showChildrens;
         [SerializeField, ReorderableList] private GameObject[] objToShowOnActive;
         [SerializeField, ReorderableList] private GameObject[] objToHideOnActive;
 
@@ -23,6 +25,7 @@ namespace UI
         protected override void OnActive()
         {
             base.OnActive();
+            UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
             Navbar.main.Show(navbarSettings);
@@ -31,8 +34,14 @@ namespace UI
         protected override void OnInactive()
         {
             base.OnInactive();
+            UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
+        }
+
+        private void UpdateChildrens()
+        {
+            if (showChildrens) foreach(Transform child in transform) child.gameObject.SetActive(IsActive);
         }
 
         public string GetName() { return useCustomName ? customName : name; }
