@@ -203,15 +203,12 @@ namespace Level
                 clusterTile.color = tilemap.color;
                 clusterTile.transform.localScale = Vector3.one;
                 DiscoverTile(x, y);
-                LeanTween.scale(clusterTile.gameObject, Vector3.zero, scaleTime).setOnComplete(() => Destroy(clusterTile.gameObject));
+                LeanTween.scale(clusterTile.gameObject, Vector3.zero, scaleTime).setDestroyOnComplete(true);
                 if (index + 1 < cells.Count)
                     LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); });
             }
         }
 
-        private void OnDisable()
-        {
-            grid.SetAllTiles(TileVisibility.Visible);
-        }
+        private void OnDisable() { grid.SetAllTiles(TileVisibility.Visible); }
     }
 }
