@@ -27,7 +27,7 @@ namespace PlayerLogic
                 if (isSafe)
                 {
                     character.transform.localScale = smallScale;
-                    LeanTween.scale(character, bigScale, SCALE_TIME);
+                    LeanTween.scale(character.gameObject, bigScale, SCALE_TIME);
                     StoppedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
                 }
             }
@@ -55,10 +55,10 @@ namespace PlayerLogic
             private set
             {
                 isActive = value;
-                character.SetActive(isActive);
+                character.gameObject.SetActive(isActive);
             }
         }
-        [SerializeField, NotNull] private GameObject character;
+        [SerializeField, NotNull] private SpriteRenderer character;
 
         private const float SCALE_SIZE = 0.7f;
         private Vector3 bigScale { get { return Vector3.one; } }
@@ -76,24 +76,15 @@ namespace PlayerLogic
             else Destroy(this);
             IsActive = false;
             IsSafe = false;
-        }
 
-        private void OnEnable()
-        {
             LevelManager.OnLevelNotReady += (sender, args) => IsActive = false;
-
-            playerSpawn = delegate (object sender, GridCoordsEventArgs args)
+            LevelManager.OnLevelPlayable += (sender, args) =>
             {
                 IsActive = true;
                 MoveToStartCell(args.x, args.y);
             };
-            LevelManager.OnLevelPlayable += playerSpawn;
-        }
 
-        private void OnDisable()
-        {
-            LevelManager.OnLevelNotReady += (sender, args) => IsActive = false;
-            LevelManager.OnLevelPlayable -= playerSpawn;
+            LevelPalette.Updated += (color) => character.color = color;
         }
 
         private void Update()
@@ -135,7 +126,7 @@ namespace PlayerLogic
                             if (IsSafe)
                             {
                                 character.transform.localScale = bigScale;
-                                LeanTween.scale(character, smallScale, SCALE_TIME);
+                                LeanTween.scale(character.gameObject, smallScale, SCALE_TIME);
                             }
                             LeanTween.move(gameObject, LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(x, y, 0)), moveTime).setOnComplete(() => CheckCurrentTile());
                         }

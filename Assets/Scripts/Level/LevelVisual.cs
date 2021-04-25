@@ -34,6 +34,8 @@ namespace Level
                 Tilemap.SetTile(new Vector3Int(args.x, args.y, 0), null);
             };
             LevelFog.DiscoveredTile += (sender, args) => UpdateVisual(args.x, args.y);
+
+            LevelPalette.Updated += (color) => Tilemap.color = color;
         }
 
         public void UpdateVisual(int x, int y)
