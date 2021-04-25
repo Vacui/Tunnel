@@ -56,5 +56,7 @@ namespace Level
                 default: return t_tunnel;
             }
         }
+
+        private void OnDisable() { Tilemap.ClearAllTiles(); }
     }
 }
