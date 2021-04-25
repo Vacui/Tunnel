@@ -10,6 +10,7 @@ namespace PlayerLogic
     {
         public static Player main;
 
+        public static event EventHandler<GridCoordsEventArgs> StartedMove;
         public static event EventHandler<GridCoordsEventArgs> Moved;
         public static event EventHandler<GridCoordsEventArgs> StoppedMove;
         public static event EventHandler<PlayerInputEventArgs> Input;
@@ -23,18 +24,22 @@ namespace PlayerLogic
             get { return isSafe; }
             set
             {
+                bool changedValue = isSafe != value;
                 isSafe = value;
-                if (isSafe)
+                if (changedValue && isSafe)
                 {
                     character.transform.localScale = smallScale;
                     LeanTween.scale(character.gameObject, bigScale, SCALE_TIME);
                     StoppedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
-                }
+                } else if (changedValue && !isSafe)
+                    StartedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
             }
         }
 
         [Header("Movement")]
-        [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("moveSpeed")] private float moveTime = 0.3f;
+        [SerializeField] private float moveTime = 0.3f;
+        [SerializeField] private float wallBounceTime = 0.3f;
+        [SerializeField, Clamp(0, 1)] public float wallBounceDistance = 0.3f;
         [SerializeField, Disable] private int moves;
         public int Moves
         {
@@ -59,6 +64,7 @@ namespace PlayerLogic
             }
         }
         [SerializeField, NotNull] private SpriteRenderer character;
+        [SerializeField, NotNull] private GameObject characterBody;
 
         private const float SCALE_SIZE = 0.7f;
         private Vector3 bigScale { get { return Vector3.one; } }
@@ -67,8 +73,6 @@ namespace PlayerLogic
 
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
-
-        EventHandler<GridCoordsEventArgs> playerSpawn = null;
 
         private void Awake()
         {
@@ -85,6 +89,17 @@ namespace PlayerLogic
             };
 
             LevelPalette.Updated += (color) => character.color = color;
+
+            StartedMove += (sender, args) =>
+            {
+                character.transform.localScale = bigScale;
+                LeanTween.scale(character.gameObject, smallScale, SCALE_TIME);
+            };
+            StoppedMove += (sender, args) =>
+            {
+                character.transform.localScale = smallScale;
+                LeanTween.scale(character.gameObject, bigScale, SCALE_TIME);
+            };
         }
 
         private void Update()
@@ -105,42 +120,38 @@ namespace PlayerLogic
             }
         }
 
-        private void MoveToCell(int x, int y, bool teleport)
+        private void MoveToCell(int newX, int newY, bool teleport)
         {
+            bool canMove = false;
+
             if (LevelManager.main.grid != null && IsActive)
-                if (LevelManager.main.grid.CellIsValid(x, y))
+                if (LevelManager.main.grid.CellIsValid(newX, newY))
                 {
-                    if (LevelManager.main.grid.GetTile(x, y) != Element.NULL)
+                    Element newTileElement = LevelManager.main.grid.GetTile(newX, newY);
+                    if (newTileElement != Element.NULL)
                     {
-                        if (showDebugLog) Debug.Log($"Moving to tile {x},{y}", gameObject);
-
-                        this.x = x;
-                        this.y = y;
-
-                        if (teleport)
+                        newTileElement.ToDirection().ToOffset(out int offsetX, out int offsetY);
+                        if (x != newX + offsetX || y != newY + offsetY || (x == newX && y == newY) || newTileElement.ToDirection() == Direction.All)
                         {
-                            transform.position = LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(x, y, 0));
-                            CheckCurrentTile();
+                            if (showDebugLog) Debug.Log($"Moving to tile {newX},{newY}", gameObject);
+
+                            x = newX;
+                            y = newY;
+
+                            if (teleport)
+                                transform.position = LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(newX, newY, 0));
+
+                            canMove = true;
                         } else
-                        {
-                            if (IsSafe)
-                            {
-                                character.transform.localScale = bigScale;
-                                LeanTween.scale(character.gameObject, smallScale, SCALE_TIME);
-                            }
-                            LeanTween.move(gameObject, LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(x, y, 0)), moveTime).setOnComplete(() => CheckCurrentTile());
-                        }
-                        Moved?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                            Debug.LogWarning($"The tile {newX},{newY} is looking to current player tile", gameObject);
                     } else
-                    {
-                        Debug.LogWarning($"Can't move to NULL tile {x},{y}.", gameObject);
-                        IsSafe = true;
-                    }
+                        Debug.LogWarning($"Can't move to NULL tile {newX},{newY}.", gameObject);
                 } else
-                {
-                    Debug.LogWarning($"Can't move to non valid cell {x},{y}.", gameObject);
-                    IsSafe = true;
-                }
+                    Debug.LogWarning($"Can't move to non valid cell {newX},{newY}.", gameObject);
+
+            IsSafe = false;
+            MoveAnim(LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(newX, newY, 0)), !canMove);
+            if(canMove) Moved?.Invoke(this, new GridCoordsEventArgs { x = newX, y = newY });
         }
 
         private void MoveToCell(Direction dir)
@@ -197,6 +208,22 @@ namespace PlayerLogic
                     IsSafe = true;
                 }
             }
+        }
+
+        private void MoveAnim(Vector3 position, bool againstWall)
+        {
+            float distancePercentage = againstWall ? wallBounceDistance : 1;
+
+            Vector3 positionDiff = new Vector3(transform.position.x - position.x, transform.position.y - position.y);
+            positionDiff = positionDiff * distancePercentage;
+
+            LTDescr moveLTDescr = LeanTween.move(againstWall ? characterBody : gameObject, transform.position - positionDiff, moveTime);
+            if (againstWall)
+            {
+                moveLTDescr.setTime(wallBounceTime);
+                moveLTDescr.setLoopPingPong(1).setOnComplete(() => IsSafe = true);
+            } else
+                moveLTDescr.setOnComplete(() => CheckCurrentTile());
         }
     }
 }
