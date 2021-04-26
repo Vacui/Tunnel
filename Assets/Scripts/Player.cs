@@ -8,8 +8,6 @@ namespace PlayerLogic
     [DisallowMultipleComponent]
     public class Player : MonoBehaviour
     {
-        public static Player main;
-
         public static event EventHandler<GridCoordsEventArgs> StartedMove;
         public static event EventHandler<GridCoordsEventArgs> Moved;
         public static event EventHandler<GridCoordsEventArgs> StoppedMove;
@@ -61,8 +59,6 @@ namespace PlayerLogic
 
         private void Awake()
         {
-            if (main == null) main = this;
-            else Destroy(this);
             IsActive = false;
             IsSafe = false;
 
