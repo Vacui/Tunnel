@@ -166,21 +166,20 @@ namespace Level
                                     if (seedParts[2].Count(c => (c == '-')) == (width * height) - 1)
                                     {
                                         List<string> cellString = seedParts[2].Split('-').ToList();
-                                        int cell;
                                         for (int i = 0; i < cellString.Count; i++)
                                         {
-                                            if (cellString[i] != "" && int.TryParse(cellString[i], out cell))
+                                            if (cellString[i] != "" && int.TryParse(cellString[i], out int cell))
                                                 cells.Add(cell);
                                             else
                                                 cells.Add(0);
                                         }
                                         isValid = cells.Count == cellString.Count;
-                                    } else { Debug.LogWarning("Error in the seed cells section length."); }
-                                } else { Debug.LogWarning("Seed height is less or equal to 0."); }
-                            } else { Debug.LogWarning("Error in parsing seed height number."); }
-                        } else { Debug.LogWarning("Seed width is less or equal to 0."); }
-                    } else { Debug.LogWarning("Error in parsing seed width number."); }
-                } else { Debug.LogWarning("Error in seed number of parts."); }
+                                    } else Debug.LogWarning("Error in the seed cells section length.");
+                                } else Debug.LogWarning("Seed height is less or equal to 0.");
+                            } else Debug.LogWarning("Error in parsing seed height number.");
+                        } else Debug.LogWarning("Seed width is less or equal to 0.");
+                    } else Debug.LogWarning("Error in parsing seed width number.");
+                } else Debug.LogWarning("Error in seed number of parts.");
             }
 
             public override string ToString()
@@ -210,6 +209,7 @@ namespace Level
         public static event EventHandler<GridCoordsEventArgs> OnLevelPlayable;
 
         [Header("Events")]
+        [SerializeField] private UnityEvent OnLevelStart;
         [SerializeField] private UnityEvent OnWin;
 
         [Header("Debug")]
@@ -238,6 +238,7 @@ namespace Level
             if (lvlSeed != null && lvlSeed.isValid)
             {
                 Debug.Log("0. Loading level...");
+                Debug.Log($"   Seed: {lvlSeed}");
 
                 LeanTween.cancelAll();
                 StopAllCoroutines();
@@ -282,9 +283,9 @@ namespace Level
                     Debug.Log("Level is playable!");
                     LvlState = LevelState.Playable;
                     OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });
+                    OnLevelStart?.Invoke();
                 }
-            } else
-                Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
+            } else Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
         }
         public void LoadLevel(string seed) { LoadLevel(new Seed(seed)); }
     }

@@ -7,7 +7,7 @@ namespace UI
     {
         [Header("Tab Settings")]
         [SerializeField] private TabGroup group;
-        [SerializeField] private Navbar.NavbarShowSettings navbarSettings;
+        [SerializeField] Navbar.NavbarSettings navbarSettings;
         [SerializeField] private bool useCustomName = false;
         [SerializeField, EnableIf("useCustomName", true)] private string customName = "";
 
@@ -28,7 +28,7 @@ namespace UI
             UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
-            Navbar.main.Show(navbarSettings);
+            Navbar.Show(navbarSettings);
         }
 
         protected override void OnInactive()
@@ -37,13 +37,19 @@ namespace UI
             UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
+            Navbar.Show(null);
         }
 
         private void UpdateChildrens()
         {
-            if (showChildrens) foreach(Transform child in transform) child.gameObject.SetActive(IsActive);
+            if (showChildrens)
+                foreach (Transform child in transform)
+                    child.gameObject.SetActive(IsActive);
         }
 
-        public string GetName() { return useCustomName ? customName : name; }
+        public string GetName()
+        {
+            return useCustomName ? customName : name;
+        }
     }
 }

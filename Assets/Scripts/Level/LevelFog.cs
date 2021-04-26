@@ -21,6 +21,8 @@ namespace Level
         }
 
         private GridXY<TileVisibility> grid;
+        public static event EventHandler<GridCoordsEventArgs> HiddenTile;
+        public static event EventHandler<GridCoordsEventArgs> DiscoveredTile;
 
         [Header("Visuals")]
         private Tilemap tilemap;
@@ -29,18 +31,6 @@ namespace Level
         [SerializeField] private float scaleTime = 1;
         [SerializeField] private float clusterDiscoverySpeed = 0.3f;
 
-        [Header("Stats")]
-        [SerializeField, Disable] private int tilesTotal;
-        [SerializeField, Disable] private int tilesHidden;
-        public float LevelExplorationPercentage { get { return (tilesTotal - tilesHidden) / (float)tilesTotal; } }
-
-        public static event EventHandler<ChangedTileVisibilityEventArgs> HiddenTile;
-        public static event EventHandler<ChangedTileVisibilityEventArgs> DiscoveredTile;
-        public class ChangedTileVisibilityEventArgs : EventArgs
-        {
-            public int x, y;
-            public float levelExplorationPercentage;
-        }
 
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
@@ -59,12 +49,10 @@ namespace Level
                 switch (args.value)
                 {
                     case TileVisibility.Invisible:
-                        tilesHidden++;
-                        HiddenTile?.Invoke(this, new ChangedTileVisibilityEventArgs { x = args.x, y = args.y, levelExplorationPercentage = LevelExplorationPercentage });
+                        HiddenTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                     case TileVisibility.Visible:
-                        tilesHidden--;
-                        DiscoveredTile?.Invoke(this, new ChangedTileVisibilityEventArgs { x = args.x, y = args.y, levelExplorationPercentage = LevelExplorationPercentage });
+                        DiscoveredTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                 }
                 tilemap.SetTile(new Vector3Int(args.x, args.y, 0), args.value != TileVisibility.Visible ? visual : null);
@@ -73,7 +61,6 @@ namespace Level
 
             LevelManager.main.grid.OnGridCreated += (sender, args) =>
             {
-                tilesTotal = args.width * args.height;
                 tilemap.ClearAllTiles();
                 grid.CreateGridXY(args.width, args.height);
             };
@@ -215,6 +202,9 @@ namespace Level
             yield return true;
         }
 
-        private void OnDisable() { grid.SetAllTiles(TileVisibility.Visible); }
+        private void OnDisable()
+        {
+            grid.SetAllTiles(TileVisibility.Visible);
+        }
     }
 }

@@ -1,17 +1,17 @@
 ﻿using Level;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace UI
 {
-    [RequireComponent(typeof(RectTransform)), RequireComponent(typeof(Button)), DisallowMultipleComponent]
-    public class LoadSeed : MonoBehaviour
+    [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
+    public class LoadSeed : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private string seed;
 
-        private void Awake()
+        public void OnPointerClick(PointerEventData eventData)
         {
-            GetComponent<Button>().onClick.AddListener(Load);
+            Load();
         }
 
         private void Load()

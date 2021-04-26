@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 public static class MyUtils
 {
-    // origin: https://www.codegrepper.com/code-examples/csharp/how+to+clear+console+through+script+unity
+    // source: https://www.codegrepper.com/code-examples/csharp/how+to+clear+console+through+script+unity
     public static void ClearLogConsole()
     {
         Assembly assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
         Type logEntries = assembly.GetType("UnityEditor.LogEntries");
         MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
         clearConsoleMethod.Invoke(new object(), null);
+    }
+
+    //source: https://stackoverflow.com/a/5320727
+    public static bool In<T>(this T val, params T[] values) where T : struct
+    {
+        return values.Contains(val);
     }
 
     public static void AddBlankRange(this List<string> list, int count)

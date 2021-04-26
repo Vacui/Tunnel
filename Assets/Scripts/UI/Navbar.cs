@@ -9,20 +9,33 @@ namespace UI
         public static Navbar main;
 
         [System.Serializable]
+        public class NavbarSettings
+        {
+            public bool title;
+            public bool menu;
+            public bool back;
+
+            public void GetSettings(ref bool title, ref bool menu, ref bool back)
+            {
+                title = this.title;
+                menu = this.menu;
+                back = this.back;
+            }
+        }
+
+        [System.Serializable]
         public enum NavbarShowSettings
         {
-            Hide,
-            Show,
-            OnlyBackBtn,
-            OnlyTitle,
-            OnlyMenuBtn,
-            Back_And_Menu_Btns
+            None,
+            Title,
+            MenuButton,
+            Title_And_MenuButton
         }
 
         [Header("Components")]
-        [SerializeField] private GameObject backBtn;
-        [SerializeField] private GameObject title;
+        [SerializeField] private GameObject titleText;
         [SerializeField] private GameObject menuBtn;
+        [SerializeField] private GameObject backBtn;
 
         public UnityEvent OnShow;
 
@@ -31,28 +44,25 @@ namespace UI
             if (main == null) main = this;
             else Destroy(this);
 
-            Show(false, false, false);
+            Show(null);
         }
 
-        public void Show(NavbarShowSettings showSettings)
+        public static void Show(NavbarSettings showSettings)
         {
-            switch (showSettings)
+            if(main != null)
             {
-                case NavbarShowSettings.Hide: Show(false, false, false); break;
-                case NavbarShowSettings.Show: Show(true, true, true); break;
-                case NavbarShowSettings.OnlyBackBtn: Show(true, false, false); break;
-                case NavbarShowSettings.OnlyTitle: Show(false, true, false); break;
-                case NavbarShowSettings.OnlyMenuBtn: Show(false, false, true); break;
-                case NavbarShowSettings.Back_And_Menu_Btns: Show(true, false, true); break;
-            }
-        }
+                bool title = false;
+                bool menu = false;
+                bool back = false;
 
-        private void Show(bool backBtn, bool title, bool menuBtn)
-        {
-            MyUtils.SetObjectActive(this.backBtn, backBtn);
-            MyUtils.SetObjectActive(this.title, title);
-            MyUtils.SetObjectActive(this.menuBtn, menuBtn);
-            OnShow?.Invoke();
+                if (showSettings != null)
+                    showSettings.GetSettings(ref title, ref menu, ref back);
+
+                MyUtils.SetObjectActive(main.titleText, title);
+                MyUtils.SetObjectActive(main.menuBtn, menu);
+                MyUtils.SetObjectActive(main.backBtn, back);
+                main.OnShow?.Invoke();
+            }
         }
     }
 }
