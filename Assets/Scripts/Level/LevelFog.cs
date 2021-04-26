@@ -81,8 +81,6 @@ namespace Level
                 DiscoverTile(args.x, args.y + 1);
                 DiscoverTile(args.x, args.y - 1);
             };
-
-            LevelPalette.Updated += (color) => tilemap.color = color;
         }
         private void DiscoverTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Visible); }
         private void HideTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Invisible); }

@@ -68,8 +68,6 @@ namespace PlayerLogic
                 MoveToStartCell(args.x, args.y);
             };
 
-            LevelPalette.Updated += (color) => character.color = color;
-
             StartedMove += (sender, args) =>
             {
                 character.transform.localScale = bigScale;
