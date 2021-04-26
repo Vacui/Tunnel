@@ -13,8 +13,6 @@ namespace PlayerLogic
         public static event EventHandler<GridCoordsEventArgs> StartedMove;
         public static event EventHandler<GridCoordsEventArgs> Moved;
         public static event EventHandler<GridCoordsEventArgs> StoppedMove;
-        public static event EventHandler<PlayerInputEventArgs> Input;
-        public class PlayerInputEventArgs : EventArgs { public int moves; }
 
         [SerializeField, Disable] private int x = -1;
         [SerializeField, Disable] private int y = -1;
@@ -27,11 +25,8 @@ namespace PlayerLogic
                 bool changedValue = isSafe != value;
                 isSafe = value;
                 if (changedValue && isSafe)
-                {
-                    character.transform.localScale = smallScale;
-                    LeanTween.scale(character.gameObject, bigScale, SCALE_TIME);
                     StoppedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
-                } else if (changedValue && !isSafe)
+                else if (changedValue && !isSafe)
                     StartedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
             }
         }
@@ -40,16 +35,6 @@ namespace PlayerLogic
         [SerializeField] private float moveTime = 0.3f;
         [SerializeField] private float wallBounceTime = 0.3f;
         [SerializeField, Clamp(0, 1)] public float wallBounceDistance = 0.3f;
-        [SerializeField, Disable] private int moves;
-        public int Moves
-        {
-            get { return moves; }
-            private set
-            {
-                moves = value;
-                Input?.Invoke(this, new PlayerInputEventArgs { moves = value });
-            }
-        }
         private Direction dirCurrent = Direction.NULL;
 
         [Header("Character")]
@@ -107,16 +92,13 @@ namespace PlayerLogic
             if (IsSafe && IsActive)
             {
                 Direction moveDirection = Direction.NULL;
-                if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Direction.Up;
-                else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow)) moveDirection = Direction.Left;
-                else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow)) moveDirection = Direction.Down;
-                else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow)) moveDirection = Direction.Right;
+                if (Input.GetKeyDown(KeyCode.UpArrow)) moveDirection = Direction.Up;
+                else if (Input.GetKeyDown(KeyCode.LeftArrow)) moveDirection = Direction.Left;
+                else if (Input.GetKeyDown(KeyCode.DownArrow)) moveDirection = Direction.Down;
+                else if (Input.GetKeyDown(KeyCode.RightArrow)) moveDirection = Direction.Right;
 
                 if (moveDirection != Direction.NULL)
-                {
-                    Moves++;
                     MoveToCell(moveDirection);
-                }
             }
         }
 
@@ -142,16 +124,19 @@ namespace PlayerLogic
                                 transform.position = LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(newX, newY, 0));
 
                             canMove = true;
-                        } else
-                            Debug.LogWarning($"The tile {newX},{newY} is looking to current player tile", gameObject);
-                    } else
-                        Debug.LogWarning($"Can't move to NULL tile {newX},{newY}.", gameObject);
-                } else
-                    Debug.LogWarning($"Can't move to non valid cell {newX},{newY}.", gameObject);
+                        } else Debug.LogWarning($"The tile {newX},{newY} is looking to current player tile", gameObject);
+                    } else Debug.LogWarning($"Can't move to NULL tile {newX},{newY}.", gameObject);
+                } else Debug.LogWarning($"Can't move to non valid cell {newX},{newY}.", gameObject);
 
             IsSafe = false;
-            MoveAnim(LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(newX, newY, 0)), !canMove);
-            if(canMove) Moved?.Invoke(this, new GridCoordsEventArgs { x = newX, y = newY });
+
+            if (canMove && teleport)
+                CheckCurrentTile();
+            else
+                MoveAnim(LevelVisual.main.Tilemap.CellToWorld(new Vector3Int(newX, newY, 0)), !canMove);
+
+            if (canMove)
+                Moved?.Invoke(this, new GridCoordsEventArgs { x = newX, y = newY });
         }
 
         private void MoveToCell(Direction dir)
@@ -181,7 +166,6 @@ namespace PlayerLogic
         public void MoveToStartCell(int x, int y)
         {
             IsActive = true;
-            Moves = 0;
             dirCurrent = Direction.NULL;
             MoveToCell(x, y, true);
         }
