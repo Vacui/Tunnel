@@ -13,6 +13,7 @@ public class GridXY<T>
     public class TileChangedEventArgs : EventArgs
     {
         public int x, y;
+        public T previousValue;
         public T value;
     }
     public event EventHandler<GridCreationEventArgs> OnGridCreated;
@@ -67,8 +68,9 @@ public class GridXY<T>
     {
         if (CellIsValid(x, y) && (!EqualityComparer<T>.Default.Equals(tiles[x, y], value) || updateAlways))
         {
+            T previousValue = tiles[x, y];
             tiles[x, y] = value;
-            OnTileChanged?.Invoke(this, new TileChangedEventArgs { x = x, y = y, value = value });
+            OnTileChanged?.Invoke(this, new TileChangedEventArgs { x = x, y = y, value = value, previousValue = previousValue });
         }
     }
 

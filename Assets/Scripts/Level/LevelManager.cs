@@ -174,21 +174,19 @@ namespace Level
                                                 cells.Add(0);
                                         }
                                         isValid = cells.Count == cellString.Count;
-                                    } else Debug.LogWarning("Error in the seed cells section length.");
-                                } else Debug.LogWarning("Seed height is less or equal to 0.");
-                            } else Debug.LogWarning("Error in parsing seed height number.");
-                        } else Debug.LogWarning("Seed width is less or equal to 0.");
-                    } else Debug.LogWarning("Error in parsing seed width number.");
-                } else Debug.LogWarning("Error in seed number of parts.");
+                                    } else Debug.LogWarning($"Error in the seed cells section length [{seedParts[2].Count(c => (c == '-'))}]");
+                                } else Debug.LogWarning($"Seed height is less or equal to 0 [{height}]");
+                            } else Debug.LogWarning($"Error in parsing seed height number [{seedParts[1]}]");
+                        } else Debug.LogWarning($"Seed width is less or equal to 0 [{width}]");
+                    } else Debug.LogWarning($"Error in parsing seed width number [{seedParts[0]}]");
+                } else Debug.LogWarning($"Error in seed number of parts [{seedParts.Count}]");
             }
 
             public override string ToString()
             {
                 string seed = $"{width}/{height}/";
                 foreach (int cell in cells)
-                {
                     seed += $"{cell}-";
-                }
                 seed.Trim('-');
                 return seed;
             }

@@ -14,6 +14,30 @@ namespace UI
         private void Awake() { if (text == null) text = GetComponent<TextMeshProUGUI>(); }
 #endif
 
-        public void UpdateText() { if (text != null && group != null) text.text = group.History.Last(offset).GetName(); }
+        public void UpdateText()
+        {
+            if (text != null)
+            {
+                if (group != null)
+                {
+                    if (group.History != null)
+                    {
+                        if (group.History.Count > 0)
+                        {
+                            Tab lastTab = group.History.Last(offset);
+                            if (lastTab != null)
+                            {
+                                text.text = lastTab.GetName();
+                            } else
+                                Debug.LogWarning("Tab to select is null", gameObject);
+                        } else
+                            Debug.LogWarning("Tab Group History is empty", gameObject);
+                    } else
+                        Debug.LogWarning("Tab Group History has not been initialized", gameObject);
+                } else
+                    Debug.LogWarning("No TabGroup selected", gameObject);
+            } else
+                Debug.LogWarning("Text component is null", gameObject);
+        }
     }
 }
