@@ -1,22 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-namespace UI
-{
+namespace UI {
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
-    public class Navbar : MonoBehaviour
-    {
+    public class Navbar : MonoBehaviour {
         public static Navbar main;
 
         [System.Serializable]
-        public class NavbarSettings
-        {
+        public class NavbarSettings {
             public bool title;
             public bool menu;
             public bool back;
 
-            public void GetSettings(ref bool title, ref bool menu, ref bool back)
-            {
+            public void GetSettings(ref bool title, ref bool menu, ref bool back) {
                 title = this.title;
                 menu = this.menu;
                 back = this.back;
@@ -24,8 +20,7 @@ namespace UI
         }
 
         [System.Serializable]
-        public enum NavbarShowSettings
-        {
+        public enum NavbarShowSettings {
             None,
             Title,
             MenuButton,
@@ -39,24 +34,22 @@ namespace UI
 
         public UnityEvent OnShow;
 
-        private void Awake()
-        {
+        private void Awake() {
             if (main == null) main = this;
             else Destroy(this);
 
             Show(null);
         }
 
-        public static void Show(NavbarSettings showSettings)
-        {
-            if(main != null)
-            {
+        public static void Show(NavbarSettings showSettings) {
+            if (main != null) {
                 bool title = false;
                 bool menu = false;
                 bool back = false;
 
-                if (showSettings != null)
+                if (showSettings != null) {
                     showSettings.GetSettings(ref title, ref menu, ref back);
+                }
 
                 MyUtils.SetObjectActive(main.titleText, title);
                 MyUtils.SetObjectActive(main.menuBtn, menu);

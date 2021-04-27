@@ -105,15 +105,11 @@ public static class ElementUtils
     }
 }
 
-namespace Level
-{
-    public static class SeedUtils
-    {
-        public static string ToSeedString(this GridXY<Element> grid)
-        {
+namespace Level {
+    public static class SeedUtils {
+        public static string ToSeedString(this GridXY<Element> grid) {
             string result = "";
-            if (grid.width > 0 && grid.height > 0)
-            {
+            if (grid.width > 0 && grid.height > 0) {
                 result = $"{grid.width}/{grid.height}/";
 
                 for (int x = 0; x < grid.width; x++)
@@ -127,10 +123,8 @@ namespace Level
 
 
     [DisallowMultipleComponent]
-    public class LevelManager : MonoBehaviour
-    {
-        public class Seed
-        {
+    public class LevelManager : MonoBehaviour {
+        public class Seed {
             int width;
             public int Width { get { return width; } }
             int height;
@@ -141,8 +135,7 @@ namespace Level
 
             public bool isValid { get; private set; }
 
-            public Seed(string seed)
-            {
+            public Seed(string seed) {
                 width = -1;
                 height = -1;
                 cells = new List<int>();
@@ -153,25 +146,19 @@ namespace Level
 
                 isValid = false;
 
-                if (seedParts.Count == 3)
-                {
-                    if (int.TryParse(seedParts[0], out width))
-                    {
-                        if (width > 0)
-                        {
-                            if (int.TryParse(seedParts[1], out height))
-                            {
-                                if (height > 0)
-                                {
-                                    if (seedParts[2].Count(c => (c == '-')) == (width * height) - 1)
-                                    {
+                if (seedParts.Count == 3) {
+                    if (int.TryParse(seedParts[0], out width)) {
+                        if (width > 0) {
+                            if (int.TryParse(seedParts[1], out height)) {
+                                if (height > 0) {
+                                    if (seedParts[2].Count(c => (c == '-')) == (width * height) - 1) {
                                         List<string> cellString = seedParts[2].Split('-').ToList();
-                                        for (int i = 0; i < cellString.Count; i++)
-                                        {
-                                            if (cellString[i] != "" && int.TryParse(cellString[i], out int cell))
+                                        for (int i = 0; i < cellString.Count; i++) {
+                                            if (cellString[i] != "" && int.TryParse(cellString[i], out int cell)) {
                                                 cells.Add(cell);
-                                            else
+                                            } else {
                                                 cells.Add(0);
+                                            }
                                         }
                                         isValid = cells.Count == cellString.Count;
                                     } else Debug.LogWarning($"Error in the seed cells section length [{seedParts[2].Count(c => (c == '-'))}]");
@@ -182,11 +169,11 @@ namespace Level
                 } else Debug.LogWarning($"Error in seed number of parts [{seedParts.Count}]");
             }
 
-            public override string ToString()
-            {
+            public override string ToString() {
                 string seed = $"{width}/{height}/";
-                foreach (int cell in cells)
+                foreach (int cell in cells) {
                     seed += $"{cell}-";
+                }
                 seed.Trim('-');
                 return seed;
             }
@@ -213,28 +200,27 @@ namespace Level
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
 
-        private void Awake()
-        {
+        private void Awake() {
             if (main == null) main = this;
             else Destroy(this);
+
             grid = new GridXY<Element>();
         }
 
-        private void OnEnable()
-        {
-            Player.StoppedMove += (sender, args) =>
-            {
-                if (grid != null)
-                    if (grid.CellIsValid(args.x, args.y))
-                        if (grid.GetTile(args.x, args.y) == Element.End)
+        private void OnEnable() {
+            Player.StoppedMove += (sender, args) => {
+                if (grid != null) {
+                    if (grid.CellIsValid(args.x, args.y)) {
+                        if (grid.GetTile(args.x, args.y) == Element.End) {
                             OnWin?.Invoke();
+                        }
+                    }
+                }
             };
         }
 
-        public void LoadLevel(Seed lvlSeed)
-        {
-            if (lvlSeed != null && lvlSeed.isValid)
-            {
+        public void LoadLevel(Seed lvlSeed) {
+            if (lvlSeed != null && lvlSeed.isValid) {
                 Debug.Log("0. Loading level...");
                 Debug.Log($"   Seed: {lvlSeed}");
 
@@ -258,26 +244,24 @@ namespace Level
                 bool hasStart = false, hasEnd = lvlSeed.Size == 1;
 
                 Element type;
-                for (int i = 0; i < lvlSeed.cells.Count; i++)
-                {
+                for (int i = 0; i < lvlSeed.cells.Count; i++) {
                     grid.CellNumToCell(i, out int x, out int y);
                     type = (Element)lvlSeed.cells[i];
                     grid.SetTile(x, y, type);
                     if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
-                    if (type == Element.Start)
-                    {
+                    if (type == Element.Start) {
                         startPos.x = x;
                         startPos.y = y;
                         hasStart = true;
-                    } else
+                    } else {
                         hasEnd = hasEnd || type == Element.End;
+                    }
                 }
 
                 Debug.Log("Level is ready!");
                 LvlState = LevelState.Ready;
                 OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
-                if (hasStart && hasEnd)
-                {
+                if (hasStart && hasEnd) {
                     Debug.Log("Level is playable!");
                     LvlState = LevelState.Playable;
                     OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });

@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 
-namespace UI
-{
+namespace UI {
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
-    public class Tab : UIElement
-    {
+    public class Tab : UIElement {
         [Header("Tab Settings")]
         [SerializeField] private TabGroup group;
         [SerializeField] Navbar.NavbarSettings navbarSettings;
@@ -16,14 +14,14 @@ namespace UI
         [SerializeField, ReorderableList] private GameObject[] objToShowOnActive;
         [SerializeField, ReorderableList] private GameObject[] objToHideOnActive;
 
-        protected override void Start()
-        {
+        protected override void Start() {
             base.Start();
-            if (group != null) group.Subscribe(GetName(), this);
+            if (group != null) {
+                group.Subscribe(GetName(), this);
+            }
         }
 
-        protected override void OnActive()
-        {
+        protected override void OnActive() {
             base.OnActive();
             UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
@@ -31,8 +29,7 @@ namespace UI
             Navbar.Show(navbarSettings);
         }
 
-        protected override void OnInactive()
-        {
+        protected override void OnInactive() {
             base.OnInactive();
             UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
@@ -40,15 +37,15 @@ namespace UI
             Navbar.Show(null);
         }
 
-        private void UpdateChildrens()
-        {
-            if (showChildrens)
-                foreach (Transform child in transform)
+        private void UpdateChildrens() {
+            if (showChildrens) {
+                foreach (Transform child in transform) {
                     child.gameObject.SetActive(IsActive);
+                }
+            }
         }
 
-        public string GetName()
-        {
+        public string GetName() {
             return useCustomName ? customName : name;
         }
     }

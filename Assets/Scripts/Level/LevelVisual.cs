@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace Level
-{
+namespace Level {
     [DisallowMultipleComponent, RequireComponent(typeof(Tilemap))]
-    public class LevelVisual : MonoBehaviour
-    {
+    public class LevelVisual : MonoBehaviour {
         public static LevelVisual main { get; private set; }
 
         [SerializeField] private TileBase t_start;
@@ -18,35 +16,36 @@ namespace Level
         [Header("Debug")]
         [SerializeField] bool showDebugLog;
 
-        private void Awake()
-        {
+        private void Awake() {
             if (main == null) main = this;
             else Destroy(this);
 
             Tilemap = GetComponent<Tilemap>();
 
-            LevelManager.main.grid.OnGridCreated += (sender, args) => Tilemap.ClearAllTiles();
-            //LevelManager.main.grid.OnTileChanged += (sender, args) => UpdateVisual(args.x, args.y);
+            LevelManager.main.grid.OnGridCreated += (sender, args) => {
+                Tilemap.ClearAllTiles();
+            };
+            //LevelManager.main.grid.OnTileChanged += (sender, args) => {
+            //    UpdateVisual(args.x, args.y);
+            //};
 
-            LevelFog.HiddenTile += (sender, args) =>
-            {
+            LevelFog.HiddenTile += (sender, args) => {
                 if (showDebugLog) Debug.Log($"Hiding Visual Tile {args.x},{args.y}");
                 Tilemap.SetTile(new Vector3Int(args.x, args.y, 0), null);
             };
-            LevelFog.DiscoveredTile += (sender, args) => UpdateVisual(args.x, args.y);
+            LevelFog.DiscoveredTile += (sender, args) => {
+                UpdateVisual(args.x, args.y);
+            };
         }
 
-        public void UpdateVisual(int x, int y)
-        {
+        public void UpdateVisual(int x, int y) {
             Element element = LevelManager.main.grid.GetTile(x, y);
             if (showDebugLog) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
             Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }
 
-        private TileBase GetTileBase(Element type)
-        {
-            switch (type)
-            {
+        private TileBase GetTileBase(Element type) {
+            switch (type) {
                 case Element.NULL: return null;
                 case Element.Start: return t_start;
                 case Element.End: return t_end;
@@ -55,6 +54,8 @@ namespace Level
             }
         }
 
-        private void OnDisable() { Tilemap.ClearAllTiles(); }
+        private void OnDisable() {
+            Tilemap.ClearAllTiles();
+        }
     }
 }

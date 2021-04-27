@@ -12,11 +12,15 @@ namespace UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (group != null)
-                if (goBackButton)
+            if (group != null) {
+                if (goBackButton) {
                     group.GoBack();
-                else if (tabToShow != "")
-                    group.ShowTab(tabToShow);
+                } else {
+                    if (tabToShow != "") {
+                        group.ShowTab(tabToShow);
+                    }
+                }
+            }
         }
     }
 }

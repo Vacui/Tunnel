@@ -2,20 +2,12 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace UI
-{
+namespace UI {
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
-    public class LoadSeed : MonoBehaviour, IPointerClickHandler
-    {
+    public class LoadSeed : MonoBehaviour, IPointerClickHandler {
         [SerializeField] private string seed;
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            Load();
-        }
-
-        private void Load()
-        {
+        public void OnPointerClick(PointerEventData eventData) {
             LevelManager.main.LoadLevel(seed);
         }
     }

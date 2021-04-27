@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using UltEvents;
 using UnityEngine;
 
-public class LevelPalette : MonoBehaviour
-{
+public class LevelPalette : MonoBehaviour {
     [System.Serializable]
     public sealed class LevelPaletteColorChangeEvent : UltEvent<Color> { }
     private static Color color;
-    public static Color Color
-    {
+    public static Color Color {
         get { return color; }
-        private set
-        {
+        private set {
             color = value;
             UpdatedColor?.Invoke(value);
         }
@@ -22,13 +19,11 @@ public class LevelPalette : MonoBehaviour
     [SerializeField] private List<Color> colors;
     public static System.Action<Color> UpdatedColor;
 
-    private void Awake()
-    {
+    private void Awake() {
         Color = defaultColor;
     }
 
-    public void RandomColor()
-    {
+    public void RandomColor() {
         Color = colors[Random.Range(0, colors.Count - 1)];
     }
 }
