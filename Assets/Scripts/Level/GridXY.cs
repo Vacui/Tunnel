@@ -23,37 +23,73 @@ public class GridXY<T>
         public int height;
     }
 
-    public int height { get; private set; }
-    public int width { get; private set; }
+    public int Height { get; private set; }
+    public int Width { get; private set; }
+
+    public int CellSize { get; private set; }
+    public Vector3 OriginPosition { get; private set; }
+
     private T[,] tiles;
+    Func<GridXY<T>, int, int, T> tileConstructor;
     private T nullTileValue;
     private bool updateAlways;
 
     public GridXY() { }
 
-    public void CreateGridXY(int width, int height, bool updateAlways = false, T initializeValue = default, T nullTileValue = default)
+    private bool CreateGridXY(int width, int height, int cellSize, Vector3 originPosition, bool updateAlways, T nullTileValue)
     {
         if (width > 0)
         {
             if (height > 0)
             {
-                this.width = width;
-                this.height = height;
+                Width = width;
+                Height = height;
+                CellSize = cellSize;
+                OriginPosition = originPosition;
                 this.nullTileValue = nullTileValue;
                 this.updateAlways = updateAlways;
                 tiles = new T[width, height];
-                OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height });
-                SetAllTiles(initializeValue);
+                return true;
             }
         }
+        return false;
+    }
+    public bool CreateGridXY(int width, int height, int cellSize, Vector3 originPosition, bool updateAlways, T nullTileValue, T initializeValue)
+    {
+        if(CreateGridXY(width, height, cellSize, originPosition, updateAlways, nullTileValue))
+        {
+            SetAllTiles(initializeValue);
+            OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height });
+            return true;
+        }
+        return false;
+    }
+
+    public bool CreateGridXY(int width, int height, int cellSize, Vector3 originPosition, bool updateAlways, T nullTileValue, Func<GridXY<T>, int, int, T> tileConstructor)
+    {
+        if (CreateGridXY(width, height, cellSize, originPosition, updateAlways, nullTileValue))
+        {
+            SetAllTiles(tileConstructor);
+            OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height });
+            return true;
+        }
+        return false;
     }
 
     public void SetAllTiles(T value)
     {
         if (tiles != null)
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
                     SetTile(x, y, value);
+    }
+
+    public void SetAllTiles(Func<GridXY<T>, int, int, T> tileConstructor)
+    {
+        if (tiles != null)
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
+                    SetTile(x, y, tileConstructor(this, x, y));
     }
 
     public T GetTile(int x, int y)
@@ -62,6 +98,12 @@ public class GridXY<T>
             return tiles[x, y];
         else
             return nullTileValue;
+    }
+
+    public T GetTile(Vector3 worldPosition)
+    {
+        WorldToCell(worldPosition, out int x, out int y);
+        return GetTile(x, y);
     }
 
     public void SetTile(int x, int y, T value)
@@ -73,21 +115,52 @@ public class GridXY<T>
             OnTileChanged?.Invoke(this, new TileChangedEventArgs { x = x, y = y, value = value, previousValue = previousValue });
         }
     }
+    public void SetTile(Vector2Int cell, T value) {
+        SetTile(cell.x, cell.y, value);
+    }
 
     public bool CellIsValid(int x, int y)
     {
-        return x >= 0 && x < width && y >= 0 && y < height;
+        return x >= 0 && x < Width && y >= 0 && y < Height;
     }
 
     public void CellNumToCell(int cellNum, out int x, out int y)
     {
-        x = cellNum % width;
-        y = cellNum / width;
+        x = cellNum % Width;
+        y = cellNum / Width;
     }
 
-    public void WorldToCell(Vector2 world, out int x, out int y)
+    public Vector3 CellToWorld(int x, int y)
     {
-        throw new NotImplementedException();
+        return new Vector3(x, y) * CellSize + OriginPosition;
+    }
+
+    public void WorldToCell(Vector3 worldPosition, out int x, out int y)
+    {
+        worldPosition -= OriginPosition;
+        x = Mathf.FloorToInt(worldPosition.x / CellSize);
+        y = Mathf.FloorToInt(worldPosition.y / CellSize);
+    }
+
+    public List<Vector2Int> GatherNeighbourCells(int x = 0, int y = 0, int radius = 1, bool avoidCenter = false, bool avoidCorners = false)
+    {
+        List<Vector2Int> neighbours = new List<Vector2Int>();
+        if (radius > 0)
+            for (int xT = -radius; xT < radius + 1; xT++)
+                for (int yT = -radius; yT < radius + 1; yT++)
+                    if (CellIsValid(x + xT, y + yT))
+                        if (!avoidCenter || (xT != 0 || yT != 0))
+                            if (!avoidCorners || (Mathf.Abs(xT) != Mathf.Abs(yT)))
+                                neighbours.Add(new Vector2Int(x + xT, y + yT));
+        return neighbours;
+    }
+
+    public List<T> GatherNeighbourTiles(int x = 0, int y = 0, int radius = 1, bool avoidCenter = false, bool avoidCorners = false)
+    {
+        List<T> neighbours = new List<T>();
+        foreach(Vector2Int neighbour in GatherNeighbourCells(x, y, radius, avoidCenter, avoidCorners))
+            neighbours.Add(GetTile(neighbour.x, neighbour.y));
+        return neighbours;
     }
 
     public string GetTileToString(int x, int y)

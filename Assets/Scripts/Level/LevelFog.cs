@@ -64,7 +64,7 @@ namespace Level
             LevelManager.main.grid.OnGridCreated += (sender, args) =>
             {
                 tilemap.ClearAllTiles();
-                grid.CreateGridXY(args.width, args.height);
+                grid.CreateGridXY(args.width, args.height, 1, Vector3.zero, false, TileVisibility.NULL, TileVisibility.NULL);
             };
             LevelManager.main.grid.OnTileChanged += (sender, args) =>
             {
@@ -89,8 +89,8 @@ namespace Level
 
         private void CheckNullTiles()
         {
-            for (int x = 0; x < grid.width; x++)
-                for (int y = 0; y < grid.height; y++)
+            for (int x = 0; x < grid.Width; x++)
+                for (int y = 0; y < grid.Height; y++)
                     IsNullTileReadyToVisible(x, y);
         }
 
@@ -108,7 +108,7 @@ namespace Level
                     Element type;
                     TileVisibility visibility;
 
-                    List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, false);
+                    List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
                     Vector2Int neighbour;
                     for (int i = 0; i < neighbours.Count && isReadyToVisible; i++)
                     {
@@ -140,7 +140,7 @@ namespace Level
 
             if (type != Element.NULL && visibility == TileVisibility.Visible)
             {
-                List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, false);
+                List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
                 foreach (Vector2Int neighbour in neighbours)
                     IsNullTileReadyToVisible(neighbour.x, neighbour.y);
             } else if (type == Element.NULL && visibility == TileVisibility.ReadyToVisible)
@@ -164,7 +164,7 @@ namespace Level
 
             if (showDebugLog) Debug.Log($"Checking cluster Tile {x},{y} ({grid.GetTile(x, y)}) = {result}");
 
-            List<Vector2Int> neighbours = MyUtils.GatherNeighbours(x, y, 1, true, true);
+            List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, true);
             Vector2Int neighbour;
             for (int i = 0; i < neighbours.Count && result; i++)
             {

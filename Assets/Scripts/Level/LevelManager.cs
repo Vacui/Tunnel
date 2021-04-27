@@ -112,13 +112,15 @@ namespace Level
         public static string ToSeedString(this GridXY<Element> grid)
         {
             string result = "";
-            if (grid.width > 0 && grid.height > 0)
+            if (grid.Width > 0 && grid.Height > 0)
             {
-                result = $"{grid.width}/{grid.height}/";
+                result = $"{grid.Width}/{grid.Height}/";
 
-                for (int x = 0; x < grid.width; x++)
-                    for (int y = 0; y < grid.height; y++)
+                for (int x = 0; x < grid.Width; x++)
+                    for (int y = 0; y < grid.Height; y++)
                         result += $"{((x != 0 || y != 0) ? "-" : "")}{(int)grid.GetTile(x, y)}";
+
+                result = result.TrimEnd('-');
             }
             return result;
         }
@@ -246,7 +248,7 @@ namespace Level
                 OnLevelNotReady?.Invoke(this, null);
 
                 Debug.Log($"1. Initializing level...");
-                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, true);
+                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
 
                 Debug.Log("Level is not playable!");
                 LvlState = LevelState.NotPlayable;
