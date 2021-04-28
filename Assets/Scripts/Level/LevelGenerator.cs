@@ -9,6 +9,8 @@ namespace Level {
         private const int HEIGHT_MIN = 1;
         private const int HEIGHT_MAX = 20;
 
+        private static GridXY<Element> newLevel;
+
         public static void GenerateLevel(int width, int height) {
             width = Mathf.Clamp(width, WIDTH_MIN, WIDTH_MAX);
             height = Mathf.Clamp(height, HEIGHT_MIN, HEIGHT_MAX);
@@ -25,21 +27,45 @@ namespace Level {
             //LevelManager.main.LoadLevel(newLevelSeed);
 
 
-            Pathfinding pathfinding = new Pathfinding(width, height);
-            List<Pathfinding.PathNode> path = pathfinding.FindPath(new Vector2Int(0, 0), new Vector2Int(width - 1, height - 1));
-            Debug.Log(path.Count);
-
-            GridXY<Element> newLevel = new GridXY<Element>();
+            newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(width, height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
-            newLevel.SetTile(path[0].GetCell(), Element.Start);
-            Debug.Log($"Start: {path[0]}");
-            newLevel.SetTile(path.Last().GetCell(), Element.End);
-            Debug.Log($"End: {path.Last()}");
-            for (int i = 1; i < path.Count - 1; i++) {
-                newLevel.SetTile(path[i].GetCell(), Element.Node);
-                Debug.Log($"Node: {path[i]}");
+
+            Pathfinding pathfinding = new Pathfinding(width, height);
+            List<Pathfinding.PathNode> path = pathfinding.FindPath(new Vector2Int(0, 0), new Vector2Int(width - 1, height - 1), newLevel);
+            ApplyPath(path, true);
+
+            for (int i = 0, limit = 0; i < 5 && limit < 10; i++, limit++) {
+                path = pathfinding.FindPath(new Vector2Int(Random.Range(0, width), Random.Range(0, height)), new Vector2Int(Random.Range(0, width), Random.Range(0, height)), newLevel);
+                if(path == null) {
+                    i--;
+                    continue;
+                }
+                ApplyPath(path, false);
             }
+
             LevelManager.main.LoadLevel(newLevel.ToSeedString());
+        }
+
+        private static void ApplyPath(List<Pathfinding.PathNode> path, bool isStartEndPath) {
+            if (path != null) {
+                if (newLevel.GetTile(path[0].GetCell()) != Element.Start && newLevel.GetTile(path[0].GetCell()) != Element.End)
+                    newLevel.SetTile(path[0].GetCell(), isStartEndPath ? Element.Start : Element.Node);
+                if (newLevel.GetTile(path.Last().GetCell()) != Element.Start && newLevel.GetTile(path.Last().GetCell()) != Element.End)
+                    newLevel.SetTile(path.Last().GetCell(), isStartEndPath ? Element.End : Element.Node);
+                Element newTile;
+                for (int i = 1; i < path.Count - 1; i++) {
+                    newTile = Element.Node;
+                    if (path[i].X < path[i + 1].X && path[i].Y == path[i + 1].Y)
+                        newTile = Element.Right;
+                    if (path[i].X > path[i + 1].X && path[i].Y == path[i + 1].Y)
+                        newTile = Element.Left;
+                    if (path[i].X == path[i + 1].X && path[i].Y > path[i + 1].Y)
+                        newTile = Element.Down;
+                    if (path[i].X == path[i + 1].X && path[i].Y < path[i + 1].Y)
+                        newTile = Element.Up;
+                    newLevel.SetTile(path[i].GetCell(), newTile);
+                }
+            }
         }
     }
 
@@ -73,6 +99,7 @@ namespace Level {
         }
 
         private GridXY<PathNode> grid;
+        private GridXY<Element> gridElements;
         private List<PathNode> openList;
         private List<PathNode> closedList;
 
@@ -81,7 +108,9 @@ namespace Level {
             grid.CreateGridXY(width, height, 1, Vector3.zero, true, null, (GridXY<PathNode> grid, int x, int y) => new PathNode(grid, x, y));
         }
 
-        public List<PathNode> FindPath(Vector2Int startCell, Vector2Int endCell) {
+        public List<PathNode> FindPath(Vector2Int startCell, Vector2Int endCell, GridXY<Element> gridElements) {
+            this.gridElements = gridElements;
+
             PathNode startNode = grid.GetTile(startCell.x, startCell.y);
             PathNode endNode = grid.GetTile(endCell.x, endCell.y);
 
@@ -100,7 +129,8 @@ namespace Level {
             startNode.hCost = CalculateDistanceCost(startNode, endNode);
 
             while (openList.Count > 0) {
-                PathNode currentNode = GetLowestFCostNode(openList);
+                //PathNode currentNode = GetLowestFCostNode(openList);
+                PathNode currentNode = openList[Random.Range(0, openList.Count - 1)];
 
                 if (currentNode == endNode) {
                     // Reached final node
@@ -134,22 +164,33 @@ namespace Level {
 
         private List<PathNode> GetNeighbourList(PathNode currentNode) {
             List<PathNode> neighbourList = new List<PathNode>();
+            Direction currentNodeDirection = gridElements.GetTile(currentNode.GetCell()).ToDirection();
 
-            // Left
-            if (grid.CellIsValid(currentNode.X - 1, currentNode.Y)) {
-                neighbourList.Add(grid.GetTile(currentNode.X - 1, currentNode.Y));
-            }
-            // Right
-            if (grid.CellIsValid(currentNode.X + 1, currentNode.Y)) {
-                neighbourList.Add(grid.GetTile(currentNode.X + 1, currentNode.Y));
-            }
-            // Up
-            if (grid.CellIsValid(currentNode.X, currentNode.Y - 1)) {
-                neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y - 1));
-            }
-            // Down
-            if (grid.CellIsValid(currentNode.X, currentNode.Y + 1)) {
-                neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y + 1));
+            if (currentNodeDirection != Direction.NULL && currentNodeDirection != Direction.All) {
+                Vector2Int cellFaced = currentNode.GetCell() + currentNodeDirection.ToOffset();
+                if (grid.CellIsValid(cellFaced)) {
+                    neighbourList.Add(grid.GetTile(cellFaced));
+                }
+            } else {
+                //Left
+                if (grid.CellIsValid(currentNode.X - 1, currentNode.Y)) {
+                    neighbourList.Add(grid.GetTile(currentNode.X - 1, currentNode.Y));
+                }
+
+                // Right
+                if (grid.CellIsValid(currentNode.X + 1, currentNode.Y)) {
+                    neighbourList.Add(grid.GetTile(currentNode.X + 1, currentNode.Y));
+                }
+
+                // Up
+                if (grid.CellIsValid(currentNode.X, currentNode.Y - 1)) {
+                    neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y - 1));
+                }
+
+                // Down
+                if (grid.CellIsValid(currentNode.X, currentNode.Y + 1)) {
+                    neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y + 1));
+                }
             }
 
             return neighbourList;
@@ -177,7 +218,6 @@ namespace Level {
             for (int i = 1; i < pathNodeList.Count; i++)
                 if (pathNodeList[i].FCost < lowestFCostNode.FCost)
                     lowestFCostNode = pathNodeList[i];
-
             return lowestFCostNode;
         }
     }

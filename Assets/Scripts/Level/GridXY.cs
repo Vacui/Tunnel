@@ -99,6 +99,9 @@ public class GridXY<T>
         else
             return nullTileValue;
     }
+    public T GetTile(Vector2Int cell) {
+        return GetTile(cell.x, cell.y);
+    }
 
     public T GetTile(Vector3 worldPosition)
     {
@@ -122,6 +125,9 @@ public class GridXY<T>
     public bool CellIsValid(int x, int y)
     {
         return x >= 0 && x < Width && y >= 0 && y < Height;
+    }
+    public bool CellIsValid(Vector2Int cell) {
+        return CellIsValid(cell.x, cell.y);
     }
 
     public void CellNumToCell(int cellNum, out int x, out int y)
@@ -162,8 +168,11 @@ public class GridXY<T>
             neighbours.Add(GetTile(neighbour.x, neighbour.y));
         return neighbours;
     }
+    public List<T> GatherNeighbourTiles(Vector2Int cell, int radius = 1, bool avoidCenter = false, bool avoidCorners = false) {
+        return GatherNeighbourTiles(cell.x, cell.y, radius, avoidCenter, avoidCorners);
+    }
 
-    public string GetTileToString(int x, int y)
+        public string GetTileToString(int x, int y)
     {
         string result = "";
 

@@ -46,6 +46,14 @@ public static class DirectionUtils
             case Direction.Left: offsetX--; break;
         }
     }
+    public static Vector2Int ToOffset(this Direction dir) {
+        ToOffset(dir, out int offsetX, out int offsetY);
+        return new Vector2Int(offsetX, offsetY);
+    }
+
+    public static Vector2Int FacingCell(this Direction dir, Vector2Int tileCell) {
+        return tileCell + dir.ToOffset();
+    }
 
     public static float ToAngle(this Direction dir)
     {
