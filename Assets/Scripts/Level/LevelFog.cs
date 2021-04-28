@@ -33,7 +33,7 @@ namespace Level
 
 
         [Header("Debug")]
-        [SerializeField] private bool showDebugLog = false;
+        [EditorButton(nameof(DisableFog), "Disable Fog", activityType: ButtonActivityType.OnPlayMode), SerializeField] private bool showDebugLog = false;
 
         private void Awake()
         {
@@ -84,8 +84,13 @@ namespace Level
                 DiscoverTile(args.x, args.y - 1);
             };
         }
+
         private void DiscoverTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Visible); }
         private void HideTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Invisible); }
+
+        private void DisableFog() {
+            grid.SetAllTiles(TileVisibility.Visible);
+        }
 
         private void CheckNullTiles()
         {

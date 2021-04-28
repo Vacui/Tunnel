@@ -116,8 +116,8 @@ namespace Level
             {
                 result = $"{grid.Width}/{grid.Height}/";
 
-                for (int x = 0; x < grid.Width; x++)
-                    for (int y = 0; y < grid.Height; y++)
+                for (int y = 0; y < grid.Height; y++)
+                    for (int x = 0; x < grid.Width; x++)
                         result += $"{((x != 0 || y != 0) ? "-" : "")}{(int)grid.GetTile(x, y)}";
 
                 result = result.TrimEnd('-');

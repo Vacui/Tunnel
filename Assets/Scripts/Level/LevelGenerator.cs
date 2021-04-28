@@ -3,7 +3,16 @@ using UnityEngine;
 
 namespace Level {
     public static class LevelGenerator {
+
+        private const int WIDTH_MIN = 1;
+        private const int WIDTH_MAX = 20;
+        private const int HEIGHT_MIN = 1;
+        private const int HEIGHT_MAX = 20;
+
         public static void GenerateLevel(int width, int height) {
+            width = Mathf.Clamp(width, WIDTH_MIN, WIDTH_MAX);
+            height = Mathf.Clamp(height, HEIGHT_MIN, HEIGHT_MAX);
+
             Debug.Log($"Generating level {width}x{height}");
 
             //string newLevelSeed = $"{width}/{height}/1";
@@ -22,16 +31,13 @@ namespace Level {
 
             GridXY<Element> newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(width, height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
-            for (int i = 0; i < path.Count; i++) {
-                if (i == 1) {
-                    newLevel.SetTile(path[i].GetCell(), Element.Start);
-                } else {
-                    if (i == path.Count - 1) {
-                        newLevel.SetTile(path[i].GetCell(), Element.End);
-                    } else {
-                        newLevel.SetTile(path[i].GetCell(), Element.Node);
-                    }
-                }
+            newLevel.SetTile(path[0].GetCell(), Element.Start);
+            Debug.Log($"Start: {path[0]}");
+            newLevel.SetTile(path.Last().GetCell(), Element.End);
+            Debug.Log($"End: {path.Last()}");
+            for (int i = 1; i < path.Count - 1; i++) {
+                newLevel.SetTile(path[i].GetCell(), Element.Node);
+                Debug.Log($"Node: {path[i]}");
             }
             LevelManager.main.LoadLevel(newLevel.ToSeedString());
         }
@@ -62,7 +68,7 @@ namespace Level {
             }
 
             public override string ToString() {
-                return X + "," + Y;
+                return $"x{X}, y{Y}";
             }
         }
 
