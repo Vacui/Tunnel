@@ -22,7 +22,7 @@ namespace Level {
         public void SetHeight(float value) { lvlHeight = Mathf.RoundToInt(value); }
 
         public void ApplySettings() {
-            LevelGenerator.main.GenerateLevel(lvlWidth, lvlHeight);
+            LevelGenerator.GenerateLevel(lvlWidth, lvlHeight);
         }
     }
 }

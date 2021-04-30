@@ -86,15 +86,38 @@ public static class MyUtils {
     }
 }
 
-public static class ListUtils {
-    public static void RemoveLast<T>(this List<T> list) {
-        if (list == null || list.Count <= 0) return;
+public static class GameDebug {
 
-        list.RemoveAt(list.Count - 1);
+    public static void Log(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
+        message = $"[{memberName}:{sourceLineNumber}] ({sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1)}) {message}";
+        Debug.Log(message, context);
+    }
+
+    public static void LogWarning(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
+        message = $"[{memberName}:{sourceLineNumber}] ({sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1)}) {message}";
+        Debug.LogWarning(message, context);
+    }
+
+    public static void LogError(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
+        message = $"[{memberName}:{sourceLineNumber}] ({sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1)}) {message}";
+        Debug.LogError(message, context);
+    }
+
+}
+
+public static class ListUtils {
+    public static void RemoveLast<T>(this List<T> list, int offset = 0) {
+        if (list == null || list.Count <= 0) {
+            return;
+        }
+
+        list.RemoveAt(Mathf.Clamp(list.Count - 1 - offset, 0, list.Count - 1));
     }
 
     public static T Last<T>(this List<T> list, int offset = 0) {
-        if (list == null || list.Count == 0) return default;
+        if (list == null || list.Count == 0) {
+            return default;
+        }
 
         offset = Mathf.Clamp(offset, 0, list.Count - 1);
         return list[list.Count - 1 - offset];

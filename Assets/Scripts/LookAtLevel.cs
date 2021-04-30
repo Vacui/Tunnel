@@ -16,7 +16,7 @@ public class LookAtLevel : MonoBehaviour {
     }
 
     private void ResizeCamera(int width, int height) {
-        cam.orthographicSize = width * 1.3f;
+        cam.orthographicSize = Mathf.Max(width, height) * 1.3f;
         cam.transform.position = new Vector3((width - 1) / 2.0f, (height - 1) / 2.0f, cam.transform.position.z);
     }
 }
