@@ -25,7 +25,7 @@ namespace Level
 
             Tilemap = GetComponent<Tilemap>();
 
-            LevelManager.main.grid.OnGridCreated += (sender, args) => Tilemap.ClearAllTiles();
+            LevelManager.main.Grid.OnGridCreated += (sender, args) => Tilemap.ClearAllTiles();
             //LevelManager.main.grid.OnTileChanged += (sender, args) => UpdateVisual(args.x, args.y);
 
             LevelFog.HiddenTile += (sender, args) =>
@@ -38,7 +38,7 @@ namespace Level
 
         public void UpdateVisual(int x, int y)
         {
-            Element element = LevelManager.main.grid.GetTile(x, y);
+            Element element = LevelManager.main.Grid.GetTile(x, y);
             if (showDebugLog) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
             Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }

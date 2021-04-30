@@ -35,7 +35,7 @@ public class ElementRuleTile : RuleTile<Direction>
     {
         try
         {
-            Direction gridDirection = LevelManager.main.grid.GetTile(position.x, position.y).ToDirection();
+            Direction gridDirection = LevelManager.main.Grid.GetTile(position.x, position.y).ToDirection();
             Direction rotatedDirection = baseDir.Rotate(angle);
             if (gridDirection == rotatedDirection)
             {
@@ -61,7 +61,7 @@ public class ElementRuleTile : RuleTile<Direction>
     {
         try
         {
-            Direction gridNeighborDirection = LevelManager.main.grid.GetTile(position.x, position.y).ToDirection();
+            Direction gridNeighborDirection = LevelManager.main.Grid.GetTile(position.x, position.y).ToDirection();
             return gridNeighborDirection == Direction.All || gridNeighborDirection == (Direction)neighbor;
         } catch (Exception)
         {

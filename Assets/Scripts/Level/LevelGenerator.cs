@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Level {
@@ -15,45 +16,93 @@ namespace Level {
             width = Mathf.Clamp(width, WIDTH_MIN, WIDTH_MAX);
             height = Mathf.Clamp(height, HEIGHT_MIN, HEIGHT_MAX);
 
-            Debug.Log($"Generating level {width}x{height}");
-
-            //string newLevelSeed = $"{width}/{height}/1";
-            //for (int i = 1; i < (width * height) - 1; i++)
-            //    newLevelSeed += "-3";
-            //newLevelSeed += "-2";
-
-            //Debug.Log($"Generated seed: {newLevelSeed}");
-
-            //LevelManager.main.LoadLevel(newLevelSeed);
-
+            GameDebug.Log($"Generating level {width}x{height}");
 
             newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(width, height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
-
             Pathfinding pathfinding = new Pathfinding(width, height);
-            List<Pathfinding.PathNode> path = pathfinding.FindPath(new Vector2Int(0, 0), new Vector2Int(width - 1, height - 1), newLevel);
-            ApplyPath(path, true);
 
-            for (int i = 0, limit = 0; i < 5 && limit < 10; i++, limit++) {
-                path = pathfinding.FindPath(new Vector2Int(Random.Range(0, width), Random.Range(0, height)), new Vector2Int(Random.Range(0, width), Random.Range(0, height)), newLevel);
-                if(path == null) {
+            List<Vector2Int> nodes = GenerateNodes((width * height) / 8);
+            if (GeneratePaths(nodes, pathfinding) < nodes.Count / 2) {
+                LevelManager.main.LoadLevel(newLevel.ToSeedString());
+                LevelFog.main.DisableFog();
+            } else {
+                GameDebug.Log("Error in generating paths, retry");
+                GenerateLevel(width, height);
+            }
+        }
+
+        private static List<Vector2Int> GenerateNodes(int num) {
+            int attempts = 0;
+            int maxAttempts = num * 2;
+
+            Vector2Int cell = Vector2Int.zero;
+            List<Vector2Int> nodesAlreadyFound = new List<Vector2Int>();
+            for (int i = 0; i < num && attempts < maxAttempts; i++, attempts++) {
+                cell = new Vector2Int(Random.Range(0, newLevel.Width), Random.Range(0, newLevel.Height));
+                if (IsNodeType(newLevel.GetTile(cell)) || nodesAlreadyFound.Contains(cell)) {
                     i--;
                     continue;
                 }
-                ApplyPath(path, false);
+                nodesAlreadyFound.Add(cell);
             }
+            GameDebug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts + 1}/{maxAttempts}");
 
-            LevelManager.main.LoadLevel(newLevel.ToSeedString());
+            return nodesAlreadyFound;
         }
 
-        private static void ApplyPath(List<Pathfinding.PathNode> path, bool isStartEndPath) {
+        private static int GeneratePaths(List<Vector2Int> nodes, Pathfinding pathfinding) {
+            if (nodes.Count > 0) {
+                int attempts = 0;
+                int maxAttempts = nodes.Count * 2;
+
+                List<Pathfinding.PathNode> newPath = new List<Pathfinding.PathNode>();
+                List<bool> usedNodes = Enumerable.Repeat(false, nodes.Count).ToList();
+                int path;
+                for (path = 0; path < nodes.Count - 1 && attempts < nodes.Count * 2; path++, attempts++) {
+                    newPath = pathfinding.FindPath(nodes[path], nodes[path + 1], newLevel);
+                    if (newPath == null) {
+                        path--;
+                        continue;
+                    }
+                    ApplyPath(newPath);
+                    foreach (Pathfinding.PathNode p in newPath.Where(tmpP => nodes.Contains(tmpP.GetCell())).ToList()) {
+                        usedNodes[nodes.IndexOf(p.GetCell())] = true;
+                    }
+                }
+                int unusedNodesCount = usedNodes.Where(n => n == false).Count();
+                GameDebug.Log($"Connected {nodes.Count - unusedNodesCount}/{nodes.Count} nodes, attempts={attempts + 1}/{maxAttempts}");
+
+
+                for (int i = 0; i < nodes.Count; i++) {
+                    if (!usedNodes[i]) {
+                        newLevel.SetTile(nodes[i], Element.NULL);
+                    }
+                }
+                GameDebug.Log($"Deleted unused nodes");
+
+                newLevel.SetTile(nodes[0], Element.Start);
+                newLevel.SetTile(nodes[Random.Range(1, nodes.Count - unusedNodesCount)], Element.End);
+
+                return unusedNodesCount;
+            }
+
+            return 1;
+        }
+
+        private static void ApplyPath(List<Pathfinding.PathNode> path) {
             if (path != null) {
-                if (newLevel.GetTile(path[0].GetCell()) != Element.Start && newLevel.GetTile(path[0].GetCell()) != Element.End)
-                    newLevel.SetTile(path[0].GetCell(), isStartEndPath ? Element.Start : Element.Node);
-                if (newLevel.GetTile(path.Last().GetCell()) != Element.Start && newLevel.GetTile(path.Last().GetCell()) != Element.End)
-                    newLevel.SetTile(path.Last().GetCell(), isStartEndPath ? Element.End : Element.Node);
+                if (!IsNodeType(newLevel.GetTile(path[0].GetCell()))) {
+                    newLevel.SetTile(path[0].GetCell(), Element.Node);
+                }
+                if (!IsNodeType(newLevel.GetTile(path.Last().GetCell()))) {
+                    newLevel.SetTile(path.Last().GetCell(), Element.Node);
+                }
                 Element newTile;
                 for (int i = 1; i < path.Count - 1; i++) {
+                    if (IsNodeType(newLevel.GetTile(path[i].GetCell()))) {
+                        continue;
+                    }
                     newTile = Element.Node;
                     if (path[i].X < path[i + 1].X && path[i].Y == path[i + 1].Y)
                         newTile = Element.Right;
@@ -67,7 +116,11 @@ namespace Level {
                 }
             }
         }
+        private static bool IsNodeType(Element element) {
+            return element.ToDirection() == Direction.All;
+        }
     }
+
 
     public class Pathfinding {
         private const int MOVE_STRAIGHT_COST = 1;

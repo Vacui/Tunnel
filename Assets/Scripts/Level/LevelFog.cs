@@ -52,7 +52,7 @@ namespace Level
                         HiddenTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                     case TileVisibility.Visible:
-                        if (LevelManager.main.grid.GetTile(args.x, args.y) == Element.NULL && enabled)
+                        if (LevelManager.main.Grid.GetTile(args.x, args.y) == Element.NULL && enabled)
                             StartCoroutine(SpawnNullTileSprite(args.x, args.y));
                         DiscoveredTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
@@ -61,12 +61,12 @@ namespace Level
                 CheckTilesVisibilityAround(args.x, args.y);
             };
 
-            LevelManager.main.grid.OnGridCreated += (sender, args) =>
+            LevelManager.main.Grid.OnGridCreated += (sender, args) =>
             {
                 tilemap.ClearAllTiles();
                 grid.CreateGridXY(args.width, args.height, 1, Vector3.zero, false, TileVisibility.NULL, TileVisibility.NULL);
             };
-            LevelManager.main.grid.OnTileChanged += (sender, args) =>
+            LevelManager.main.Grid.OnTileChanged += (sender, args) =>
             {
                 HideTile(args.x, args.y);
                 if (args.value == Element.End)
@@ -88,7 +88,7 @@ namespace Level
         private void DiscoverTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Visible); }
         private void HideTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Invisible); }
 
-        private void DisableFog() {
+        public void DisableFog() {
             grid.SetAllTiles(TileVisibility.Visible);
         }
 
@@ -105,7 +105,7 @@ namespace Level
 
             if (grid.CellIsValid(x, y))
             {
-                if (LevelManager.main.grid.GetTile(x, y) == Element.NULL && grid.GetTile(x, y) == TileVisibility.Invisible)
+                if (LevelManager.main.Grid.GetTile(x, y) == Element.NULL && grid.GetTile(x, y) == TileVisibility.Invisible)
                 {
                     if (showDebugLog) Debug.Log($"Is Tile {x},{y} ReadyToVisible?");
                     isReadyToVisible = true;
@@ -118,9 +118,9 @@ namespace Level
                     for (int i = 0; i < neighbours.Count && isReadyToVisible; i++)
                     {
                         neighbour = neighbours[i];
-                        if (LevelManager.main.grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y))
+                        if (LevelManager.main.Grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y))
                         {
-                            type = LevelManager.main.grid.GetTile(neighbour.x, neighbour.y);
+                            type = LevelManager.main.Grid.GetTile(neighbour.x, neighbour.y);
                             visibility = grid.GetTile(neighbour.x, neighbour.y);
                             isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
                             if (showDebugLog) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
@@ -138,7 +138,7 @@ namespace Level
 
         private void CheckTilesVisibilityAround(int x, int y)
         {
-            Element type = LevelManager.main.grid.GetTile(x, y);
+            Element type = LevelManager.main.Grid.GetTile(x, y);
             TileVisibility visibility = grid.GetTile(x, y);
 
             if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
@@ -176,7 +176,7 @@ namespace Level
                 neighbour = neighbours[i];
                 if (!cellsChecked.Contains(neighbour))
                     if (grid.CellIsValid(neighbour.x, neighbour.y))
-                        if (LevelManager.main.grid.GetTile(neighbour.x, neighbour.y) == Element.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
+                        if (LevelManager.main.Grid.GetTile(neighbour.x, neighbour.y) == Element.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible)
                             result = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
             }
 

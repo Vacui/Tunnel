@@ -95,6 +95,25 @@ public static class MyUtils
     }
 }
 
+public static class GameDebug {
+
+    public static void Log(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
+        message = $"[{memberName}:{sourceLineNumber}] ({sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1)}) {message}";
+        Debug.Log(message, context);
+    }
+
+    public static void LogWarning(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
+        message = $"[{memberName}:{sourceLineNumber}] ({sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1)}) {message}";
+        Debug.LogWarning(message, context);
+    }
+
+    public static void LogError(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
+        message = $"[{memberName}:{sourceLineNumber}] ({sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1)}) {message}";
+        Debug.LogError(message, context);
+    }
+
+}
+
 public static class ListUtils
 {
     public static void RemoveLast<T>(this List<T> list)

@@ -206,7 +206,7 @@ namespace Level
 
         public const float CELLSIZE = 1f;
 
-        public GridXY<Element> grid { get; private set; }
+        public GridXY<Element> Grid { get; private set; }
         public enum LevelState { NotReady, NotPlayable, Ready, Playable }
         public LevelState LvlState { get; private set; }
 
@@ -227,16 +227,16 @@ namespace Level
         {
             if (main == null) main = this;
             else Destroy(this);
-            grid = new GridXY<Element>();
+            Grid = new GridXY<Element>();
         }
 
         private void OnEnable()
         {
             Player.StoppedMove += (sender, args) =>
             {
-                if (grid != null)
-                    if (grid.CellIsValid(args.x, args.y))
-                        if (grid.GetTile(args.x, args.y) == Element.End)
+                if (Grid != null)
+                    if (Grid.CellIsValid(args.x, args.y))
+                        if (Grid.GetTile(args.x, args.y) == Element.End)
                             OnWin?.Invoke();
             };
         }
@@ -256,7 +256,7 @@ namespace Level
                 OnLevelNotReady?.Invoke(this, null);
 
                 Debug.Log($"1. Initializing level...");
-                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
+                Grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
 
                 Debug.Log("Level is not playable!");
                 LvlState = LevelState.NotPlayable;
@@ -270,10 +270,10 @@ namespace Level
                 Element type;
                 for (int i = 0; i < lvlSeed.cells.Count; i++)
                 {
-                    grid.CellNumToCell(i, out int x, out int y);
+                    Grid.CellNumToCell(i, out int x, out int y);
                     type = (Element)lvlSeed.cells[i];
-                    grid.SetTile(x, y, type);
-                    if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
+                    Grid.SetTile(x, y, type);
+                    if (showDebugLog) Debug.Log($"Setted Tile n.{i} {Grid.GetTileToString(x, y)}");
                     if (type == Element.Start)
                     {
                         startPos.x = x;
@@ -292,6 +292,8 @@ namespace Level
                     LvlState = LevelState.Playable;
                     OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });
                     OnLevelStart?.Invoke();
+                } else {
+                    Debug.Log($"Level Start={hasStart}, End={hasEnd}");
                 }
             } else Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
         }

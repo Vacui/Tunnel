@@ -25,6 +25,7 @@ public class GridXY<T>
 
     public int Height { get; private set; }
     public int Width { get; private set; }
+    public int Size { get { return Width * Height; } }
 
     public int CellSize { get; private set; }
     public Vector3 OriginPosition { get; private set; }
