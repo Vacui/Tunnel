@@ -40,7 +40,7 @@ namespace Level {
             grid = new GridXY<TileVisibility>();
 
             grid.OnTileChanged += (sender, args) => {
-                if (showDebugLog) Debug.Log($"Setting Visibility Tile {args.x},{args.y} ({args.value})");
+                if (showDebugLog) GameDebug.Log($"Setting Visibility Tile {args.x},{args.y} ({args.value})");
 
                 switch (args.value) {
                     case TileVisibility.Invisible:
@@ -101,7 +101,7 @@ namespace Level {
 
             if (grid.CellIsValid(x, y)) {
                 if (LevelManager.main.Grid.GetTile(x, y) == Element.NULL && grid.GetTile(x, y) == TileVisibility.Invisible) {
-                    if (showDebugLog) Debug.Log($"Is Tile {x},{y} ReadyToVisible?");
+                    if (showDebugLog) GameDebug.Log($"Is Tile {x},{y} ReadyToVisible?");
 
                     isReadyToVisible = true;
 
@@ -116,7 +116,7 @@ namespace Level {
                             type = LevelManager.main.Grid.GetTile(neighbour.x, neighbour.y);
                             visibility = grid.GetTile(neighbour.x, neighbour.y);
                             isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
-                            if (showDebugLog) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
+                            if (showDebugLog) GameDebug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
                         }
                     }
 
@@ -135,7 +135,7 @@ namespace Level {
             Element type = LevelManager.main.Grid.GetTile(x, y);
             TileVisibility visibility = grid.GetTile(x, y);
 
-            if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
+            if (showDebugLog) GameDebug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
 
             if (type != Element.NULL && visibility == TileVisibility.Visible) {
                 List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
@@ -144,7 +144,7 @@ namespace Level {
                 }
             } else {
                 if (type == Element.NULL && visibility == TileVisibility.ReadyToVisible) {
-                    if (showDebugLog) Debug.Log("Checking for cluster completion");
+                    if (showDebugLog) GameDebug.Log("Checking for cluster completion");
 
                     List<Vector2Int> cellsChecked = new List<Vector2Int>() { };
                     if (CheckClusterTileVisibility(x, y, ref cellsChecked)) {
@@ -163,7 +163,7 @@ namespace Level {
 
             bool clusterIsNotInvisible = grid.CellIsValid(x, y) && grid.GetTile(x, y) != TileVisibility.Invisible;
 
-            if (showDebugLog) Debug.Log($"Checking cluster Tile {x},{y} ({grid.GetTile(x, y)}) = {clusterIsNotInvisible}");
+            if (showDebugLog) GameDebug.Log($"Checking cluster Tile {x},{y} ({grid.GetTile(x, y)}) = {clusterIsNotInvisible}");
 
             List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, true);
             Vector2Int neighbour;
