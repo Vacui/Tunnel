@@ -199,6 +199,8 @@ namespace Level {
         public const float CELLSIZE = 1f;
 
         public GridXY<Element> Grid { get; private set; }
+        public Vector2Int StartCell { get; private set; }
+        public Vector2Int EndCell { get; private set; }
         public enum LevelState { NotReady, NotPlayable, Ready, Playable }
         public LevelState LvlState { get; private set; }
 
@@ -254,9 +256,11 @@ namespace Level {
                 OnLevelNotPlayable?.Invoke(this, null);
 
                 Debug.Log("2. Generating level...");
-                Vector2Int startPos = Vector2Int.one * -1;
+                StartCell = Vector2Int.one * -1;
+                EndCell = Vector2Int.one * -1;
 
-                bool hasStart = false, hasEnd = lvlSeed.Size == 1;
+                bool hasStart = false;
+                bool hasEnd = lvlSeed.Size == 1;
 
                 Element type;
                 for (int i = 0; i < lvlSeed.cells.Count; i++) {
@@ -265,11 +269,13 @@ namespace Level {
                     Grid.SetTile(x, y, type);
                     if (showDebugLog) Debug.Log($"Setted Tile n.{i} {Grid.GetTileToString(x, y)}");
                     if (type == Element.Start) {
-                        startPos.x = x;
-                        startPos.y = y;
+                        StartCell = new Vector2Int(x, y);
                         hasStart = true;
                     } else {
-                        hasEnd = hasEnd || type == Element.End;
+                        if (type == Element.End) {
+                            EndCell = new Vector2Int(x, y);
+                            hasEnd = true;
+                        }
                     }
                 }
 
@@ -279,7 +285,7 @@ namespace Level {
                 if (hasStart && hasEnd) {
                     Debug.Log("Level is playable!");
                     LvlState = LevelState.Playable;
-                    OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });
+                    OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = StartCell.x, y = StartCell.y });
                     OnLevelStart?.Invoke();
                 } else {
                     Debug.Log($"Level Start={hasStart}, End={hasEnd}");

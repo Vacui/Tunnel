@@ -192,6 +192,15 @@ namespace Level {
             PathNode startNode = grid.GetTile(startCell.x, startCell.y);
             PathNode endNode = grid.GetTile(endCell.x, endCell.y);
 
+            if(startNode == null) {
+                GameDebug.LogError($"Can't find path because start node on cell {startCell} is null");
+                return null;
+            }
+            if (endNode == null) {
+                GameDebug.LogError($"Can't find path because end node on cell {endCell} is null");
+                return null;
+            }
+
             openList = new List<PathNode>() { startNode };
             closedList = new List<PathNode>();
 
