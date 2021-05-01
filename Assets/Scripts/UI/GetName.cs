@@ -6,6 +6,7 @@ namespace UI {
     public class GetName : MonoBehaviour {
         [SerializeField] private Transform parent;
 
+#if (UNITY_EDITOR)
         private void Awake() {
             if (parent == null) {
                 parent = transform.parent;
@@ -13,7 +14,6 @@ namespace UI {
             }
         }
 
-#if (UNITY_EDITOR)
         private void Update() {
             GetParentNameToString();
         }

@@ -3957,6 +3957,8 @@ GameObject:
   - component: {fileID: 1016507421}
   - component: {fileID: 1016507420}
   - component: {fileID: 1016507419}
+  - component: {fileID: 1016507423}
+  - component: {fileID: 1016507422}
   m_Layer: 5
   m_Name: Version (TMP)
   m_TagString: Untagged
@@ -4094,6 +4096,43 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1016507417}
   m_CullTransparentMesh: 0
+--- !u!114 &1016507422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016507417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003c25630808c7243847bd9149749434, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AwakeEvent:
+    _PersistentCalls: []
+  _StartEvent:
+    _PersistentCalls: []
+  _EnableEvent:
+    _PersistentCalls:
+    - _Target: {fileID: 1016507423}
+      _MethodName: UpdateText
+      _PersistentArguments: []
+  _DisableEvent:
+    _PersistentCalls: []
+  _DestroyEvent:
+    _PersistentCalls: []
+--- !u!114 &1016507423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016507417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cab0ee8438aea2045897d4024628c392, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1028431189
 GameObject:
   m_ObjectHideFlags: 0
