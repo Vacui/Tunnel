@@ -12,7 +12,7 @@ namespace Level {
 
         private static GridXY<Element> newLevel;
 
-        public static void GenerateLevel(int width, int height) {
+        public static GridXY<Element> GenerateLevel(int width, int height, int nodesPercentage) {
             width = Mathf.Clamp(width, WIDTH_MIN, WIDTH_MAX);
             height = Mathf.Clamp(height, HEIGHT_MIN, HEIGHT_MAX);
 
@@ -22,33 +22,38 @@ namespace Level {
             newLevel.CreateGridXY(width, height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
             Pathfinding pathfinding = new Pathfinding(width, height);
 
-            List<Vector2Int> nodes = GenerateNodes((width * height) / 8);
-            if (GeneratePaths(nodes, pathfinding) < nodes.Count / 2) {
-                LevelManager.main.LoadLevel(newLevel.ToSeedString());
-                LevelFog.main.DisableFog();
+            List<Vector2Int> nodes = GenerateNodes(Mathf.RoundToInt(Mathf.Clamp((width * height) * (nodesPercentage / 100f), 2, newLevel.Size)));
+            int paths = GeneratePaths(nodes, pathfinding);
+            if (paths < nodes.Count / 2) {
+                return newLevel;
             } else {
-                GameDebug.Log("Error in generating paths, retry");
-                GenerateLevel(width, height);
+                GameDebug.LogWarning($"Generated just {paths} paths");
+                return null;
             }
         }
 
         private static List<Vector2Int> GenerateNodes(int num) {
-            int attempts = 0;
-            int maxAttempts = num * 2;
+            if (num > 0) {
+                int attempts = 0;
+                int maxAttempts = num * 2;
 
-            Vector2Int cell = Vector2Int.zero;
-            List<Vector2Int> nodesAlreadyFound = new List<Vector2Int>();
-            for (int i = 0; i < num && attempts < maxAttempts; i++, attempts++) {
-                cell = new Vector2Int(Random.Range(0, newLevel.Width), Random.Range(0, newLevel.Height));
-                if (IsNodeType(newLevel.GetTile(cell)) || nodesAlreadyFound.Contains(cell)) {
-                    i--;
-                    continue;
+                List<Vector2Int> nodesAlreadyFound = new List<Vector2Int>();
+                Vector2Int cell = Vector2Int.zero;
+                for (int i = 0; i < num && attempts < maxAttempts; i++, attempts++) {
+                    cell = new Vector2Int(Random.Range(0, newLevel.Width), Random.Range(0, newLevel.Height));
+                    if (IsNodeType(newLevel.GetTile(cell)) || nodesAlreadyFound.Contains(cell)) {
+                        i--;
+                        continue;
+                    }
+                    nodesAlreadyFound.Add(cell);
                 }
-                nodesAlreadyFound.Add(cell);
-            }
-            GameDebug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts + 1}/{maxAttempts}");
+                GameDebug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts}/{maxAttempts}");
 
-            return nodesAlreadyFound;
+                return nodesAlreadyFound;
+            }
+
+            GameDebug.LogWarning($"Can't generate {num} nodes");
+            return null;
         }
 
         private static int GeneratePaths(List<Vector2Int> nodes, Pathfinding pathfinding) {
@@ -71,7 +76,7 @@ namespace Level {
                     }
                 }
                 int unusedNodesCount = usedNodes.Where(n => n == false).Count();
-                GameDebug.Log($"Connected {nodes.Count - unusedNodesCount}/{nodes.Count} nodes, attempts={attempts + 1}/{maxAttempts}");
+                GameDebug.Log($"Connected {nodes.Count - unusedNodesCount}/{nodes.Count} nodes, attempts={attempts}/{maxAttempts}");
 
 
                 for (int i = 0; i < nodes.Count; i++) {
@@ -87,7 +92,8 @@ namespace Level {
                 return unusedNodesCount;
             }
 
-            return 1;
+            GameDebug.LogWarning("There are no nodes for which generate paths");
+            return 0;
         }
 
         private static void ApplyPath(List<Pathfinding.PathNode> path) {
