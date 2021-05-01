@@ -5,8 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
-public enum Direction
-{
+public enum Direction {
     NULL,
     All,
     Up,
@@ -15,17 +14,13 @@ public enum Direction
     Left
 }
 
-public static class DirectionUtils
-{
-    public static bool IsNull(this Direction dir)
-    {
+public static class DirectionUtils {
+    public static bool IsNull(this Direction dir) {
         return dir == Direction.NULL;
     }
 
-    public static Direction Opposite(this Direction dir)
-    {
-        switch (dir)
-        {
+    public static Direction Opposite(this Direction dir) {
+        switch (dir) {
             default:
             case Direction.Up: return Direction.Down;
             case Direction.Right: return Direction.Left;
@@ -34,12 +29,10 @@ public static class DirectionUtils
         }
     }
 
-    public static void ToOffset(this Direction dir, out int offsetX, out int offsetY)
-    {
+    public static void ToOffset(this Direction dir, out int offsetX, out int offsetY) {
         offsetX = 0;
         offsetY = 0;
-        switch (dir)
-        {
+        switch (dir) {
             case Direction.Up: offsetY++; break;
             case Direction.Right: offsetX++; break;
             case Direction.Down: offsetY--; break;
@@ -55,8 +48,7 @@ public static class DirectionUtils
         return tileCell + dir.ToOffset();
     }
 
-    public static float ToAngle(this Direction dir)
-    {
+    public static float ToAngle(this Direction dir) {
         float result = -1;
 
         if (dir != Direction.NULL)
@@ -65,10 +57,8 @@ public static class DirectionUtils
         return result;
     }
 
-    public static Direction Rotate(this Direction direction, int angle)
-    {
-        switch (direction)
-        {
+    public static Direction Rotate(this Direction direction, int angle) {
+        switch (direction) {
             case Direction.NULL: return Direction.NULL;
             case Direction.All: return Direction.All;
             default:
@@ -81,8 +71,7 @@ public static class DirectionUtils
 }
 
 [Serializable]
-public enum Element
-{
+public enum Element {
     NULL = 0,
     Start = 1,
     End = 2,
@@ -93,13 +82,10 @@ public enum Element
     Left = 7
 }
 
-public static class ElementUtils
-{
-    public static Direction ToDirection(this Element tileType)
-    {
+public static class ElementUtils {
+    public static Direction ToDirection(this Element tileType) {
         Direction result = Direction.NULL;
-        switch (tileType)
-        {
+        switch (tileType) {
             case Element.NULL: result = Direction.NULL; break;
             case Element.Start: result = Direction.All; break;
             case Element.Node: result = Direction.All; break;
