@@ -4,17 +4,19 @@ using UnityEngine;
 
 namespace Level {
     public static class LevelGenerator {
-
-        private const int WIDTH_MIN = 1;
-        private const int WIDTH_MAX = 20;
-        private const int HEIGHT_MIN = 1;
-        private const int HEIGHT_MAX = 20;
-
         private static GridXY<Element> newLevel;
 
         public static GridXY<Element> GenerateLevel(int width, int height, int nodesPercentage) {
-            width = Mathf.Clamp(width, WIDTH_MIN, WIDTH_MAX);
-            height = Mathf.Clamp(height, HEIGHT_MIN, HEIGHT_MAX);
+
+            if(width <= 0) {
+                GameDebug.LogError($"Can't generate a level with {width} width");
+                return null;
+            }
+
+            if (height <= 0) {
+                GameDebug.LogError($"Can't generate a level with {height} height");
+                return null;
+            }
 
             GameDebug.Log($"Generating level {width}x{height}");
 
