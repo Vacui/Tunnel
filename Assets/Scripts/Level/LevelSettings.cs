@@ -26,7 +26,7 @@ namespace Level {
             if(newLevel != null) {
                 LevelManager.main.LoadLevel(newLevel.ToSeedString());
             } else {
-                GameDebug.LogWarning("Level generated is not valid, abort");
+                Debug.LogWarning("Level generated is not valid, abort");
             }
         }
     }

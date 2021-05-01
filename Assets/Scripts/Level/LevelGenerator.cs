@@ -9,16 +9,16 @@ namespace Level {
         public static GridXY<Element> GenerateLevel(int width, int height, int nodesPercentage) {
 
             if(width <= 0) {
-                GameDebug.LogError($"Can't generate a level with {width} width");
+                Debug.LogError($"Can't generate a level with {width} width");
                 return null;
             }
 
             if (height <= 0) {
-                GameDebug.LogError($"Can't generate a level with {height} height");
+                Debug.LogError($"Can't generate a level with {height} height");
                 return null;
             }
 
-            GameDebug.Log($"Generating level {width}x{height}");
+            Debug.Log($"Generating level {width}x{height}");
 
             newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(width, height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
@@ -29,7 +29,7 @@ namespace Level {
             if (paths < nodes.Count / 2) {
                 return newLevel;
             } else {
-                GameDebug.LogWarning($"Generated just {paths} paths");
+                Debug.LogWarning($"Generated just {paths} paths");
                 return null;
             }
         }
@@ -50,12 +50,12 @@ namespace Level {
                     nodesAlreadyFound.Add(cell);
                     newLevel.SetTile(cell, Element.Node);
                 }
-                GameDebug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts}/{maxAttempts}");
+                Debug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts}/{maxAttempts}");
 
                 return nodesAlreadyFound;
             }
 
-            GameDebug.LogWarning($"Can't generate {num} nodes");
+            Debug.LogWarning($"Can't generate {num} nodes");
             return null;
         }
 
@@ -93,7 +93,7 @@ namespace Level {
                 }
 
                 int unusedNodesCount = usedNodes.Where(n => n == false).Count();
-                GameDebug.Log($"Connected {nodes.Count - unusedNodesCount}/{nodes.Count} nodes, attempts={attempts}/{maxAttempts}");
+                Debug.Log($"Connected {nodes.Count - unusedNodesCount}/{nodes.Count} nodes, attempts={attempts}/{maxAttempts}");
 
 
                 for (int i = 0; i < nodes.Count; i++) {
@@ -101,7 +101,7 @@ namespace Level {
                         newLevel.SetTile(nodes[i], Element.NULL);
                     }
                 }
-                GameDebug.Log($"Deleted {unusedNodesCount} unused nodes");
+                Debug.Log($"Deleted {unusedNodesCount} unused nodes");
 
                 newLevel.SetTile(nodes[0], Element.Start);
                 newLevel.SetTile(nodes[Random.Range(1, nodes.Count - unusedNodesCount)], Element.End);
@@ -109,7 +109,7 @@ namespace Level {
                 return unusedNodesCount;
             }
 
-            GameDebug.LogWarning("There are no nodes for which generate paths");
+            Debug.LogWarning("There are no nodes for which generate paths");
             return 0;
         }
 
@@ -195,11 +195,11 @@ namespace Level {
             PathNode endNode = grid.GetTile(endCell.x, endCell.y);
 
             if(startNode == null) {
-                GameDebug.LogError($"Can't find path because start node on cell {startCell} is null");
+                Debug.LogError($"Can't find path because start node on cell {startCell} is null");
                 return null;
             }
             if (endNode == null) {
-                GameDebug.LogError($"Can't find path because end node on cell {endCell} is null");
+                Debug.LogError($"Can't find path because end node on cell {endCell} is null");
                 return null;
             }
 

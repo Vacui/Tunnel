@@ -86,29 +86,6 @@ public static class MyUtils {
     }
 }
 
-public static class GameDebug {
-
-    private static string ApplyMessageFormat(object message, UnityEngine.Object context = null, string memberName = "", string sourceFilePath = "", int sourceLineNumber = 0) {
-        return string.Format("[{0}:{1}] ({2}) {3}", memberName, sourceLineNumber, sourceFilePath.Substring(sourceFilePath.LastIndexOf(@"\") + 1), message);
-    }
-
-    public static void Log(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
-        message = ApplyMessageFormat(message, context, memberName, sourceFilePath, sourceLineNumber);
-        Debug.Log(message, context);
-    }
-
-    public static void LogWarning(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
-        message = ApplyMessageFormat(message, context, memberName, sourceFilePath, sourceLineNumber);
-        Debug.LogWarning(message, context);
-    }
-
-    public static void LogError(object message, UnityEngine.Object context = null, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "", [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "", [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0) {
-        message = ApplyMessageFormat(message, context, memberName, sourceFilePath, sourceLineNumber);
-        Debug.LogError(message, context);
-    }
-
-}
-
 public static class ListUtils {
     public static void RemoveLast<T>(this List<T> list, int offset = 0) {
         if (list == null || list.Count <= 0) {
