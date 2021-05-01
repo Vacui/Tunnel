@@ -140,8 +140,11 @@ public class GridXY<T> {
                                 neighbours.Add(new Vector2Int(x + xT, y + yT));
         return neighbours;
     }
+    public List<Vector2Int> GatherNeighbourCells(Vector2Int cell, int radius = 1, bool avoidCenter = false, bool avoidCorners = false) {
+        return GatherNeighbourCells(cell.x, cell.y, radius, avoidCenter, avoidCorners);
+    }
 
-    public List<T> GatherNeighbourTiles(int x = 0, int y = 0, int radius = 1, bool avoidCenter = false, bool avoidCorners = false) {
+        public List<T> GatherNeighbourTiles(int x = 0, int y = 0, int radius = 1, bool avoidCenter = false, bool avoidCorners = false) {
         List<T> neighbours = new List<T>();
         foreach (Vector2Int neighbour in GatherNeighbourCells(x, y, radius, avoidCenter, avoidCorners))
             neighbours.Add(GetTile(neighbour.x, neighbour.y));

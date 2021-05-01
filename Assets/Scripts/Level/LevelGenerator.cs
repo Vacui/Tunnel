@@ -20,7 +20,7 @@ namespace Level {
 
             newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(width, height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
-            Pathfinding pathfinding = new Pathfinding(width, height);
+            Pathfinding pathfinding = new Pathfinding(width, height, true, false);
 
             List<Vector2Int> nodes = GenerateNodes(Mathf.RoundToInt(Mathf.Clamp((width * height) * (nodesPercentage / 100f), 2, newLevel.Size)));
             int paths = GeneratePaths(nodes, pathfinding);
@@ -46,6 +46,7 @@ namespace Level {
                         continue;
                     }
                     nodesAlreadyFound.Add(cell);
+                    newLevel.SetTile(cell, Element.Node);
                 }
                 GameDebug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts}/{maxAttempts}");
 
@@ -63,6 +64,7 @@ namespace Level {
 
                 List<Pathfinding.PathNode> newPath = new List<Pathfinding.PathNode>();
                 List<bool> usedNodes = Enumerable.Repeat(false, nodes.Count).ToList();
+
                 int path;
                 for (path = 0; path < nodes.Count - 1 && attempts < nodes.Count * 2; path++, attempts++) {
                     newPath = pathfinding.FindPath(nodes[path], nodes[path + 1], newLevel);
@@ -75,6 +77,19 @@ namespace Level {
                         usedNodes[nodes.IndexOf(p.GetCell())] = true;
                     }
                 }
+
+                for(int i = 0; i < usedNodes.Count; i++) {
+                    if (usedNodes[i]) {
+                        List<Vector2Int> neighbours = newLevel.GatherNeighbourCells(nodes[i]);
+                        neighbours = neighbours.Where(n => nodes.Contains(n)).ToList();
+                        if (neighbours.Count > 0) {
+                            foreach(Vector2Int neighbour in neighbours) {
+                                usedNodes[nodes.IndexOf(neighbour)] = true;
+                            }
+                        }
+                    }
+                }
+
                 int unusedNodesCount = usedNodes.Where(n => n == false).Count();
                 GameDebug.Log($"Connected {nodes.Count - unusedNodesCount}/{nodes.Count} nodes, attempts={attempts}/{maxAttempts}");
 
@@ -84,7 +99,7 @@ namespace Level {
                         newLevel.SetTile(nodes[i], Element.NULL);
                     }
                 }
-                GameDebug.Log($"Deleted unused nodes");
+                GameDebug.Log($"Deleted {unusedNodesCount} unused nodes");
 
                 newLevel.SetTile(nodes[0], Element.Start);
                 newLevel.SetTile(nodes[Random.Range(1, nodes.Count - unusedNodesCount)], Element.End);
@@ -161,10 +176,14 @@ namespace Level {
         private GridXY<Element> gridElements;
         private List<PathNode> openList;
         private List<PathNode> closedList;
+        private bool includeNullElements;
+        private bool searchBestPath;
 
-        public Pathfinding(int width, int height) {
+        public Pathfinding(int width, int height, bool includeNullElements, bool searchBestPath) {
             grid = new GridXY<PathNode>();
             grid.CreateGridXY(width, height, 1, Vector3.zero, true, null, (GridXY<PathNode> grid, int x, int y) => new PathNode(grid, x, y));
+            this.includeNullElements = includeNullElements;
+            this.searchBestPath = searchBestPath;
         }
 
         public List<PathNode> FindPath(Vector2Int startCell, Vector2Int endCell, GridXY<Element> gridElements) {
@@ -188,8 +207,13 @@ namespace Level {
             startNode.hCost = CalculateDistanceCost(startNode, endNode);
 
             while (openList.Count > 0) {
-                //PathNode currentNode = GetLowestFCostNode(openList);
-                PathNode currentNode = openList[Random.Range(0, openList.Count - 1)];
+                PathNode currentNode;
+
+                if (searchBestPath) {
+                    currentNode = GetLowestFCostNode(openList);
+                } else {
+                    currentNode = openList[Random.Range(0, openList.Count - 1)];
+                }
 
                 if (currentNode == endNode) {
                     // Reached final node
@@ -250,6 +274,10 @@ namespace Level {
                 if (grid.CellIsValid(currentNode.X, currentNode.Y + 1)) {
                     neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y + 1));
                 }
+            }
+
+            if (!includeNullElements) {
+                neighbourList = neighbourList.Where(p => gridElements.GetTile(p.GetCell()) != Element.NULL).ToList();
             }
 
             return neighbourList;
