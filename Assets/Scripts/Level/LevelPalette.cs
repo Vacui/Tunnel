@@ -3,8 +3,6 @@ using UltEvents;
 using UnityEngine;
 
 public class LevelPalette : MonoBehaviour {
-    [System.Serializable]
-    public sealed class LevelPaletteColorChangeEvent : UltEvent<Color> { }
     private static Color color;
     public static Color Color {
         get { return color; }

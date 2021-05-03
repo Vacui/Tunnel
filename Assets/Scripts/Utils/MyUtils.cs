@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UltEvents;
 using UnityEngine;
 
 public static class MyUtils {
@@ -145,3 +146,8 @@ public static class EditorUtils {
         return result;
     }
 }
+
+[Serializable]
+public sealed class UltEventColor : UltEvent<Color> { }
+[Serializable]
+public sealed class UltEventString : UltEvent<string> { }

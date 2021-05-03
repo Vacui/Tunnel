@@ -83,9 +83,9 @@ public enum Element {
 }
 
 public static class ElementUtils {
-    public static Direction ToDirection(this Element tileType) {
+    public static Direction ToDirection(this Element element) {
         Direction result = Direction.NULL;
-        switch (tileType) {
+        switch (element) {
             case Element.NULL: result = Direction.NULL; break;
             case Element.Start: result = Direction.All; break;
             case Element.Node: result = Direction.All; break;
@@ -96,6 +96,10 @@ public static class ElementUtils {
             case Element.Left: result = Direction.Left; break;
         }
         return result;
+    }
+
+    public static bool IsNodeType(this Element element) {
+        return element.ToDirection() == Direction.All;
     }
 }
 
