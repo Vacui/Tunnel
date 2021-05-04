@@ -149,5 +149,9 @@ public static class EditorUtils {
 
 [Serializable]
 public sealed class UltEventColor : UltEvent<Color> { }
+
 [Serializable]
 public sealed class UltEventString : UltEvent<string> { }
+
+[Serializable]
+public sealed class UltEventFloat : UltEvent<float> { }

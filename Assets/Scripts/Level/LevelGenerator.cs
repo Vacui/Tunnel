@@ -18,8 +18,8 @@ namespace Level {
         [SerializeField, Disable] private int nodesPercentage;
         System.Random rnd;
 
-        Thread generating;
-        enum LevelGenerationStatus {
+        private Thread generating;
+        private enum LevelGenerationStatus {
             Idle,
             Generating,
             Completed,
@@ -27,11 +27,14 @@ namespace Level {
         }
         private LevelGenerationStatus status;
         public bool stopGenerating = false;
+        private float genProgressionPrev;
+        private float genProgression;
 
         [Header("Events")]
-        [SerializeField] private UltEvent StartedGeneration;
-        [SerializeField] private UltEvent StoppedGeneration;
-        [SerializeField] private UltEvent AbortedGeneration;
+        [SerializeField] private UltEvent GenerationStarted;
+        [SerializeField] private UltEvent GenerationStopped;
+        [SerializeField] private UltEvent GenerationAborted;
+        [SerializeField] private UltEventFloat GenerationProgress;
 
         private void Awake() {
             ResetSettings();
@@ -40,12 +43,18 @@ namespace Level {
         private void Update() {
             if(status == LevelGenerationStatus.Abort) {
                 AbortGeneration();
+                GenerationAborted?.Invoke();
+            }
+
+            if(genProgressionPrev != genProgression) {
+                GenerationProgress?.Invoke(genProgression);
+                genProgressionPrev = genProgression;
             }
 
             if (status == LevelGenerationStatus.Completed) {
                 Debug.Log("Generated level");
                 status = LevelGenerationStatus.Idle;
-                StoppedGeneration?.Invoke();
+                GenerationStopped?.Invoke();
                 if (newLevel != null) {
                     LevelManager.main.LoadLevel(newLevel.ToSeedString());
                 } else {
@@ -68,12 +77,14 @@ namespace Level {
             Debug.Log("Before start thread");
             generating = new Thread(GenerateLevel);
             generating.Start();
-            StartedGeneration?.Invoke();
+            GenerationStarted?.Invoke();
             Debug.Log("Started thread");
         }
 
         private void GenerateLevel() {
             status = LevelGenerationStatus.Idle;
+            genProgressionPrev = -1;
+            genProgression = 0;
             rnd = new System.Random(System.DateTime.Now.Millisecond);
 
             if (lvlWidth <= 0) {
@@ -118,7 +129,7 @@ namespace Level {
                     nodesAlreadyFound.Add(cell);
                     newLevel.SetTile(cell, Element.Node);
                 }
-                Debug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes, attempts={attempts}/{maxAttempts}");
+                Debug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes in {attempts}/{maxAttempts} attempts");
 
                 return nodesAlreadyFound;
             }
@@ -136,25 +147,31 @@ namespace Level {
                 List<bool> nodesUsed = Enumerable.Repeat(false, nodes.Count).ToList();
 
                 int path;
-                for (path = 0; path < nodes.Count - 1 && attempts < nodes.Count * 2; path++, attempts++) {
-                    newPath = pathfinding.FindPath(nodes[path], nodes[path + 1], newLevel);
+                int nodesUnusable = 0;
+                for (path = 0; path < nodes.Count - 1 && attempts < maxAttempts; path++, attempts++) {
+                    newPath = pathfinding.FindPath(nodes[path], nodes[path + 1 + nodesUnusable], newLevel);
                     if (newPath == null) {
                         path--;
-                        continue;
+                        nodesUnusable += (path + nodesUnusable < nodes.Count - 2) ? 1 : 0;
+                    } else {
+                        ApplyPath(newPath);
+                        foreach (Pathfinding.PathNode p in newPath.Where(tmpP => nodes.Contains(tmpP.GetCell())).ToList()) {
+                            nodesUsed[nodes.IndexOf(p.GetCell())] = true;
+                        }
+                        path += nodesUnusable;
+                        nodesUnusable = 0;
                     }
-                    ApplyPath(newPath);
-                    foreach (Pathfinding.PathNode p in newPath.Where(tmpP => nodes.Contains(tmpP.GetCell())).ToList()) {
-                        nodesUsed[nodes.IndexOf(p.GetCell())] = true;
-                    }
+                    genProgression = Mathf.Max((float)path / nodes.Count, (float)attempts / maxAttempts);
                 }
 
-                nodesUsed = SearchForNodeClusters(nodes, nodesUsed);
+                Debug.Log($"Generated {path}/{nodes.Count} paths in {attempts}/{maxAttempts} attempts");
 
-                nodes = TrimNodes(nodes, nodesUsed);
-                Debug.Log($"Deleted unused nodes");
+                //SearchForNodeClusters(nodes, nodesUsed);
+
+                nodes = RemoveUnusedNodes(nodes, nodesUsed);
 
                 newLevel.SetTile(nodes[0], Element.Start);
-                newLevel.SetTile(nodes[rnd.Next(1, nodes.Count - 1)], Element.End);
+                newLevel.SetTile(nodes[nodes.Count - 1], Element.End);
 
                 return nodes.Count;
             }
@@ -163,7 +180,7 @@ namespace Level {
             return 0;
         }
 
-        private List<bool> SearchForNodeClusters(List<Vector2Int> nodes, List<bool> nodesUsed) {
+        private void SearchForNodeClusters(List<Vector2Int> nodes, List<bool> nodesUsed) {
             for (int i = 0; i < nodesUsed.Count; i++) {
                 if (nodesUsed[i]) {
                     List<Vector2Int> neighbours = newLevel.GatherNeighbourCells(nodes[i], 1, true, true);
@@ -175,10 +192,9 @@ namespace Level {
                     }
                 }
             }
-            return nodesUsed;
         }
 
-        private List<Vector2Int> TrimNodes(List<Vector2Int> nodes, List<bool> nodesUsed) {
+        private List<Vector2Int> RemoveUnusedNodes(List<Vector2Int> nodes, List<bool> nodesUsed) {
             List<Vector2Int> result = new List<Vector2Int>();
             for (int i = 0; i < nodes.Count; i++) {
                 if (!nodesUsed[i]) {
@@ -187,6 +203,7 @@ namespace Level {
                     result.Add(nodes[i]);
                 }
             }
+            Debug.Log($"Removed unused nodes");
             return result;
         }
 
@@ -222,8 +239,7 @@ namespace Level {
                 Debug.Log("Aborting Thread");
                 status = LevelGenerationStatus.Idle;
                 generating.Abort();
-                StoppedGeneration?.Invoke();
-                AbortedGeneration?.Invoke();
+                GenerationStopped?.Invoke();
             }
         }
     }
