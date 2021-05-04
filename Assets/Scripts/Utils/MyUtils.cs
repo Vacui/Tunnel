@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UltEvents;
 using UnityEngine;
+using UnityEngine.UI;
 
 public static class MyUtils {
     // source: https://www.codegrepper.com/code-examples/csharp/how+to+clear+console+through+script+unity
@@ -126,6 +127,19 @@ public static class UIUtils {
     // Get Default Unity Font, used in text objects if no font given
     public static Font GetDefaultFont() {
         return Resources.GetBuiltinResource<Font>("Arial.ttf");
+    }
+
+    // source: https://forum.unity.com/threads/layoutgroup-does-not-refresh-in-its-current-frame.458446/#post-6712318
+    public static void RefreshLayoutGroupsImmediateAndRecursive(GameObject root) {
+        var componentsInChildren = root.GetComponentsInChildren<LayoutGroup>(true);
+
+        foreach (var layoutGroup in componentsInChildren) {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup.GetComponent<RectTransform>());
+        }
+
+        var parent = root.GetComponent<LayoutGroup>();
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(parent.GetComponent<RectTransform>());
     }
 }
 

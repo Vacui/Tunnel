@@ -4,9 +4,10 @@ using UnityEngine;
 namespace UI {
     [RequireComponent(typeof(RectTransform))]
     public class TabGroup : MonoBehaviour {
-        [SerializeField] string originName;
-        Dictionary<string, Tab> tabs;
-        [SerializeField, Disable] List<Tab> history;
+        [SerializeField] private Tab originTab;
+        private string OriginName { get { return originTab.GetName(); } }
+        private Dictionary<string, Tab> tabs;
+        [SerializeField, Disable] private List<Tab> history;
         public List<Tab> History { get { return history; } }
 
         private void Awake() {
@@ -18,7 +19,8 @@ namespace UI {
             name = name.Trim().ToLower();
             if (!tabs.ContainsKey(name)) {
                 tabs.Add(name, tab);
-                if (name == originName) {
+                Debug.Log($"Subscribing tab {name} ({OriginName})");
+                if (name == OriginName) {
                     ShowTab(name);
                 } else {
                     tab.Inactive();
@@ -35,7 +37,7 @@ namespace UI {
                     history.Last().Inactive();
                 }
 
-                if (name == originName) {
+                if (name == OriginName) {
                     history = new List<Tab>();
                 }
 
