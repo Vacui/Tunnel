@@ -19,7 +19,6 @@ namespace UI {
             name = name.Trim().ToLower();
             if (!tabs.ContainsKey(name)) {
                 tabs.Add(name, tab);
-                Debug.Log($"Subscribing tab {name} ({OriginName})");
                 if (name == OriginName) {
                     ShowTab(name);
                 } else {
