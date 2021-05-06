@@ -131,52 +131,80 @@ namespace Level {
     public class LevelManager : MonoBehaviour {
         public class Seed {
             int width;
-            public int Width { get { return width; } }
+            public int Width { get { return width; } private set { width = value; } }
             int height;
-            public int Height { get { return height; } }
+            public int Height { get { return height; } private set { height = value; } }
             public int Size { get { return width * height; } }
-            public List<int> cells { get; private set; }
+            public List<int> Cells { get; private set; }
             public string SeedOriginal { get; private set; }
 
-            public bool isValid { get; private set; }
+            public bool IsValid { get; private set; }
 
             public Seed(string seed) {
-                width = -1;
-                height = -1;
-                cells = new List<int>();
+                Width = -1;
+                Height = -1;
+                Cells = new List<int>();
 
                 SeedOriginal = seed;
                 seed = seed.Trim();
                 List<string> seedParts = seed.Split('/').ToList();
 
-                isValid = false;
+                IsValid = false;
 
-                if (seedParts.Count == 3) {
-                    if (int.TryParse(seedParts[0], out width)) {
-                        if (width > 0) {
-                            if (int.TryParse(seedParts[1], out height)) {
-                                if (height > 0) {
-                                    if (seedParts[2].Count(c => (c == '-')) == (width * height) - 1) {
-                                        List<string> cellString = seedParts[2].Split('-').ToList();
-                                        for (int i = 0; i < cellString.Count; i++) {
-                                            if (cellString[i] != "" && int.TryParse(cellString[i], out int cell)) {
-                                                cells.Add(cell);
-                                            } else {
-                                                cells.Add(0);
-                                            }
-                                        }
-                                        isValid = cells.Count == cellString.Count;
-                                    } else Debug.LogWarning($"Error in the seed cells section length [{seedParts[2].Count(c => (c == '-'))}]");
-                                } else Debug.LogWarning($"Seed height is less or equal to 0 [{height}]");
-                            } else Debug.LogWarning($"Error in parsing seed height number [{seedParts[1]}]");
-                        } else Debug.LogWarning($"Seed width is less or equal to 0 [{width}]");
-                    } else Debug.LogWarning($"Error in parsing seed width number [{seedParts[0]}]");
-                } else Debug.LogWarning($"Error in seed number of parts [{seedParts.Count}]");
+                if (seedParts.Count != 3) {
+                    Debug.LogWarning($"Error in seed number of parts [{seedParts.Count}]");
+                    return;
+                }
+
+                if(!int.TryParse(seedParts[0], out width)) {
+                    Debug.LogWarning($"Error in parsing seed Width [{seedParts[0]}]");
+                    return;
+                }
+
+                if(Width <= 0) {
+                    Debug.LogWarning($"Seed Width is less or equal to 0 [{Width}]");
+                    return;
+                }
+
+                if(!int.TryParse(seedParts[1], out height)) {
+                    Debug.LogWarning($"Error in parsing seed Height [{seedParts[1]}]");
+                    return;
+                }
+
+                if (Height <= 0) {
+                    Debug.LogWarning($"Seed Height is less or equal to 0 [{Height}]");
+                    return;
+                }
+
+                if(seedParts[2].Count(c => (c == '-')) != (width * height) - 1) {
+                    Debug.LogWarning($"Error in the seed cells section length [{seedParts[2].Count(c => (c == '-'))}]");
+                    return;
+                }
+
+
+                List<string> cellString = seedParts[2].Split('-').ToList();
+                for (int i = 0; i < cellString.Count; i++) {
+                    if (cellString[i] != "" && int.TryParse(cellString[i], out int cell)) {
+                        Cells.Add(cell);
+                    } else {
+                        Cells.Add(0);
+                    }
+                }
+                IsValid = Cells.Count == cellString.Count;
+            }
+
+            public GridXY<Element> ToGrid() {
+                GridXY<Element> grid = new GridXY<Element>();
+                grid.CreateGridXY(Width, Height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
+                for(int i = 0; i < Cells.Count; i++) {
+                    grid.SetTile(i, (Element)Cells[i]);
+                }
+                return grid;
             }
 
             public override string ToString() {
                 string seed = $"{width}/{height}/";
-                foreach (int cell in cells) {
+                foreach (int cell in Cells) {
                     seed += $"{cell}-";
                 }
                 seed.Trim('-');
@@ -216,48 +244,52 @@ namespace Level {
 
         private void OnEnable() {
             Player.StoppedMove += (sender, args) => {
-                if (Grid != null) {
-                    if (Grid.CellIsValid(args.x, args.y)) {
-                        if (Grid.GetTile(args.x, args.y) == Element.End) {
-                            OnWin?.Invoke();
-                        }
+                if (Grid == null) {
+                    return;
+                }
+
+                if (Grid.CellIsValid(args.x, args.y)) {
+                    if (Grid.GetTile(args.x, args.y) == Element.End) {
+                        OnWin?.Invoke();
                     }
                 }
             };
         }
 
-        public void LoadLevel(Seed lvlSeed) {
-            if (lvlSeed != null && lvlSeed.isValid) {
-                Debug.Log("0. Loading level...");
-                Debug.Log($"   Seed: {lvlSeed}");
+        public void LoadLevel(GridXY<Element> newLevel) {
+            if (newLevel == null || newLevel.Size == 0) {
+                Debug.LogWarning("The new level grid is not valid");
+                return;
+            }
 
-                LeanTween.cancelAll();
-                StopAllCoroutines();
+            Debug.Log($"0. Loading level {newLevel.Width}x{newLevel.Height}...");
+            LeanTween.cancelAll();
+            StopAllCoroutines();
 
-                Debug.Log("Level is not ready!");
-                LvlState = LevelState.NotReady;
-                OnLevelNotReady?.Invoke(this, null);
+            Debug.Log("Level is not ready!");
+            LvlState = LevelState.NotReady;
+            OnLevelNotReady?.Invoke(this, null);
 
-                Debug.Log($"1. Initializing level...");
-                Grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
+            Debug.Log($"1. Initializing level...");
+            Grid.CreateGridXY(newLevel.Width, newLevel.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
 
-                Debug.Log("Level is not playable!");
-                LvlState = LevelState.NotPlayable;
-                OnLevelNotPlayable?.Invoke(this, null);
+            Debug.Log("Level is not playable!");
+            LvlState = LevelState.NotPlayable;
+            OnLevelNotPlayable?.Invoke(this, null);
 
-                Debug.Log("2. Generating level...");
-                StartCell = Vector2Int.one * -1;
-                EndCell = Vector2Int.one * -1;
+            Debug.Log("2. Generating level...");
+            StartCell = Vector2Int.one * -1;
+            EndCell = Vector2Int.one * -1;
 
-                bool hasStart = false;
-                bool hasEnd = lvlSeed.Size == 1;
+            bool hasStart = false;
+            bool hasEnd = Grid.Size == 1;
 
-                Element type;
-                for (int i = 0; i < lvlSeed.cells.Count; i++) {
-                    Grid.CellNumToCell(i, out int x, out int y);
-                    type = (Element)lvlSeed.cells[i];
+            Element type;
+            for (int x = 0; x < Grid.Width; x++) {
+                for (int y = 0; y < Grid.Height; y++) {
+                    type = newLevel.GetTile(x, y);
+                    if (showDebugLog) Debug.Log($"Setted Tile {x},{y} ({type})");
                     Grid.SetTile(x, y, type);
-                    if (showDebugLog) Debug.Log($"Setted Tile n.{i} {Grid.GetTileToString(x, y)}");
                     if (type == Element.Start) {
                         StartCell = new Vector2Int(x, y);
                         hasStart = true;
@@ -268,26 +300,44 @@ namespace Level {
                         }
                     }
                 }
+            }
 
-                Debug.Log("Level is ready!");
-                LvlState = LevelState.Ready;
-                OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
-                if (hasStart && hasEnd) {
-                    Debug.Log("Level is playable!");
-                    LvlState = LevelState.Playable;
-                    OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = StartCell.x, y = StartCell.y });
-                    OnLevelStart?.Invoke();
-                } else {
-                    Debug.Log($"Level Start={hasStart}, End={hasEnd}");
-                }
-            } else Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
+            Debug.Log("Level is ready!");
+            LvlState = LevelState.Ready;
+            OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = Grid.Width, height = Grid.Height });
+
+            if(!hasStart || !hasEnd) {
+                Debug.LogWarning($"Level has {(!hasStart ? "NO": "")} Start and {(!hasEnd ? "NO" : "")} End");
+                return;
+            }
+
+            Debug.Log("Level is playable!");
+            LvlState = LevelState.Playable;
+            OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = StartCell.x, y = StartCell.y });
+            OnLevelStart?.Invoke();
+        }
+        public void LoadLevel(Seed lvlSeed) {
+            if (lvlSeed == null || !lvlSeed.IsValid) {
+                Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
+                return;
+            }
+
+            Debug.Log($"Loading seed: {lvlSeed}");
+            LoadLevel(lvlSeed.ToGrid());
         }
         public void LoadLevel(string seed) {
             LoadLevel(new Seed(seed));
         }
 
         public void Restart() {
-            // Restarting
+            GridXY<Element> newLevel = new GridXY<Element>();
+            newLevel.CreateGridXY(Grid.Width, Grid.Height, Grid.CellSize, Grid.OriginPosition, false, Element.NULL, Element.NULL);
+            for (int x = 0; x < Grid.Width; x++) {
+                for (int y = 0; y < Grid.Height; y++) {
+                    newLevel.SetTile(x, y, Grid.GetTile(x, y));
+                }
+            }
+            LoadLevel(newLevel);
         }
     }
 }

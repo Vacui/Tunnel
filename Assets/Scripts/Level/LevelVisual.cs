@@ -13,8 +13,16 @@ namespace Level {
 
         public Tilemap Tilemap { get; private set; }
 
+        [System.Flags]
+        enum LevelVisualDebug {
+            Nothing = 0,
+            Hiding_Tile = 1,
+            Discovering_Tile = 2,
+            Updating_Visual = 4,
+            Everything = ~0
+        }
         [Header("Debug")]
-        [SerializeField] bool showDebugLog;
+        [SerializeField, EnumFlag] private LevelVisualDebug showDebugLog;
 
         private void Awake() {
             if (main == null) main = this;
@@ -23,6 +31,7 @@ namespace Level {
             Tilemap = GetComponent<Tilemap>();
 
             LevelManager.main.Grid.OnGridCreated += (sender, args) => {
+                Debug.Log("Clearing visual Tilemap");
                 Tilemap.ClearAllTiles();
             };
             //LevelManager.main.Grid.OnTileChanged += (sender, args) => {
@@ -30,17 +39,18 @@ namespace Level {
             //};
 
             LevelFog.HiddenTile += (sender, args) => {
-                if (showDebugLog) Debug.Log($"Hiding Visual Tile {args.x},{args.y}");
+                if (showDebugLog.HasFlag(LevelVisualDebug.Hiding_Tile)) Debug.Log($"Hiding Visual Tile {args.x},{args.y}");
                 Tilemap.SetTile(new Vector3Int(args.x, args.y, 0), null);
             };
             LevelFog.DiscoveredTile += (sender, args) => {
+                if (showDebugLog.HasFlag(LevelVisualDebug.Discovering_Tile)) Debug.Log($"Discovering Visual Tile {args.x},{args.y}");
                 UpdateVisual(args.x, args.y);
             };
         }
 
         public void UpdateVisual(int x, int y) {
             Element element = LevelManager.main.Grid.GetTile(x, y);
-            if (showDebugLog) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
+            if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
             Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }
 

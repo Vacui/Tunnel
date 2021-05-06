@@ -29,20 +29,28 @@ namespace UI {
 
         public void ShowTab(string name) {
             name = name.Trim().ToLower();
-            if (name != "" && tabs.ContainsKey(name) && tabs[name]) {
-                Debug.Log($"Showing tab {name}");
 
-                if (history.Count > 0) {
-                    history.Last().Inactive();
-                }
-
-                if (name == OriginName) {
-                    history = new List<Tab>();
-                }
-
-                history.Add(tabs[name]);
-                history.Last().Active();
+            if(name == "" || !tabs.ContainsKey(name) || !tabs[name]) {
+                return;
             }
+
+            if (history.Count > 0) {
+                Tab lastTab = history.Last();
+                if (lastTab.GetName() == name) {
+                    return;
+                }
+
+                Debug.Log($"Hiding tab { lastTab.GetName()}");
+                lastTab.Inactive();
+            }
+
+            if (name == OriginName) {
+                history = new List<Tab>();
+            }
+
+            history.Add(tabs[name]);
+            Debug.Log($"Showing tab {history.Last().GetName()}");
+            history.Last().Active();
         }
 
         public void GoBack() {

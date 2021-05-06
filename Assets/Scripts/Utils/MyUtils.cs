@@ -86,6 +86,17 @@ public static class MyUtils {
         vec.z = 0f;
         return vec;
     }
+
+    // source: https://stackoverflow.com/a/129395
+    public static T DeepClone<T>(T obj) {
+        using (var ms = new System.IO.MemoryStream()) {
+            var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            formatter.Serialize(ms, obj);
+            ms.Position = 0;
+
+            return (T)formatter.Deserialize(ms);
+        }
+    }
 }
 
 public static class ListUtils {

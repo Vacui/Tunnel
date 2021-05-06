@@ -57,7 +57,7 @@ namespace Level {
                 status = LevelGenerationStatus.Idle;
                 GenerationStopped?.Invoke();
                 if (newLevel != null) {
-                    LevelManager.main.LoadLevel(newLevel.ToSeedString());
+                    LevelManager.main.LoadLevel(newLevel/*.ToSeedString()*/);
                 } else {
                     Debug.LogWarning("Level generated is not valid, abort");
                 }
@@ -148,9 +148,9 @@ namespace Level {
                 List<Pathfinding.PathNode> newPath = new List<Pathfinding.PathNode>();
                 List<bool> nodesUsed = Enumerable.Repeat(false, nodes.Count).ToList();
 
-                int path;
+                int path = 0;
                 int nodesUnusable = 0;
-                for (path = 0; path + nodesUnusable + 1 < nodes.Count - 1 && attempts < maxAttempts; path++, attempts++) {
+                for (path = 0; path + nodesUnusable + 1 < nodes.Count && attempts < maxAttempts; path++, attempts++) {
                     newPath = pathfinding.FindPath(nodes[path], nodes[path + nodesUnusable + 1], newLevel);
                     if (newPath == null) {
                         path--;
@@ -166,7 +166,7 @@ namespace Level {
                     genProgression = Mathf.Max((float)path / nodes.Count, (float)attempts / maxAttempts);
                 }
 
-                Debug.Log($"Generated {path}/{nodes.Count} paths in {attempts}/{maxAttempts} attempts");
+                Debug.Log($"Generated {path}/{nodes.Count - 1} paths in {attempts}/{maxAttempts} attempts");
 
                 //SearchForNodeClusters(nodes, nodesUsed);
 

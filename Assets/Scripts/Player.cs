@@ -34,7 +34,7 @@ namespace PlayerLogic {
         private Direction dirCurrent = Direction.NULL;
 
         [Header("Character")]
-        [SerializeField, Disable] bool isActive = true;
+        [EditorButton(nameof(DisablePlayer), "Disable Player", activityType: ButtonActivityType.OnPlayMode), SerializeField, Disable] bool isActive = true;
         public bool IsActive {
             get { return isActive; }
             private set {
@@ -61,7 +61,6 @@ namespace PlayerLogic {
                 IsActive = false;
             };
             LevelManager.OnLevelPlayable += (sender, args) => {
-                IsActive = true;
                 MoveToStartCell(args.x, args.y);
             };
 
@@ -154,6 +153,7 @@ namespace PlayerLogic {
         public void MoveToStartCell(int x, int y) {
             IsActive = true;
             dirCurrent = Direction.NULL;
+            if (showDebugLog) Debug.Log($"Moving to start cell {x},{y}");
             MoveToCell(x, y, true);
         }
 
@@ -189,6 +189,10 @@ namespace PlayerLogic {
             } else {
                 moveLTDescr.setOnComplete(() => CheckCurrentTile());
             }
+        }
+
+        private void DisablePlayer() {
+            IsActive = false;
         }
     }
 }

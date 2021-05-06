@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridCoordsEventArgs : EventArgs
-{
+public class GridCoordsEventArgs : EventArgs {
     public int x, y;
 }
 
@@ -105,6 +104,10 @@ public class GridXY<T> {
     }
     public void SetTile(Vector2Int cell, T value) {
         SetTile(cell.x, cell.y, value);
+    }
+    public void SetTile(int cellNum, T value) {
+        CellNumToCell(cellNum, out int x, out int y);
+        SetTile(x, y, value);
     }
 
     public bool CellIsValid(int x, int y) {

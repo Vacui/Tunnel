@@ -29,8 +29,17 @@ namespace Level {
         [SerializeField] private float clusterDiscoverySpeed = 0.3f;
 
 
+        [System.Flags]
+        enum LevelFogDebug {
+            Nothing = 0,
+            Setting_Tile = 1,
+            Tiles_Around = 2,
+            ReadyToVisible_Logic = 4,
+            Cluster_Logic = 8,
+            Everything = ~0
+        }
         [Header("Debug")]
-        [EditorButton(nameof(DisableFog), "Disable Fog", activityType: ButtonActivityType.OnPlayMode), SerializeField] private bool showDebugLog = false;
+        [EditorButton(nameof(DisableFog), "Disable Fog", activityType: ButtonActivityType.OnPlayMode), SerializeField, EnumFlag] private LevelFogDebug showDebugLog;
 
         private void Awake() {
             if (main == null) main = this;
@@ -40,15 +49,16 @@ namespace Level {
             grid = new GridXY<TileVisibility>();
 
             grid.OnTileChanged += (sender, args) => {
-                if (showDebugLog) Debug.Log($"Setting Visibility Tile {args.x},{args.y} ({args.value})");
+                if (showDebugLog.HasFlag(LevelFogDebug.Setting_Tile)) Debug.Log($"Setting Visibility Tile {args.x},{args.y} ({args.value})");
 
                 switch (args.value) {
                     case TileVisibility.Invisible:
                         HiddenTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                     case TileVisibility.Visible:
-                        if (LevelManager.main.Grid.GetTile(args.x, args.y) == Element.NULL && enabled)
+                        if (LevelManager.main.Grid.GetTile(args.x, args.y) == Element.NULL && enabled) {
                             StartCoroutine(SpawnNullTileSprite(args.x, args.y));
+                        }
                         DiscoveredTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                 }
@@ -57,6 +67,7 @@ namespace Level {
             };
 
             LevelManager.main.Grid.OnGridCreated += (sender, args) => {
+                Debug.Log("Clearing Fog Tilemap");
                 tilemap.ClearAllTiles();
                 grid.CreateGridXY(args.width, args.height, 1, Vector3.zero, false, TileVisibility.NULL, TileVisibility.NULL);
             };
@@ -97,35 +108,36 @@ namespace Level {
         }
 
         private bool IsNullTileReadyToVisible(int x, int y) {
-            bool isReadyToVisible = false;
 
-            if (grid.CellIsValid(x, y)) {
-                if (LevelManager.main.Grid.GetTile(x, y) == Element.NULL && grid.GetTile(x, y) == TileVisibility.Invisible) {
-                    if (showDebugLog) Debug.Log($"Is Tile {x},{y} ReadyToVisible?");
+            if (!grid.CellIsValid(x, y)) {
+                return false;
+            }
 
-                    isReadyToVisible = true;
+            if (LevelManager.main.Grid.GetTile(x, y) != Element.NULL || grid.GetTile(x, y) != TileVisibility.Invisible) {
+                return grid.GetTile(x, y) != TileVisibility.ReadyToVisible;
+            }
 
-                    Element type;
-                    TileVisibility visibility;
+            if (showDebugLog.HasFlag(LevelFogDebug.ReadyToVisible_Logic)) Debug.Log($"Is Tile {x},{y} ReadyToVisible?");
 
-                    List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
-                    Vector2Int neighbour;
-                    for (int i = 0; i < neighbours.Count && isReadyToVisible; i++) {
-                        neighbour = neighbours[i];
-                        if (LevelManager.main.Grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y)) {
-                            type = LevelManager.main.Grid.GetTile(neighbour.x, neighbour.y);
-                            visibility = grid.GetTile(neighbour.x, neighbour.y);
-                            isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
-                            if (showDebugLog) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
-                        }
-                    }
+            bool isReadyToVisible = true;
 
-                    if (isReadyToVisible) {
-                        grid.SetTile(x, y, TileVisibility.ReadyToVisible);
-                    }
-                } else {
-                    isReadyToVisible = grid.GetTile(x, y) != TileVisibility.ReadyToVisible;
+            Element type;
+            TileVisibility visibility;
+
+            List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
+            Vector2Int neighbour;
+            for (int i = 0; i < neighbours.Count && isReadyToVisible; i++) {
+                neighbour = neighbours[i];
+                if (LevelManager.main.Grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y)) {
+                    type = LevelManager.main.Grid.GetTile(neighbour.x, neighbour.y);
+                    visibility = grid.GetTile(neighbour.x, neighbour.y);
+                    isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
+                    if (showDebugLog.HasFlag(LevelFogDebug.ReadyToVisible_Logic)) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
                 }
+            }
+
+            if (isReadyToVisible) {
+                grid.SetTile(x, y, TileVisibility.ReadyToVisible);
             }
 
             return isReadyToVisible;
@@ -135,7 +147,7 @@ namespace Level {
             Element type = LevelManager.main.Grid.GetTile(x, y);
             TileVisibility visibility = grid.GetTile(x, y);
 
-            if (showDebugLog) Debug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
+            if (showDebugLog.HasFlag(LevelFogDebug.Tiles_Around)) Debug.Log($"Checking Tiles Visibility around {x},{y} ({visibility})");
 
             if (type != Element.NULL && visibility == TileVisibility.Visible) {
                 List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
@@ -144,7 +156,7 @@ namespace Level {
                 }
             } else {
                 if (type == Element.NULL && visibility == TileVisibility.ReadyToVisible) {
-                    if (showDebugLog) Debug.Log("Checking for cluster completion");
+                    if (showDebugLog.HasFlag(LevelFogDebug.Cluster_Logic)) Debug.Log("Checking for cluster completion");
 
                     List<Vector2Int> cellsChecked = new List<Vector2Int>() { };
                     if (CheckClusterTileVisibility(x, y, ref cellsChecked)) {
@@ -163,7 +175,7 @@ namespace Level {
 
             bool clusterIsNotInvisible = grid.CellIsValid(x, y) && grid.GetTile(x, y) != TileVisibility.Invisible;
 
-            if (showDebugLog) Debug.Log($"Checking cluster Tile {x},{y} ({grid.GetTile(x, y)}) = {clusterIsNotInvisible}");
+            if (showDebugLog.HasFlag(LevelFogDebug.Cluster_Logic)) Debug.Log($"Checking cluster Tile {x},{y} ({grid.GetTile(x, y)}) = {clusterIsNotInvisible}");
 
             List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, true);
             Vector2Int neighbour;
