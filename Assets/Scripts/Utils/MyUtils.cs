@@ -131,15 +131,17 @@ public static class UIUtils {
 
     // source: https://forum.unity.com/threads/layoutgroup-does-not-refresh-in-its-current-frame.458446/#post-6712318
     public static void RefreshLayoutGroupsImmediateAndRecursive(GameObject root) {
-        var componentsInChildren = root.GetComponentsInChildren<LayoutGroup>(true);
+        LayoutGroup[] layoutGroupsInChildren = root.GetComponentsInChildren<LayoutGroup>(true);
 
-        foreach (var layoutGroup in componentsInChildren) {
+        foreach (LayoutGroup layoutGroup in layoutGroupsInChildren) {
             LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup.GetComponent<RectTransform>());
         }
 
-        var parent = root.GetComponent<LayoutGroup>();
+        LayoutGroup parentLayoutGroup = root.GetComponent<LayoutGroup>();
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(parent.GetComponent<RectTransform>());
+        if (parentLayoutGroup != null) {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(parentLayoutGroup.GetComponent<RectTransform>());
+        }
     }
 }
 

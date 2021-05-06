@@ -285,5 +285,9 @@ namespace Level {
         public void LoadLevel(string seed) {
             LoadLevel(new Seed(seed));
         }
+
+        public void Restart() {
+            // Restarting
+        }
     }
 }

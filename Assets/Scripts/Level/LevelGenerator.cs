@@ -34,6 +34,7 @@ namespace Level {
         [SerializeField] private UltEvent GenerationStarted;
         [SerializeField] private UltEvent GenerationStopped;
         [SerializeField] private UltEvent GenerationAborted;
+        [SerializeField] private UltEvent GenerationCompleted;
         [SerializeField] private UltEventFloat GenerationProgress;
 
         private void Awake() {
@@ -60,6 +61,7 @@ namespace Level {
                 } else {
                     Debug.LogWarning("Level generated is not valid, abort");
                 }
+                GenerationCompleted?.Invoke();
             }
         }
 
@@ -148,8 +150,8 @@ namespace Level {
 
                 int path;
                 int nodesUnusable = 0;
-                for (path = 0; path < nodes.Count - 1 && attempts < maxAttempts; path++, attempts++) {
-                    newPath = pathfinding.FindPath(nodes[path], nodes[path + 1 + nodesUnusable], newLevel);
+                for (path = 0; path + nodesUnusable + 1 < nodes.Count - 1 && attempts < maxAttempts; path++, attempts++) {
+                    newPath = pathfinding.FindPath(nodes[path], nodes[path + nodesUnusable + 1], newLevel);
                     if (newPath == null) {
                         path--;
                         nodesUnusable += (path + nodesUnusable < nodes.Count - 2) ? 1 : 0;
