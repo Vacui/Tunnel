@@ -13,7 +13,7 @@ TagManager:
   - UI
   - 
   - 
-  - Pointer
+  - 
   - 
   - 
   - 
@@ -43,4 +43,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 140132965
+    locked: 0
+  - name: Pointer
+    uniqueID: 1859170471
     locked: 0
