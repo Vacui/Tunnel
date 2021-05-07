@@ -29,6 +29,16 @@ public class GetLevelPaletteColor : MonoBehaviour {
             if (tilemap != null) {
                 tilemap.color = color;
             }
+
+            TrailRenderer trailRenderer = GetComponent<TrailRenderer>();
+            if (trailRenderer != null) {
+                Gradient trailRendererGradient = new Gradient();
+                trailRendererGradient.SetKeys(
+                    new GradientColorKey[2] { new GradientColorKey(color, 0), new GradientColorKey(color, 1) },
+                    new GradientAlphaKey[2] { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1) }
+                    );
+                trailRenderer.colorGradient = trailRendererGradient;
+            }
         }
     }
 }
