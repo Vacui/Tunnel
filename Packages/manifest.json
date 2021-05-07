@@ -2,7 +2,7 @@
   "dependencies": {
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap.extras": "https://github.com/Unity-Technologies/2d-extras.git#1.5.0-preview",
-    "com.unity.cinemachine": "2.6.4",
+    "com.unity.cinemachine": "2.7.3",
     "com.unity.editorcoroutines": "1.0.0",
     "com.unity.test-framework": "1.1.22",
     "com.unity.textmeshpro": "2.1.1",

@@ -12,7 +12,7 @@ namespace UI {
         private Pathfinding pathfinding;
 
         private void OnEnable() {
-            LevelManager.main.Grid.OnGridCreated += (sender, args) => {
+            LevelManager.Main.Grid.OnGridCreated += (sender, args) => {
                 pathfinding = new Pathfinding(args.width, args.height, false, true);
             };
             Player.StoppedMove += (sender, args) => UpdateValue(args.x, args.y);
@@ -20,9 +20,9 @@ namespace UI {
 
         public void UpdateValue(int startX, int startY) {
             if (text != null) {
-                List<Pathfinding.PathNode> path = pathfinding.FindPath(new Vector2Int(startX, startY), LevelManager.main.EndCell, LevelManager.main.Grid);
+                List<Pathfinding.PathNode> path = pathfinding.FindPath(new Vector2Int(startX, startY), LevelManager.Main.EndCell, LevelManager.Main.Grid);
                 if (path != null) {
-                    text.text = (path.Where(p => LevelManager.main.Grid.GetTile(p.GetCell()).ToDirection() == Direction.All).ToList().Count - 1).ToString();
+                    text.text = (path.Where(p => LevelManager.Main.Grid.GetTile(p.GetCell()).ToDirection() == Direction.All).ToList().Count - 1).ToString();
                 } else {
                     text.text = "N/A";
                 }

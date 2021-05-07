@@ -212,7 +212,7 @@ namespace Level {
             }
         }
 
-        public static LevelManager main { get; private set; }
+        public static LevelManager Main { get; private set; }
 
         public const float CELLSIZE = 1f;
 
@@ -236,7 +236,7 @@ namespace Level {
         [SerializeField] private bool showDebugLog = false;
 
         private void Awake() {
-            if (main == null) main = this;
+            if (Main == null) Main = this;
             else Destroy(this);
 
             Grid = new GridXY<Element>();

@@ -99,7 +99,7 @@ namespace PlayerLogic {
         private void MoveToCell(int newX, int newY, bool teleport) {
             bool canMove = false;
 
-            if(LevelManager.main.Grid == null) {
+            if(LevelManager.Main.Grid == null) {
                 Debug.LogWarning("Level Manager grid is null", gameObject);
                 return;
             }
@@ -109,8 +109,8 @@ namespace PlayerLogic {
                 return;
             }
 
-            if (LevelManager.main.Grid.CellIsValid(newX, newY)) {
-                Element newTileElement = LevelManager.main.Grid.GetTile(newX, newY);
+            if (LevelManager.Main.Grid.CellIsValid(newX, newY)) {
+                Element newTileElement = LevelManager.Main.Grid.GetTile(newX, newY);
                 if (newTileElement != Element.NULL) {
                     newTileElement.ToDirection().ToOffset(out int offsetX, out int offsetY);
                     if (x != newX + offsetX || y != newY + offsetY || (x == newX && y == newY) || newTileElement.ToDirection() == Direction.All) {
@@ -139,7 +139,7 @@ namespace PlayerLogic {
         }
 
         private void MoveToCell(Direction dir) {
-            Direction dirCurrentTile = LevelManager.main.Grid.GetTile(x, y).ToDirection();
+            Direction dirCurrentTile = LevelManager.Main.Grid.GetTile(x, y).ToDirection();
 
             if (dir == Direction.NULL) {
                 Debug.LogWarning($"Character can't move in a null direction.", gameObject);
@@ -176,11 +176,11 @@ namespace PlayerLogic {
         public void CheckCurrentTile() {
             if (showDebugLog) Debug.Log("Checking current tile", gameObject);
 
-            if (!LevelManager.main.Grid.CellIsValid(x, y)) {
+            if (!LevelManager.Main.Grid.CellIsValid(x, y)) {
                 return;
             }
 
-            Element currentTileType = LevelManager.main.Grid.GetTile(x, y);
+            Element currentTileType = LevelManager.Main.Grid.GetTile(x, y);
 
             if(currentTileType == Element.NULL) {
                 Debug.LogError($"NULL tile type {x},{y}.", gameObject);

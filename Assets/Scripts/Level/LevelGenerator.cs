@@ -57,7 +57,7 @@ namespace Level {
                 status = LevelGenerationStatus.Idle;
                 GenerationStopped?.Invoke();
                 if (newLevel != null) {
-                    LevelManager.main.LoadLevel(newLevel);
+                    LevelManager.Main.LoadLevel(newLevel);
                 } else {
                     Debug.LogWarning("Level generated is not valid, abort");
                 }

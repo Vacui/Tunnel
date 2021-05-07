@@ -8,7 +8,7 @@ namespace UI {
         [SerializeField] private string seed;
 
         public void OnPointerClick(PointerEventData eventData) {
-            LevelManager.main.LoadLevel(seed);
+            LevelManager.Main.LoadLevel(seed);
         }
     }
 }

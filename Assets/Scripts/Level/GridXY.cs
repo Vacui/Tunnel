@@ -17,6 +17,7 @@ public class GridXY<T> {
     public class GridCreationEventArgs : EventArgs {
         public int width;
         public int height;
+        public int cellSize;
     }
 
     public int Height { get; private set; }
@@ -51,7 +52,7 @@ public class GridXY<T> {
     public bool CreateGridXY(int width, int height, int cellSize, Vector3 originPosition, bool updateAlways, T nullTileValue, T initializeValue) {
         if (CreateGridXY(width, height, cellSize, originPosition, updateAlways, nullTileValue)) {
             SetAllTiles(initializeValue);
-            OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height });
+            OnGridCreated?.Invoke(this, new GridCreationEventArgs { width = width, height = height, cellSize = cellSize });
             return true;
         }
         return false;

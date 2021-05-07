@@ -30,7 +30,7 @@ namespace Level {
 
             Tilemap = GetComponent<Tilemap>();
 
-            LevelManager.main.Grid.OnGridCreated += (sender, args) => {
+            LevelManager.Main.Grid.OnGridCreated += (sender, args) => {
                 Debug.Log("Clearing visual Tilemap");
                 Tilemap.ClearAllTiles();
             };
@@ -49,7 +49,7 @@ namespace Level {
         }
 
         public void UpdateVisual(int x, int y) {
-            Element element = LevelManager.main.Grid.GetTile(x, y);
+            Element element = LevelManager.Main.Grid.GetTile(x, y);
             if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
             Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }
