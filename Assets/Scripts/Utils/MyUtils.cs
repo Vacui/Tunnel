@@ -97,6 +97,24 @@ public static class MyUtils {
             return (T)formatter.Deserialize(ms);
         }
     }
+
+    // source: https://unitycodemonkey.com/utils.php
+    public static float GetAngleFromVectorFloat(Vector3 dir) {
+        dir = dir.normalized;
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (n < 0) n += 360;
+
+        return n;
+    }
+
+    public static Vector3 RemoveZ(this Vector3 vector) {
+        return new Vector3(vector.x, vector.y, 0f);
+    }
+
+    public static Color SetColorAlpha(Color color, float alpha) {
+        color.a = alpha;
+        return color;
+    }
 }
 
 public static class ListUtils {
@@ -182,3 +200,6 @@ public sealed class UltEventString : UltEvent<string> { }
 
 [Serializable]
 public sealed class UltEventFloat : UltEvent<float> { }
+
+[Serializable]
+public sealed class UltEventVector3 : UltEvent<Vector3> { }

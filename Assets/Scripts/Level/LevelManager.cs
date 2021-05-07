@@ -219,14 +219,20 @@ namespace Level {
         public GridXY<Element> Grid { get; private set; }
         public Vector2Int StartCell { get; private set; }
         public Vector2Int EndCell { get; private set; }
-        public enum LevelState { NotReady, NotPlayable, Ready, Playable }
+        public enum LevelState { NotReady, NotPlayable, Ready, Playable, Win }
         public LevelState LvlState { get; private set; }
 
         public static event EventHandler OnLevelNotReady;
         public static event EventHandler OnLevelNotPlayable;
         public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
-        public class OnLevelReadyEventArgs : EventArgs { public int width, height; }
-        public static event EventHandler<GridCoordsEventArgs> OnLevelPlayable;
+        public class OnLevelReadyEventArgs : EventArgs {
+            public int width, height;
+        }
+        public static event EventHandler<OnLevelPlayableEventArgs> OnLevelPlayable;
+        public class OnLevelPlayableEventArgs : EventArgs {
+            public int startX, startY;
+            public int endX, endY;
+        }
 
         [Header("Events")]
         [SerializeField] private UnityEvent OnLevelStart;
@@ -243,13 +249,14 @@ namespace Level {
         }
 
         private void OnEnable() {
-            Player.StoppedMove += (sender, args) => {
+            Player.StoppedMoveStatic += (sender, args) => {
                 if (Grid == null) {
                     return;
                 }
 
                 if (Grid.CellIsValid(args.x, args.y)) {
                     if (Grid.GetTile(args.x, args.y) == Element.End) {
+                        LvlState = LevelState.Win;
                         OnWin?.Invoke();
                     }
                 }
@@ -313,7 +320,7 @@ namespace Level {
 
             Debug.Log("Level is playable!");
             LvlState = LevelState.Playable;
-            OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = StartCell.x, y = StartCell.y });
+            OnLevelPlayable?.Invoke(this, new OnLevelPlayableEventArgs { startX = StartCell.x, startY = StartCell.y, endX = EndCell.x, endY = EndCell.y });
             OnLevelStart?.Invoke();
         }
         public void LoadLevel(Seed lvlSeed) {

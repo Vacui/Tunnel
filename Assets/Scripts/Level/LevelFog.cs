@@ -77,10 +77,10 @@ namespace Level {
                 CheckNullTiles();
             };
 
-            Player.Moved += (sender, args) => {
+            Player.MovedStatic += (sender, args) => {
                 DiscoverTile(args.x, args.y);
             };
-            Player.StoppedMove += (sender, args) => {
+            Player.StoppedMoveStatic += (sender, args) => {
                 DiscoverTile(args.x + 1, args.y);
                 DiscoverTile(args.x - 1, args.y);
                 DiscoverTile(args.x, args.y + 1);

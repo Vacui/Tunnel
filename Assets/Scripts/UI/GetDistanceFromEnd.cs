@@ -15,7 +15,7 @@ namespace UI {
             LevelManager.Main.Grid.OnGridCreated += (sender, args) => {
                 pathfinding = new Pathfinding(args.width, args.height, false, true);
             };
-            Player.StoppedMove += (sender, args) => UpdateValue(args.x, args.y);
+            Player.StoppedMoveStatic += (sender, args) => UpdateValue(args.x, args.y);
         }
 
         public void UpdateValue(int startX, int startY) {

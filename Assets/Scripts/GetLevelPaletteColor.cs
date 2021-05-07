@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public class GetLevelPaletteColor : MonoBehaviour {
+
+    [SerializeField] private UltEventColor UpdatedColor;
+
     private void OnEnable() {
         LevelPalette.UpdatedColor += UpdateColor;
         UpdateColor(LevelPalette.Color);
@@ -40,5 +43,7 @@ public class GetLevelPaletteColor : MonoBehaviour {
                 trailRenderer.colorGradient = trailRendererGradient;
             }
         }
+
+        UpdatedColor?.Invoke(color);
     }
 }

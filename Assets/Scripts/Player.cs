@@ -5,9 +5,9 @@ using UnityEngine;
 namespace PlayerLogic {
     [DisallowMultipleComponent]
     public class Player : MonoBehaviour {
-        public static event EventHandler<GridCoordsEventArgs> StartedMove;
-        public static event EventHandler<GridCoordsEventArgs> Moved;
-        public static event EventHandler<GridCoordsEventArgs> StoppedMove;
+        public static event EventHandler<GridCoordsEventArgs> StartedMoveStatic;
+        public static event EventHandler<GridCoordsEventArgs> MovedStatic;
+        public static event EventHandler<GridCoordsEventArgs> StoppedMoveStatic;
 
         [SerializeField, Disable] private int x = -1;
         [SerializeField, Disable] private int y = -1;
@@ -18,10 +18,12 @@ namespace PlayerLogic {
                 bool changedValue = isSafe != value;
                 isSafe = value;
                 if (changedValue && isSafe) {
-                    StoppedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                    StoppedMoveStatic?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                    StoppedMove?.Invoke(new Vector3(x, y, 0));
                 } else {
                     if (changedValue && !isSafe) {
-                        StartedMove?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                        StartedMoveStatic?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                        StartedMove?.Invoke(new Vector3(x, y, 0));
                     }
                 }
             }
@@ -50,6 +52,11 @@ namespace PlayerLogic {
         private Vector3 smallScale { get { return Vector3.one * SCALE_SIZE; } }
         private const float SCALE_TIME = 0.1f;
 
+        [Header("Events")]
+        [SerializeField] private UltEventVector3 StartedMove;
+        [SerializeField] private UltEventVector3 Moved;
+        [SerializeField] private UltEventVector3 StoppedMove;
+
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
 
@@ -61,14 +68,14 @@ namespace PlayerLogic {
                 IsActive = false;
             };
             LevelManager.OnLevelPlayable += (sender, args) => {
-                MoveToStartCell(args.x, args.y);
+                MoveToStartCell(args.startX, args.startY);
             };
 
-            StartedMove += (sender, args) => {
+            StartedMoveStatic += (sender, args) => {
                 character.transform.localScale = bigScale;
                 LeanTween.scale(character.gameObject, smallScale, SCALE_TIME);
             };
-            StoppedMove += (sender, args) => {
+            StoppedMoveStatic += (sender, args) => {
                 character.transform.localScale = smallScale;
                 LeanTween.scale(character.gameObject, bigScale, SCALE_TIME);
             };
@@ -134,7 +141,8 @@ namespace PlayerLogic {
             }
 
             if (canMove) {
-                Moved?.Invoke(this, new GridCoordsEventArgs { x = newX, y = newY });
+                MovedStatic?.Invoke(this, new GridCoordsEventArgs { x = newX, y = newY });
+                Moved?.Invoke(new Vector3(newX, newY, 0));
             }
         }
 

@@ -28,7 +28,7 @@ namespace Level {
         private LevelGenerationStatus status;
         public bool stopGenerating = false;
         private float genProgressionPrev;
-        private float genProgression;
+        [SerializeField, ProgressBar("Generation Progress", minValue: 0f, maxValue: 1f, HexColor = "#EB7D34")] private float genProgression;
 
         [Header("Events")]
         [SerializeField] private UltEvent GenerationStarted;
