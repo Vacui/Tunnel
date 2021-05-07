@@ -22,8 +22,6 @@ namespace Level {
         [Header("Visuals")]
         private Tilemap tilemap;
         [SerializeField, NotNull] private TileBase visual;
-        [SerializeField, NotNull] private Sprite clusterTileVisual;
-        [SerializeField] private float scaleTime = 1;
         [SerializeField] private float clusterDiscoverySpeed = 0.3f;
         private int clusterDiscoveryTweenId = -1;
 
