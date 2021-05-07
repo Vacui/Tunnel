@@ -7,7 +7,6 @@ using UnityEngine.Tilemaps;
 namespace Level {
     [DisallowMultipleComponent, RequireComponent(typeof(Tilemap))]
     public class LevelFog : MonoBehaviour {
-        public static LevelFog main { get; private set; }
 
         public enum TileVisibility {
             NULL,
@@ -42,8 +41,6 @@ namespace Level {
         [EditorButton(nameof(DisableFog), "Disable Fog", activityType: ButtonActivityType.OnPlayMode), SerializeField, EnumFlag] private LevelFogDebug showDebugLog;
 
         private void Awake() {
-            if (main == null) main = this;
-            else Destroy(this);
 
             tilemap = GetComponent<Tilemap>();
             grid = new GridXY<TileVisibility>();
