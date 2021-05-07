@@ -99,22 +99,30 @@ namespace PlayerLogic {
         private void MoveToCell(int newX, int newY, bool teleport) {
             bool canMove = false;
 
-            if (LevelManager.main.Grid != null && IsActive) {
-                if (LevelManager.main.Grid.CellIsValid(newX, newY)) {
-                    Element newTileElement = LevelManager.main.Grid.GetTile(newX, newY);
-                    if (newTileElement != Element.NULL) {
-                        newTileElement.ToDirection().ToOffset(out int offsetX, out int offsetY);
-                        if (x != newX + offsetX || y != newY + offsetY || (x == newX && y == newY) || newTileElement.ToDirection() == Direction.All) {
-                            if (showDebugLog) Debug.Log($"Moving to tile {newX},{newY}", gameObject);
-
-                            x = newX;
-                            y = newY;
-
-                            canMove = true;
-                        } else Debug.LogWarning($"The tile {newX},{newY} is looking to current player tile", gameObject);
-                    } else Debug.LogWarning($"Can't move to NULL tile {newX},{newY}.", gameObject);
-                } else Debug.LogWarning($"Can't move to non valid cell {newX},{newY}.", gameObject);
+            if(LevelManager.main.Grid == null) {
+                Debug.LogWarning("Level Manager grid is null", gameObject);
+                return;
             }
+
+            if (!IsActive) {
+                if (showDebugLog) Debug.LogWarning("The player is not active", gameObject);
+                return;
+            }
+
+            if (LevelManager.main.Grid.CellIsValid(newX, newY)) {
+                Element newTileElement = LevelManager.main.Grid.GetTile(newX, newY);
+                if (newTileElement != Element.NULL) {
+                    newTileElement.ToDirection().ToOffset(out int offsetX, out int offsetY);
+                    if (x != newX + offsetX || y != newY + offsetY || (x == newX && y == newY) || newTileElement.ToDirection() == Direction.All) {
+                        if (showDebugLog) Debug.Log($"Moving to tile {newX},{newY}", gameObject);
+
+                        x = newX;
+                        y = newY;
+
+                        canMove = true;
+                    } else Debug.LogWarning($"The tile {newX},{newY} is looking to current player tile", gameObject);
+                } else Debug.LogWarning($"Can't move to NULL tile {newX},{newY}.", gameObject);
+            } else Debug.LogWarning($"Can't move to non valid cell {newX},{newY}.", gameObject);
 
             IsSafe = false;
 
@@ -132,22 +140,25 @@ namespace PlayerLogic {
 
         private void MoveToCell(Direction dir) {
             Direction dirCurrentTile = LevelManager.main.Grid.GetTile(x, y).ToDirection();
-            if (dir != Direction.NULL) {
-                if (dirCurrentTile == Direction.All || dirCurrentTile == dir) {
-                    dirCurrent = dir;
-                    dirCurrent.ToOffset(out int offsetX, out int offsetY);
 
-                    MoveToCell(x + offsetX, y + offsetY, false);
-                } else {
-                    if (showDebugLog) Debug.Log($"Character can't exit tile with direction {dirCurrentTile} to {dir}.", gameObject);
-                    if (!IsSafe) {
-                        MoveToCell(dirCurrentTile);
-                    }
-                }
-            } else {
+            if (dir == Direction.NULL) {
                 Debug.LogWarning($"Character can't move in a null direction.", gameObject);
                 IsSafe = true;
+                return;
             }
+
+            if (dirCurrentTile != Direction.All && dirCurrentTile != dir) {
+                if (showDebugLog) Debug.Log($"Character can't exit tile with direction {dirCurrentTile} to {dir}.", gameObject);
+                if (!IsSafe) {
+                    MoveToCell(dirCurrentTile);
+                }
+                return;
+            }
+
+            dirCurrent = dir;
+            dirCurrent.ToOffset(out int offsetX, out int offsetY);
+
+            MoveToCell(x + offsetX, y + offsetY, false);
         }
 
         public void MoveToStartCell(int x, int y) {
@@ -164,16 +175,21 @@ namespace PlayerLogic {
 
         public void CheckCurrentTile() {
             if (showDebugLog) Debug.Log("Checking current tile", gameObject);
-            if (LevelManager.main.Grid.CellIsValid(x, y)) {
-                Element currentTileType = LevelManager.main.Grid.GetTile(x, y);
-                if (currentTileType != Element.NULL) {
-                    IsSafe = currentTileType.ToDirection() == Direction.All;
-                    if (!IsSafe) MoveToCurrentDirection();
-                } else {
-                    Debug.LogError($"NULL tile type {x},{y}.", gameObject);
-                    IsSafe = true;
-                }
+
+            if (!LevelManager.main.Grid.CellIsValid(x, y)) {
+                return;
             }
+
+            Element currentTileType = LevelManager.main.Grid.GetTile(x, y);
+
+            if(currentTileType == Element.NULL) {
+                Debug.LogError($"NULL tile type {x},{y}.", gameObject);
+                IsSafe = true;
+                return;
+            }
+
+            IsSafe = currentTileType.ToDirection() == Direction.All;
+            if (!IsSafe) MoveToCurrentDirection();
         }
 
         private void MoveAnim(Vector3 position, bool againstWall) {
