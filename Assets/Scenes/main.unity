@@ -17331,6 +17331,34 @@ MonoBehaviour:
   isActive: 0
   character: {fileID: 1323248950}
   characterBody: {fileID: 429867342}
+  StartedMove:
+    _PersistentCalls:
+    - _Target: {fileID: 1323248952}
+      _MethodName: set_enabled
+      _PersistentArguments:
+      - _Type: 1
+        _Int: 1
+        _String: 
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
+  Moved:
+    _PersistentCalls: []
+  StoppedMove:
+    _PersistentCalls:
+    - _Target: {fileID: 1323248952}
+      _MethodName: set_enabled
+      _PersistentArguments:
+      - _Type: 1
+        _Int: 0
+        _String: 
+        _X: 0
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
   showDebugLog: 0
 --- !u!1 &5231296366298567265
 GameObject:
