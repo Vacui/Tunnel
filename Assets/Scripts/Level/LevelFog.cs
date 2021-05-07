@@ -1,6 +1,5 @@
 ﻿using PlayerLogic;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -27,6 +26,7 @@ namespace Level {
         [SerializeField, NotNull] private Sprite clusterTileVisual;
         [SerializeField] private float scaleTime = 1;
         [SerializeField] private float clusterDiscoverySpeed = 0.3f;
+        private int clusterDiscoveryTweenId = -1;
 
 
         [System.Flags]
@@ -56,9 +56,6 @@ namespace Level {
                         HiddenTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                     case TileVisibility.Visible:
-                        if (LevelManager.main.Grid.GetTile(args.x, args.y) == Element.NULL && enabled) {
-                            StartCoroutine(SpawnNullTileSprite(args.x, args.y));
-                        }
                         DiscoveredTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
                         break;
                 }
@@ -69,6 +66,9 @@ namespace Level {
             LevelManager.main.Grid.OnGridCreated += (sender, args) => {
                 Debug.Log("Clearing Fog Tilemap");
                 tilemap.ClearAllTiles();
+                if (LeanTween.isTweening(clusterDiscoveryTweenId)) {
+                    LeanTween.cancel(clusterDiscoveryTweenId, false);
+                }
                 grid.CreateGridXY(args.width, args.height, 1, Vector3.zero, false, TileVisibility.NULL, TileVisibility.NULL);
             };
             LevelManager.main.Grid.OnTileChanged += (sender, args) => {
@@ -197,19 +197,9 @@ namespace Level {
             if (index < cells.Count) {
                 DiscoverTile(cells[index].x, cells[index].y);
                 if (index + 1 < cells.Count) {
-                    LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); });
+                    clusterDiscoveryTweenId = LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); }).id;
                 }
             }
-        }
-
-        IEnumerator SpawnNullTileSprite(int x, int y) {
-            SpriteRenderer clusterTile = new GameObject().AddComponent<SpriteRenderer>();
-            clusterTile.transform.position = tilemap.CellToWorld(new Vector3Int(x, y, 0));
-            clusterTile.sprite = clusterTileVisual;
-            clusterTile.color = tilemap.color;
-            clusterTile.transform.localScale = Vector3.one;
-            LeanTween.scale(clusterTile.gameObject, Vector3.zero, scaleTime).setDestroyOnComplete(true);
-            yield return true;
         }
     }
 }
