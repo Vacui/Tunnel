@@ -184,20 +184,19 @@ namespace PlayerLogic {
         public void CheckCurrentTile() {
             if (showDebugLog) Debug.Log("Checking current tile", gameObject);
 
-            if (!LevelManager.Main.Grid.CellIsValid(x, y)) {
-                return;
-            }
-
             Element currentTileType = LevelManager.Main.Grid.GetTile(x, y);
 
-            if(currentTileType == Element.NULL) {
+            if (currentTileType == Element.NULL) {
                 Debug.LogError($"NULL tile type {x},{y}.", gameObject);
                 IsSafe = true;
                 return;
             }
 
-            IsSafe = currentTileType.ToDirection() == Direction.All;
-            if (!IsSafe) MoveToCurrentDirection();
+            if (currentTileType.ToDirection() == Direction.All) {
+                IsSafe = true;
+            } else {
+                MoveToCurrentDirection();
+            }
         }
 
         private void MoveAnim(Vector3 position, bool againstWall) {
@@ -206,7 +205,7 @@ namespace PlayerLogic {
             Vector3 positionDiff = new Vector3(transform.position.x - position.x, transform.position.y - position.y);
             positionDiff = positionDiff * distancePercentage;
 
-            LTDescr moveLTDescr = LeanTween.move(againstWall ? characterBody : gameObject, transform.position - positionDiff, moveTime);
+            LTDescr moveLTDescr = LeanTween.move(againstWall ? characterBody : gameObject, transform.position - positionDiff, moveTime).setEaseLinear();
             if (againstWall) {
                 moveLTDescr.setTime(wallBounceTime);
                 moveLTDescr.setLoopPingPong(1).setOnComplete(() => IsSafe = true);
