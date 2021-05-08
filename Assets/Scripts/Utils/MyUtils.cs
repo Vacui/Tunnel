@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using UltEvents;
 using UnityEngine;
@@ -9,11 +8,12 @@ using UnityEngine.UI;
 
 public static class MyUtils {
     // source: https://www.codegrepper.com/code-examples/csharp/how+to+clear+console+through+script+unity
+    // Commented to avoid build error
     public static void ClearLogConsole() {
-        Assembly assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
-        Type logEntries = assembly.GetType("UnityEditor.LogEntries");
-        MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
-        clearConsoleMethod.Invoke(new object(), null);
+        //Assembly assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+        //Type logEntries = assembly.GetType("UnityEditor.LogEntries");
+        //MethodInfo clearConsoleMethod = logEntries.GetMethod("Clear");
+        //clearConsoleMethod.Invoke(new object(), null);
     }
 
     //source: https://stackoverflow.com/a/5320727
