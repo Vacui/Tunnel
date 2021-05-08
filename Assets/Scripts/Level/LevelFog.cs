@@ -68,13 +68,18 @@ namespace Level {
             };
             LevelManager.Main.Grid.OnTileChanged += (sender, args) => {
                 HideTile(args.x, args.y);
-                if (args.value == Element.End) {
-                    DiscoverTile(args.x, args.y);
-                }
             };
 
             LevelManager.OnLevelReady += (sender, args) => {
                 CheckNullTiles();
+            };
+
+            LevelManager.OnLevelPlayable += (sender, args) => {
+                DiscoverTile(args.endX, args.endY);
+                DiscoverTile(args.endX + 1, args.endY);
+                DiscoverTile(args.endX - 1, args.endY);
+                DiscoverTile(args.endX, args.endY + 1);
+                DiscoverTile(args.endX, args.endY - 1);
             };
 
             Player.MovedStatic += (sender, args) => {

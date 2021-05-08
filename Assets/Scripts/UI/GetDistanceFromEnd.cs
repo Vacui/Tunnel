@@ -8,7 +8,13 @@ using UnityEngine;
 namespace UI {
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
     public class GetDistanceFromEnd : MonoBehaviour {
-        [SerializeField] private TextMeshProUGUI text;
+        [SerializeField] private TMP_Text text;
+
+        private void Awake() {
+#if (UNITY_EDITOR)
+            text = GetComponent<TMP_Text>();
+#endif
+        }
 
         private void OnEnable() {
             Player.StoppedMoveStatic += (sender, args) => UpdateValue(args.x, args.y);

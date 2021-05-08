@@ -1,29 +1,26 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
-[RequireComponent(typeof(Image))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class ColorTween : TweenScript {
     [SerializeField] private Color from;
     public Color From { get { return from; } set { from = value; } }
     [SerializeField] private Color to;
 
-    private RectTransform targetRectTransform;
-    private Image targetImage;
+    private SpriteRenderer targetSpriteRenderer;
 
     private void Awake() {
-        targetRectTransform = GetComponent<RectTransform>();
-        targetImage = GetComponent<Image>();
+        targetSpriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     protected override void ApplyTweenTypeSettings() {
         base.ApplyTweenTypeSettings();
 
-        if(targetRectTransform == null || targetImage == null) {
+        if (targetSpriteRenderer == null) {
             return;
         }
 
-        targetImage.color = from;
-        id = LeanTween.color(targetRectTransform, to, time).id;
+        targetSpriteRenderer.color = from;
+        id = LeanTween.value(gameObject, from, to, time).setOnUpdateColor((newColor) => { targetSpriteRenderer.color = newColor; }).id;
     }
 
     public void SetColors(Color from, Color to) {
