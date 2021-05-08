@@ -11,6 +11,14 @@ namespace UI {
         [SerializeField] private RectTransform pointerRectTransform;
         [SerializeField] private Transform playerTransform;
 
+        [Header("Text")]
+        [SerializeField] private RectTransform textRectTransform;
+        [SerializeField] private float textDistance;
+
+        [Header("Icon")]
+        [SerializeField] private RectTransform offScreenIconRectTransform;
+        [SerializeField] private RectTransform onScreenIconRectTransform;
+
         [Header("Border")]
         [SerializeField, Clamp(0f, Mathf.Infinity)] private float borderTop;
         [SerializeField, Clamp(0f, Mathf.Infinity)] private float borderRight;
@@ -29,46 +37,46 @@ namespace UI {
         private void Update() {
 
             if (LevelManager.Main != null && LevelManager.Main.LvlState == LevelManager.LevelState.Playable) {
-                if (isActive) {
+                if (true) {
+                    pointerRectTransform.gameObject.SetActive(true);
+
                     Vector3 fromPosition = playerTransform.position.RemoveZ();
                     Vector3 toPosition = targetPosition.RemoveZ();
                     Debug.DrawLine(fromPosition, toPosition);
-                    Vector3 dir = (toPosition - fromPosition).normalized;
-                    float angle = MyUtils.GetAngleFromVectorFloat(dir);
-                    pointerRectTransform.localEulerAngles = new Vector3(0, 0, angle);
 
-                    Vector3 targetPositionScreenPoint = Camera.main.WorldToScreenPoint(targetPosition);
+                    Vector3 dir = (toPosition - fromPosition).normalized;
+
+                    Vector3 pointerPositionScreenPoint = Camera.main.WorldToScreenPoint(targetPosition);
+
                     bool isOffScreen =
-                        targetPositionScreenPoint.x <= borderLeft ||
-                        targetPositionScreenPoint.x >= Screen.width - borderRight||
-                        targetPositionScreenPoint.y <= borderBottom ||
-                        targetPositionScreenPoint.y >= Screen.height - borderTop;
+                        pointerPositionScreenPoint.x <= 0 ||
+                        pointerPositionScreenPoint.x >= Screen.width ||
+                        pointerPositionScreenPoint.y <= 0 ||
+                        pointerPositionScreenPoint.y >= Screen.height - borderTop;
 
                     if (isOffScreen) {
-                        Vector3 cappedTargetScreenPosition = targetPositionScreenPoint;
-                        cappedTargetScreenPosition.x = Mathf.Clamp(cappedTargetScreenPosition.x, borderLeft, Screen.width - borderRight);
-                        cappedTargetScreenPosition.y = Mathf.Clamp(cappedTargetScreenPosition.y, borderBottom, Screen.height - borderTop);
-
-                        Vector3 pointerWorldPosition = Camera.main.ScreenToWorldPoint(cappedTargetScreenPosition);
-                        pointerRectTransform.position = pointerWorldPosition;
-                        pointerRectTransform.localPosition = pointerRectTransform.localPosition.RemoveZ();
-
-                        ShowPointer();
-                    } else {
-                        HidePointer();
+                        pointerPositionScreenPoint.x = Mathf.Clamp(pointerPositionScreenPoint.x, borderLeft, Screen.width - borderRight);
+                        pointerPositionScreenPoint.y = Mathf.Clamp(pointerPositionScreenPoint.y, borderBottom, Screen.height - borderTop);
                     }
+
+                    Vector3 pointerWorldPosition = Camera.main.ScreenToWorldPoint(pointerPositionScreenPoint);
+                    pointerRectTransform.position = pointerWorldPosition;
+                    pointerRectTransform.localPosition = pointerRectTransform.localPosition.RemoveZ();
+
+                    offScreenIconRectTransform.gameObject.SetActive(isOffScreen);
+                    onScreenIconRectTransform.gameObject.SetActive(!isOffScreen);
+
+                    if (isOffScreen) {
+                        float angle = MyUtils.GetAngleFromVectorFloat(dir);
+                        offScreenIconRectTransform.localEulerAngles = new Vector3(0, 0, angle);
+                    }
+
+                    textRectTransform.position = Camera.main.ScreenToWorldPoint(pointerPositionScreenPoint - (dir * textDistance));
+                    textRectTransform.localPosition = textRectTransform.localPosition.RemoveZ();
                 }
             } else {
-                HidePointer();
+                pointerRectTransform.gameObject.SetActive(false);
             }
-        }
-
-        private void ShowPointer() {
-            pointerRectTransform.gameObject.SetActive(true);
-        }
-
-        private void HidePointer() {
-            pointerRectTransform.gameObject.SetActive(false);
         }
     }
 }
