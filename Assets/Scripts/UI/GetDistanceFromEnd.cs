@@ -12,7 +12,9 @@ namespace UI {
 
         private void Awake() {
 #if (UNITY_EDITOR)
-            text = GetComponent<TMP_Text>();
+            if (text == null) {
+                text = GetComponent<TMP_Text>();
+            }
 #endif
         }
 

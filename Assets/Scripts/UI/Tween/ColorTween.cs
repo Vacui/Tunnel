@@ -20,7 +20,7 @@ public class ColorTween : TweenScript {
         }
 
         targetSpriteRenderer.color = from;
-        id = LeanTween.value(gameObject, from, to, time).setOnUpdateColor((newColor) => { targetSpriteRenderer.color = newColor; }).id;
+        id = LeanTween.color(gameObject, to, time).id;
     }
 
     public void SetColors(Color from, Color to) {
