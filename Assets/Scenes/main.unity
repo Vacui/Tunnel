@@ -3872,6 +3872,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 544497206}
+  - component: {fileID: 544497207}
   m_Layer: 0
   m_Name: Off Screen
   m_TagString: Untagged
@@ -3895,6 +3896,40 @@ Transform:
   m_Father: {fileID: 849899360}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &544497207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 544497205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003c25630808c7243847bd9149749434, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AwakeEvent:
+    _PersistentCalls: []
+  _StartEvent:
+    _PersistentCalls: []
+  _EnableEvent:
+    _PersistentCalls:
+    - _Target: {fileID: 1966994097}
+      _MethodName: Execute
+      _PersistentArguments: []
+    - _Target: {fileID: 1966994096}
+      _MethodName: Execute
+      _PersistentArguments: []
+  _DisableEvent:
+    _PersistentCalls:
+    - _Target: {fileID: 1966994097}
+      _MethodName: Execute
+      _PersistentArguments: []
+    - _Target: {fileID: 1966994096}
+      _MethodName: Execute
+      _PersistentArguments: []
+  _DestroyEvent:
+    _PersistentCalls: []
 --- !u!1 &600151905
 GameObject:
   m_ObjectHideFlags: 0
@@ -11085,6 +11120,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1356228985}
+  - component: {fileID: 1356228986}
   m_Layer: 0
   m_Name: On Screen
   m_TagString: Untagged
@@ -11108,6 +11144,40 @@ Transform:
   m_Father: {fileID: 849899360}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1356228986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356228984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 003c25630808c7243847bd9149749434, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _AwakeEvent:
+    _PersistentCalls: []
+  _StartEvent:
+    _PersistentCalls: []
+  _EnableEvent:
+    _PersistentCalls:
+    - _Target: {fileID: 1514749004}
+      _MethodName: Execute
+      _PersistentArguments: []
+    - _Target: {fileID: 1514749003}
+      _MethodName: Execute
+      _PersistentArguments: []
+  _DisableEvent:
+    _PersistentCalls:
+    - _Target: {fileID: 1514749004}
+      _MethodName: Execute
+      _PersistentArguments: []
+    - _Target: {fileID: 1514749003}
+      _MethodName: Execute
+      _PersistentArguments: []
+  _DestroyEvent:
+    _PersistentCalls: []
 --- !u!1 &1378061630
 GameObject:
   m_ObjectHideFlags: 0
@@ -11471,7 +11541,6 @@ GameObject:
   - component: {fileID: 1514749005}
   - component: {fileID: 1514749004}
   - component: {fileID: 1514749003}
-  - component: {fileID: 1514749002}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -11493,40 +11562,6 @@ Transform:
   m_Father: {fileID: 1356228985}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1514749002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1514749000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 003c25630808c7243847bd9149749434, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _AwakeEvent:
-    _PersistentCalls: []
-  _StartEvent:
-    _PersistentCalls: []
-  _EnableEvent:
-    _PersistentCalls:
-    - _Target: {fileID: 1514749004}
-      _MethodName: Execute
-      _PersistentArguments: []
-    - _Target: {fileID: 1514749003}
-      _MethodName: Execute
-      _PersistentArguments: []
-  _DisableEvent:
-    _PersistentCalls:
-    - _Target: {fileID: 1514749004}
-      _MethodName: Execute
-      _PersistentArguments: []
-    - _Target: {fileID: 1514749003}
-      _MethodName: Execute
-      _PersistentArguments: []
-  _DestroyEvent:
-    _PersistentCalls: []
 --- !u!114 &1514749003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14814,7 +14849,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -14834,7 +14869,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1257209286}
   m_FillRect: {fileID: 453157498}
   m_HandleRect: {fileID: 1257209284}
@@ -14880,7 +14915,6 @@ GameObject:
   - component: {fileID: 1966994098}
   - component: {fileID: 1966994097}
   - component: {fileID: 1966994096}
-  - component: {fileID: 1966994095}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -14902,40 +14936,6 @@ Transform:
   m_Father: {fileID: 544497206}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1966994095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1966994093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 003c25630808c7243847bd9149749434, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _AwakeEvent:
-    _PersistentCalls: []
-  _StartEvent:
-    _PersistentCalls: []
-  _EnableEvent:
-    _PersistentCalls:
-    - _Target: {fileID: 1966994097}
-      _MethodName: Execute
-      _PersistentArguments: []
-    - _Target: {fileID: 1966994096}
-      _MethodName: Execute
-      _PersistentArguments: []
-  _DisableEvent:
-    _PersistentCalls:
-    - _Target: {fileID: 1966994097}
-      _MethodName: Execute
-      _PersistentArguments: []
-    - _Target: {fileID: 1966994096}
-      _MethodName: Execute
-      _PersistentArguments: []
-  _DestroyEvent:
-    _PersistentCalls: []
 --- !u!114 &1966994096
 MonoBehaviour:
   m_ObjectHideFlags: 0
