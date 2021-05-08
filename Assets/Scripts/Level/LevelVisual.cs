@@ -49,9 +49,11 @@ namespace Level {
         }
 
         public void UpdateVisual(int x, int y) {
-            Element element = LevelManager.Main.Grid.GetTile(x, y);
-            if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
-            Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
+            if (LevelManager.Main.LvlState != LevelManager.LevelState.Win) {
+                Element element = LevelManager.Main.Grid.GetTile(x, y);
+                if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
+                Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
+            }
         }
 
         private TileBase GetTileBase(Element type) {

@@ -103,10 +103,10 @@ namespace Level {
 
             newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(lvlWidth, lvlHeight, 1, Vector3.zero, false, Element.NULL, Element.NULL);
-            Pathfinding pathfinding = new Pathfinding(lvlWidth, lvlHeight, true, false);
+            LevelNavigation.SetUp(lvlWidth, lvlHeight, true, false);
 
             List<Vector2Int> nodes = GenerateNodes(Mathf.RoundToInt(Mathf.Clamp((lvlWidth * lvlHeight) * (nodesPercentage / 100f), 2, newLevel.Size)));
-            int paths = GeneratePaths(nodes, pathfinding);
+            int paths = GeneratePaths(nodes);
             if (paths > 0) {
                 status = LevelGenerationStatus.Completed;
             } else {
@@ -140,24 +140,24 @@ namespace Level {
             return null;
         }
 
-        private int GeneratePaths(List<Vector2Int> nodes, Pathfinding pathfinding) {
+        private int GeneratePaths(List<Vector2Int> nodes) {
             if (nodes.Count > 0) {
                 int attempts = 0;
                 int maxAttempts = nodes.Count * 2;
 
-                List<Pathfinding.PathNode> newPath = new List<Pathfinding.PathNode>();
+                List<LevelNavigation.PathNode> newPath = new List<LevelNavigation.PathNode>();
                 List<bool> nodesUsed = Enumerable.Repeat(false, nodes.Count).ToList();
 
                 int path = 0;
                 int nodesUnusable = 0;
                 for (path = 0; path + nodesUnusable + 1 < nodes.Count && attempts < maxAttempts; path++, attempts++) {
-                    newPath = pathfinding.FindPath(nodes[path], nodes[path + nodesUnusable + 1], newLevel);
+                    newPath = LevelNavigation.FindPath(nodes[path], nodes[path + nodesUnusable + 1], newLevel);
                     if (newPath == null) {
                         path--;
                         nodesUnusable += (path + nodesUnusable < nodes.Count - 2) ? 1 : 0;
                     } else {
                         ApplyPath(newPath);
-                        foreach (Pathfinding.PathNode p in newPath.Where(tmpP => nodes.Contains(tmpP.GetCell())).ToList()) {
+                        foreach (LevelNavigation.PathNode p in newPath.Where(tmpP => nodes.Contains(tmpP.GetCell())).ToList()) {
                             nodesUsed[nodes.IndexOf(p.GetCell())] = true;
                         }
                         path += nodesUnusable;
@@ -209,7 +209,7 @@ namespace Level {
             return result;
         }
 
-        private void ApplyPath(List<Pathfinding.PathNode> path) {
+        private void ApplyPath(List<LevelNavigation.PathNode> path) {
             if (path != null) {
                 if (!newLevel.GetTile(path[0].GetCell()).IsNodeType()) {
                     newLevel.SetTile(path[0].GetCell(), Element.Node);
@@ -243,182 +243,6 @@ namespace Level {
                 generating.Abort();
                 GenerationStopped?.Invoke();
             }
-        }
-    }
-
-
-    public class Pathfinding {
-        private const int MOVE_STRAIGHT_COST = 1;
-
-        public class PathNode {
-            private GridXY<PathNode> grid;
-            public int X { get; private set; }
-            public int Y { get; private set; }
-
-            public int gCost;
-            public int hCost;
-            public int FCost { get { return gCost + hCost; } }
-
-            public PathNode previousNode;
-
-            public PathNode(GridXY<PathNode> grid, int x, int y) {
-                this.grid = grid;
-                X = x;
-                Y = y;
-            }
-
-            public Vector2Int GetCell() {
-                return new Vector2Int(X, Y);
-            }
-
-            public override string ToString() {
-                return $"x{X}, y{Y}";
-            }
-        }
-
-        private GridXY<PathNode> grid;
-        private GridXY<Element> gridElements;
-        private List<PathNode> openList;
-        private List<PathNode> closedList;
-        private bool includeNullElements;
-        private bool searchBestPath;
-
-        public Pathfinding(int width, int height, bool includeNullElements, bool searchBestPath) {
-            grid = new GridXY<PathNode>();
-            grid.CreateGridXY(width, height, 1, Vector3.zero, true, null, (GridXY<PathNode> grid, int x, int y) => new PathNode(grid, x, y));
-            this.includeNullElements = includeNullElements;
-            this.searchBestPath = searchBestPath;
-        }
-
-        public List<PathNode> FindPath(Vector2Int startCell, Vector2Int endCell, GridXY<Element> gridElements) {
-            this.gridElements = gridElements;
-
-            PathNode startNode = grid.GetTile(startCell.x, startCell.y);
-            PathNode endNode = grid.GetTile(endCell.x, endCell.y);
-
-            if(startNode == null) {
-                Debug.LogError($"Can't find path because start node on cell {startCell} is null");
-                return null;
-            }
-            if (endNode == null) {
-                Debug.LogError($"Can't find path because end node on cell {endCell} is null");
-                return null;
-            }
-
-            openList = new List<PathNode>() { startNode };
-            closedList = new List<PathNode>();
-
-            for (int x = 0; x < grid.Width; x++) {
-                for (int y = 0; y < grid.Height; y++) {
-                    PathNode pathNode = grid.GetTile(x, y);
-                    pathNode.gCost = int.MaxValue;
-                    pathNode.previousNode = null;
-                }
-            }
-
-            startNode.gCost = 0;
-            startNode.hCost = CalculateDistanceCost(startNode, endNode);
-
-            while (openList.Count > 0) {
-                PathNode currentNode;
-
-                if (searchBestPath) {
-                    currentNode = GetLowestFCostNode(openList);
-                } else {
-                    currentNode = openList[new System.Random().Next(0, openList.Count - 1)];
-                }
-
-                if (currentNode == endNode) {
-                    // Reached final node
-                    return CalculatePath(endNode);
-                }
-
-                openList.Remove(currentNode);
-                closedList.Add(currentNode);
-
-                foreach (PathNode neighbourNode in GetNeighbourList(currentNode)) {
-                    if (closedList.Contains(neighbourNode)) {
-                        continue;
-                    }
-
-                    int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNode, neighbourNode);
-                    if (tentativeGCost < neighbourNode.gCost) {
-                        neighbourNode.previousNode = currentNode;
-                        neighbourNode.gCost = tentativeGCost;
-                        neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
-
-                        if (!openList.Contains(neighbourNode)) {
-                            openList.Add(neighbourNode);
-                        }
-                    }
-                }
-            }
-
-            // No Path
-            return null;
-        }
-
-        private List<PathNode> GetNeighbourList(PathNode currentNode) {
-            List<PathNode> neighbourList = new List<PathNode>();
-            Direction currentNodeDirection = gridElements.GetTile(currentNode.GetCell()).ToDirection();
-
-            if (currentNodeDirection != Direction.NULL && currentNodeDirection != Direction.All) {
-                Vector2Int cellFaced = currentNode.GetCell() + currentNodeDirection.ToOffset();
-                if (grid.CellIsValid(cellFaced)) {
-                    neighbourList.Add(grid.GetTile(cellFaced));
-                }
-            } else {
-                //Left
-                if (grid.CellIsValid(currentNode.X - 1, currentNode.Y)) {
-                    neighbourList.Add(grid.GetTile(currentNode.X - 1, currentNode.Y));
-                }
-
-                // Right
-                if (grid.CellIsValid(currentNode.X + 1, currentNode.Y)) {
-                    neighbourList.Add(grid.GetTile(currentNode.X + 1, currentNode.Y));
-                }
-
-                // Up
-                if (grid.CellIsValid(currentNode.X, currentNode.Y - 1)) {
-                    neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y - 1));
-                }
-
-                // Down
-                if (grid.CellIsValid(currentNode.X, currentNode.Y + 1)) {
-                    neighbourList.Add(grid.GetTile(currentNode.X, currentNode.Y + 1));
-                }
-            }
-
-            if (!includeNullElements) {
-                neighbourList = neighbourList.Where(p => gridElements.GetTile(p.GetCell()) != Element.NULL).ToList();
-            }
-
-            return neighbourList;
-        }
-
-        private List<PathNode> CalculatePath(PathNode endNode) {
-            List<PathNode> path = new List<PathNode>() { endNode };
-            PathNode currentNode = endNode;
-            while(currentNode.previousNode != null) {
-                path.Add(currentNode.previousNode);
-                currentNode = currentNode.previousNode;
-            }
-            path.Reverse();
-            return path;
-        }
-
-        private int CalculateDistanceCost(PathNode a, PathNode b) {
-            int xDistance = Mathf.Abs(a.X - b.X);
-            int yDistance = Mathf.Abs(a.Y - b.Y);
-            return MOVE_STRAIGHT_COST * (xDistance + yDistance);
-        }
-
-        private PathNode GetLowestFCostNode(List<PathNode> pathNodeList) {
-            PathNode lowestFCostNode = pathNodeList[0];
-            for (int i = 1; i < pathNodeList.Count; i++)
-                if (pathNodeList[i].FCost < lowestFCostNode.FCost)
-                    lowestFCostNode = pathNodeList[i];
-            return lowestFCostNode;
         }
     }
 }

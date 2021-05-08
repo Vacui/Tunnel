@@ -318,6 +318,8 @@ namespace Level {
                 return;
             }
 
+            LevelNavigation.SetUp(Grid.Width, Grid.Height, false, true, Grid);
+
             Debug.Log("Level is playable!");
             LvlState = LevelState.Playable;
             OnLevelPlayable?.Invoke(this, new OnLevelPlayableEventArgs { startX = StartCell.x, startY = StartCell.y, endX = EndCell.x, endY = EndCell.y });
