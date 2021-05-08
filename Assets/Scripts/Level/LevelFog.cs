@@ -119,7 +119,7 @@ namespace Level {
             Element type;
             TileVisibility visibility;
 
-            List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, false);
+            List<Vector2Int> neighbours = grid.GatherNeighbourCells(x, y, 1, true, true);
             Vector2Int neighbour;
             for (int i = 0; i < neighbours.Count && isReadyToVisible; i++) {
                 neighbour = neighbours[i];
@@ -190,6 +190,10 @@ namespace Level {
 
         private void DiscoverNextClusterTile(int index, List<Vector2Int> cells) {
             if (index < cells.Count) {
+                if(index == 0) {
+                    cells.ShuffleUsingRandom();
+                }
+
                 DiscoverTile(cells[index].x, cells[index].y);
                 if (index + 1 < cells.Count) {
                     clusterDiscoveryTweenId = LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); }).id;
