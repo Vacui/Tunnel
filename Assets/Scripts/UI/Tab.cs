@@ -5,8 +5,6 @@ namespace UI {
     public class Tab : UIElement {
         [Header("Tab Settings")]
         [SerializeField] private TabGroup group;
-        [SerializeField] private bool useNavbar;
-        [SerializeField, EnableIf("useNavbar", true)] Navbar.NavbarSettings navbarSettings;
         [SerializeField] private bool useCustomName = false;
         [SerializeField, EnableIf("useCustomName", true)] private string customName = "";
 
@@ -27,9 +25,6 @@ namespace UI {
             UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
-            if (useNavbar) {
-                Navbar.Show(navbarSettings);
-            }
         }
 
         protected override void OnInactive() {
@@ -37,9 +32,6 @@ namespace UI {
             UpdateChildrens();
             MyUtils.SetObjectsActive(objToShowOnActive, IsActive);
             MyUtils.SetObjectsActive(objToHideOnActive, !IsActive);
-            if (useNavbar) {
-                Navbar.Show(null);
-            }
         }
 
         private void UpdateChildrens() {
