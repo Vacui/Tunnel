@@ -23,9 +23,17 @@ namespace UI {
         }
 
         private void GetCameraColor() {
-            if (targetCamera != null) {
-                GetComponent<Graphic>().color = targetCamera.backgroundColor;
+            if(targetCamera == null) {
+                return;
             }
+
+            Graphic targetGraphic = GetComponent<Graphic>();
+
+            if(targetGraphic == null) {
+                return;
+            }
+
+            targetGraphic.color = targetCamera.backgroundColor;
         }
     }
 }
