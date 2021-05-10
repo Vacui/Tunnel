@@ -8,6 +8,6 @@ public class ScaleTween : TweenScript {
         base.ApplyTweenTypeSettings();
 
         transform.localScale = from;
-        id = LeanTween.scale(gameObject, to, time).id;
+        id = LeanTween.scale(objectToAnimate, to, duration).id;
     }
 }

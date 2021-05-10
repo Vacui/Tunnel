@@ -1,10 +1,27 @@
-﻿using UnityEngine;
+﻿using UltEvents;
+using UnityEngine;
 
 public class TweenScript : MonoBehaviour {
-    [SerializeField] protected float time;
-    [SerializeField] private LeanTweenType type;
+    [SerializeField, NotNull] protected GameObject objectToAnimate;
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("type")] private LeanTweenType easeType;
+    [SerializeField, ShowIf(nameof(easeType), LeanTweenType.animationCurve)] private AnimationCurve animationCurve;
+    [SerializeField, UnityEngine.Serialization.FormerlySerializedAs("time")] protected float duration;
+    [SerializeField, Clamp(0, Mathf.Infinity)] private float delay;
+    [SerializeField] private bool loop;
+    [SerializeField, ShowIf(nameof(loop), true)] private bool pingPong;
+    [SerializeField, ShowIf(nameof(loop), true), Clamp(-1, 99)] private int loopTimes;
+    [SerializeField] private UltEvent onCompleteCallback;
+    [SerializeField] private bool destroyOnComplete;
 
     [SerializeField, Disable, EditorButton(nameof(Execute), activityType: ButtonActivityType.OnPlayMode)] protected int id = -1;
+
+    private void Awake() {
+#if (UNITY_EDITOR)
+        if (objectToAnimate == null) {
+            objectToAnimate = gameObject;
+        }
+#endif
+    }
 
     public void Execute() {
         StopTween();
@@ -32,6 +49,24 @@ public class TweenScript : MonoBehaviour {
             return;
         }
 
-        descr.setLoopType(type);
+        if (easeType == LeanTweenType.animationCurve) {
+            descr.setEase(animationCurve);
+
+        } else {
+            descr.setEase(easeType);
+        }
+
+        descr.setDelay(delay);
+
+        if (loop) {
+            if (pingPong) {
+                descr.setLoopPingPong(loopTimes);
+            } else {
+                descr.setLoopClamp(loopTimes);
+            }
+        }
+
+        descr.setOnComplete(() => onCompleteCallback?.Invoke());
+        descr.setDestroyOnComplete(destroyOnComplete);
     }
 }
