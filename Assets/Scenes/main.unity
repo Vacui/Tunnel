@@ -1605,6 +1605,9 @@ MonoBehaviour:
     - _Target: {fileID: 1792576422}
       _MethodName: ClearAllTiles
       _PersistentArguments: []
+    - _Target: {fileID: 928925343}
+      _MethodName: ClearLevel
+      _PersistentArguments: []
   OnLockEvent:
     _PersistentCalls: []
   OnUnlockEvent:

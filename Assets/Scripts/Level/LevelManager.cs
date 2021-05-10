@@ -263,6 +263,15 @@ namespace Level {
             };
         }
 
+        public void ClearLevel() {
+            LeanTween.cancelAll();
+            StopAllCoroutines();
+
+            Debug.Log("Level is not ready!");
+            LvlState = LevelState.NotReady;
+            OnLevelNotReady?.Invoke(this, null);
+        }
+
         public void LoadLevel(GridXY<Element> newLevel) {
             if (newLevel == null || newLevel.Size == 0) {
                 Debug.LogWarning("The new level grid is not valid");
@@ -270,12 +279,7 @@ namespace Level {
             }
 
             Debug.Log($"0. Loading level {newLevel.Width}x{newLevel.Height}...");
-            LeanTween.cancelAll();
-            StopAllCoroutines();
-
-            Debug.Log("Level is not ready!");
-            LvlState = LevelState.NotReady;
-            OnLevelNotReady?.Invoke(this, null);
+            ClearLevel();
 
             Debug.Log($"1. Initializing level...");
             Grid.CreateGridXY(newLevel.Width, newLevel.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
