@@ -380,7 +380,6 @@ GameObject:
   - component: {fileID: 48382216}
   - component: {fileID: 48382220}
   - component: {fileID: 48382219}
-  - component: {fileID: 48382218}
   - component: {fileID: 48382217}
   m_Layer: 5
   m_Name: Title (TMP)
@@ -422,19 +421,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!114 &48382218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 48382215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13c8ac8dfe5a0fd4c9f89da60484c199, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parent: {fileID: 136739833}
 --- !u!114 &48382219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -482,8 +468,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1654,7 +1640,7 @@ GameObject:
   - component: {fileID: 136739834}
   - component: {fileID: 136739835}
   m_Layer: 5
-  m_Name: Generating...
+  m_Name: Generating
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6616,6 +6602,19 @@ MonoBehaviour:
         _Int: 0
         _String: 
         _X: 5
+        _Y: 0
+        _Z: 0
+        _W: 0
+        _Object: {fileID: 0}
+  GenerationStatusChanged:
+    _PersistentCalls:
+    - _Target: {fileID: 48382219}
+      _MethodName: set_text
+      _PersistentArguments:
+      - _Type: 14
+        _Int: 0
+        _String: 
+        _X: 2
         _Y: 0
         _Z: 0
         _W: 0

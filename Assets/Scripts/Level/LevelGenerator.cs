@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using UltEvents;
 using UnityEngine;
 
@@ -18,14 +19,25 @@ namespace Level {
         [SerializeField, Disable] private int nodesPercentage;
         System.Random rnd;
 
-        private Thread generating;
         private enum LevelGenerationStatus {
             Idle,
             Generating,
+            Nodes,
+            Paths,
             Completed,
             Abort
         }
         private LevelGenerationStatus status;
+        private LevelGenerationStatus Status {
+            get { return status; }
+            set {
+                LevelGenerationStatus oldStatus = status;
+                status = value;
+                if (oldStatus != value) {
+                    GenerationStatusChanged?.Invoke(GetStatusText(value));
+                }
+            }
+        }
         public bool stopGenerating = false;
         private float genProgressionPrev;
         [SerializeField, ProgressBar("Generation Progress", minValue: 0f, maxValue: 1f, HexColor = "#EB7D34")] private float genProgression;
@@ -36,13 +48,14 @@ namespace Level {
         [SerializeField] private UltEvent GenerationAborted;
         [SerializeField] private UltEvent GenerationCompleted;
         [SerializeField] private UltEventFloat GenerationProgress;
+        [SerializeField] private UltEventString GenerationStatusChanged;
 
         private void Awake() {
             ResetSettings();
         }
 
         private void Update() {
-            if(status == LevelGenerationStatus.Abort) {
+            if(Status == LevelGenerationStatus.Abort) {
                 AbortGeneration();
                 GenerationAborted?.Invoke();
             }
@@ -52,14 +65,15 @@ namespace Level {
                 genProgressionPrev = genProgression;
             }
 
-            if (status == LevelGenerationStatus.Completed) {
+            if (Status == LevelGenerationStatus.Completed) {
                 Debug.Log("Generated level");
-                status = LevelGenerationStatus.Idle;
+                Status = LevelGenerationStatus.Idle;
                 GenerationStopped?.Invoke();
                 if (newLevel != null) {
                     LevelManager.Main.LoadLevel(newLevel);
                 } else {
                     Debug.LogWarning("Level generated is not valid, abort");
+                    AbortGeneration();
                 }
                 GenerationCompleted?.Invoke();
             }
@@ -77,26 +91,27 @@ namespace Level {
 
         public void ApplySettings() {
             Debug.Log("Before start thread");
-            generating = new Thread(GenerateLevel);
-            generating.Start();
+            StartCoroutine(GenerateLevel());
             GenerationStarted?.Invoke();
             Debug.Log("Started thread");
         }
 
-        private void GenerateLevel() {
-            status = LevelGenerationStatus.Idle;
+        IEnumerator GenerateLevel() {
+            Status = LevelGenerationStatus.Idle;
             genProgressionPrev = -1;
             genProgression = 0;
             rnd = new System.Random(System.DateTime.Now.Millisecond);
 
             if (lvlWidth <= 0) {
                 Debug.LogError($"Can't generate a level with {lvlWidth} width");
-                status = LevelGenerationStatus.Abort;
+                Status = LevelGenerationStatus.Abort;
+                yield break;
             }
 
             if (lvlHeight <= 0) {
                 Debug.LogError($"Can't generate a level with {lvlHeight} height");
-                status = LevelGenerationStatus.Abort;
+                Status = LevelGenerationStatus.Abort;
+                yield break;
             }
 
             Debug.Log($"Generating level {lvlWidth}x{lvlHeight}");
@@ -105,16 +120,31 @@ namespace Level {
             newLevel.CreateGridXY(lvlWidth, lvlHeight, 1, Vector3.zero, false, Element.NULL, Element.NULL);
             LevelNavigation.SetUp(lvlWidth, lvlHeight, true, false);
 
-            List<Vector2Int> nodes = GenerateNodes(Mathf.RoundToInt(Mathf.Clamp((lvlWidth * lvlHeight) * (nodesPercentage / 100f), 2, newLevel.Size)));
-            int paths = GeneratePaths(nodes);
-            if (paths > 0) {
-                status = LevelGenerationStatus.Completed;
+            Status = LevelGenerationStatus.Generating;
+            yield return null;
+
+            List<Vector2Int> nodes = new List<Vector2Int>();
+
+            Coroutine generatingNodes = StartCoroutine(GenerateNodes(Mathf.RoundToInt(Mathf.Clamp((lvlWidth * lvlHeight) * (nodesPercentage / 100f), 2, newLevel.Size)), (generatedNodes) => { nodes = generatedNodes; }));
+            yield return generatingNodes;
+
+            yield return null;
+
+            int pathsNum = 0;
+            Coroutine generatingPaths = StartCoroutine(GeneratePaths(nodes, (generatedPathsNum) => { pathsNum = generatedPathsNum; }));
+            yield return generatingPaths;
+
+            yield return null;
+
+            if (pathsNum > 0) {
+                Status = LevelGenerationStatus.Completed;
             } else {
-                status = LevelGenerationStatus.Abort;
+                Status = LevelGenerationStatus.Abort;
             }
         }
 
-        private List<Vector2Int> GenerateNodes(int num) {
+        IEnumerator GenerateNodes(int num, Action<List<Vector2Int>> callback) {
+
             if (num > 0) {
                 int attempts = 0;
                 int maxAttempts = num * 2;
@@ -122,6 +152,10 @@ namespace Level {
                 List<Vector2Int> nodesAlreadyFound = new List<Vector2Int>();
                 Vector2Int cell = Vector2Int.zero;
                 System.Random rnd = new System.Random(System.DateTime.Now.Millisecond);
+
+                Status = LevelGenerationStatus.Nodes;
+                yield return null;
+
                 for (int i = 0; i < num && attempts < maxAttempts; i++, attempts++) {
                     cell = new Vector2Int(rnd.Next(0, newLevel.Width), rnd.Next(0, newLevel.Height));
                     if (newLevel.GetTile(cell).IsNodeType() || nodesAlreadyFound.Contains(cell)) {
@@ -130,17 +164,20 @@ namespace Level {
                     }
                     nodesAlreadyFound.Add(cell);
                     newLevel.SetTile(cell, Element.Node);
+                    genProgression = Mathf.Max((float)i / num, (float)attempts / maxAttempts);
+                    yield return null;
                 }
                 Debug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes in {attempts}/{maxAttempts} attempts");
 
-                return nodesAlreadyFound;
+                callback?.Invoke(nodesAlreadyFound);
+                yield break;
             }
 
             Debug.LogWarning($"Can't generate {num} nodes");
-            return null;
+            yield break;
         }
 
-        private int GeneratePaths(List<Vector2Int> nodes) {
+        IEnumerator GeneratePaths(List<Vector2Int> nodes, Action<int> callback) {
             if (nodes.Count > 0) {
                 int attempts = 0;
                 int maxAttempts = nodes.Count * 2;
@@ -150,6 +187,10 @@ namespace Level {
 
                 int path = 0;
                 int nodesUnusable = 0;
+
+                Status = LevelGenerationStatus.Paths;
+                yield return null;
+
                 for (path = 0; path + nodesUnusable + 1 < nodes.Count && attempts < maxAttempts; path++, attempts++) {
                     newPath = LevelNavigation.FindPath(nodes[path], nodes[path + nodesUnusable + 1], newLevel);
                     if (newPath == null) {
@@ -164,36 +205,22 @@ namespace Level {
                         nodesUnusable = 0;
                     }
                     genProgression = Mathf.Max((float)path / nodes.Count, (float)attempts / maxAttempts);
+                    yield return null;
                 }
 
                 Debug.Log($"Generated {path}/{nodes.Count - 1} paths in {attempts}/{maxAttempts} attempts");
-
-                //SearchForNodeClusters(nodes, nodesUsed);
 
                 nodes = RemoveUnusedNodes(nodes, nodesUsed);
 
                 newLevel.SetTile(nodes[0], Element.Start);
                 newLevel.SetTile(nodes[nodes.Count - 1], Element.End);
 
-                return nodes.Count;
+                callback?.Invoke(nodes.Count);
+                yield break;
             }
 
             Debug.LogWarning("There are no nodes for which generate paths");
-            return 0;
-        }
-
-        private void SearchForNodeClusters(List<Vector2Int> nodes, List<bool> nodesUsed) {
-            for (int i = 0; i < nodesUsed.Count; i++) {
-                if (nodesUsed[i]) {
-                    List<Vector2Int> neighbours = newLevel.GatherNeighbourCells(nodes[i], 1, true, true);
-                    neighbours = neighbours.Where(n => nodes.Contains(n)).ToList();
-                    if (neighbours.Count > 0) {
-                        foreach (Vector2Int neighbour in neighbours) {
-                            nodesUsed[nodes.IndexOf(neighbour)] = true;
-                        }
-                    }
-                }
-            }
+            yield break;
         }
 
         private List<Vector2Int> RemoveUnusedNodes(List<Vector2Int> nodes, List<bool> nodesUsed) {
@@ -237,12 +264,32 @@ namespace Level {
         }
 
         public void AbortGeneration() {
-            if (generating != null) {
+            if (IsGenerating()) {
                 Debug.Log("Aborting Thread");
-                status = LevelGenerationStatus.Idle;
-                generating.Abort();
+                Status = LevelGenerationStatus.Idle;
+                StopAllCoroutines();
                 GenerationStopped?.Invoke();
             }
+        }
+
+        private bool IsGenerating() {
+            return
+                Status != LevelGenerationStatus.Idle &&
+                Status != LevelGenerationStatus.Completed &&
+                Status != LevelGenerationStatus.Abort;
+        }
+
+        private string GetStatusText(LevelGenerationStatus status) {
+            string result = "";
+
+            switch (status) {
+                case LevelGenerationStatus.Generating: result = "Generating..."; break;
+                case LevelGenerationStatus.Nodes: result = "Generating Nodes..."; break;
+                case LevelGenerationStatus.Paths: result = "Generating Paths..."; break;
+                case LevelGenerationStatus.Completed: result = "Level Generation complete"; break;
+            }
+
+            return result;
         }
     }
 }
