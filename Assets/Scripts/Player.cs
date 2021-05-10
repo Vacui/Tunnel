@@ -84,16 +84,16 @@ namespace PlayerLogic {
         private void Update() {
             if (IsSafe && IsActive) {
                 Direction moveDirection = Direction.NULL;
-                if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) {
                     moveDirection = Direction.Up;
                 }
-                if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+                if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) {
                     moveDirection = Direction.Left;
                 }
-                if (Input.GetKeyDown(KeyCode.DownArrow)) {
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) {
                     moveDirection = Direction.Down;
                 }
-                if (Input.GetKeyDown(KeyCode.RightArrow)) {
+                if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) {
                     moveDirection = Direction.Right;
                 }
 
