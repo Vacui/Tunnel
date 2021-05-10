@@ -286,7 +286,7 @@ namespace Level {
                 case LevelGenerationStatus.Generating: result = "Generating..."; break;
                 case LevelGenerationStatus.Nodes: result = "Generating Nodes..."; break;
                 case LevelGenerationStatus.Paths: result = "Generating Paths..."; break;
-                case LevelGenerationStatus.Completed: result = "Level Generation complete"; break;
+                case LevelGenerationStatus.Completed: result = "Complete!"; break;
             }
 
             return result;
