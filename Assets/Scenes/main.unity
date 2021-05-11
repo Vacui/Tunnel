@@ -15264,7 +15264,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   duration: 2
-  delay: 0
+  delay: 1
   loop: 0
   pingPong: 0
   loopTimes: 0
@@ -15275,7 +15275,7 @@ MonoBehaviour:
       _PersistentArguments: []
   destroyOnComplete: 0
   id: -1
-  from: {x: 0.8, y: 0.8, z: 1}
+  from: {x: 0.3, y: 0.3, z: 1}
   to: {x: 1.2, y: 1.2, z: 1}
 --- !u!114 &1664779761
 MonoBehaviour:
