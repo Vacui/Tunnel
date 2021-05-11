@@ -16,8 +16,8 @@ namespace Level {
         }
 
         private GridXY<TileVisibility> grid;
-        public static event EventHandler<GridCoordsEventArgs> HiddenTile;
-        public static event EventHandler<GridCoordsEventArgs> DiscoveredTile;
+        public static event EventHandler<GridCellEventArgs> HiddenTile;
+        public static event EventHandler<GridCellEventArgs> DiscoveredTile;
 
         [Header("Visuals")]
         private Tilemap tilemap;
@@ -48,10 +48,10 @@ namespace Level {
 
                 switch (args.value) {
                     case TileVisibility.Invisible:
-                        HiddenTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
+                        HiddenTile?.Invoke(this, new GridCellEventArgs { x = args.x, y = args.y, cell = new Vector2Int(args.x, args.y) });
                         break;
                     case TileVisibility.Visible:
-                        DiscoveredTile?.Invoke(this, new GridCoordsEventArgs { x = args.x, y = args.y });
+                        DiscoveredTile?.Invoke(this, new GridCellEventArgs { x = args.x, y = args.y, cell = new Vector2Int(args.x, args.y) });
                         break;
                 }
                 tilemap.SetTile(new Vector3Int(args.x, args.y, 0), args.value != TileVisibility.Visible ? visual : null);

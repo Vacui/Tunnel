@@ -5,9 +5,9 @@ using UnityEngine;
 namespace PlayerLogic {
     [DisallowMultipleComponent]
     public class Player : MonoBehaviour {
-        public static event EventHandler<GridCoordsEventArgs> StartedMoveStatic;
-        public static event EventHandler<GridCoordsEventArgs> MovedStatic;
-        public static event EventHandler<GridCoordsEventArgs> StoppedMoveStatic;
+        public static event EventHandler<GridCellEventArgs> StartedMoveStatic;
+        public static event EventHandler<GridCellEventArgs> MovedStatic;
+        public static event EventHandler<GridCellEventArgs> StoppedMoveStatic;
 
         [SerializeField, Disable] private int x = -1;
         [SerializeField, Disable] private int y = -1;
@@ -18,11 +18,11 @@ namespace PlayerLogic {
                 bool changedValue = isSafe != value;
                 isSafe = value;
                 if (changedValue && isSafe) {
-                    StoppedMoveStatic?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                    StoppedMoveStatic?.Invoke(this, new GridCellEventArgs { x = x, y = y, cell = new Vector2Int(x, y) });
                     StoppedMove?.Invoke(new Vector3(x, y, 0));
                 } else {
                     if (changedValue && !isSafe) {
-                        StartedMoveStatic?.Invoke(this, new GridCoordsEventArgs { x = x, y = y });
+                        StartedMoveStatic?.Invoke(this, new GridCellEventArgs { x = x, y = y, cell = new Vector2Int(x, y) });
                         StartedMove?.Invoke(new Vector3(x, y, 0));
                     }
                 }
@@ -141,7 +141,7 @@ namespace PlayerLogic {
             }
 
             if (canMove) {
-                MovedStatic?.Invoke(this, new GridCoordsEventArgs { x = newX, y = newY });
+                MovedStatic?.Invoke(this, new GridCellEventArgs { x = newX, y = newY, cell = new Vector2Int(newX, newY) });
                 Moved?.Invoke(new Vector3(newX, newY, 0));
             }
         }
