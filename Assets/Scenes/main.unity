@@ -14758,7 +14758,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: My family, Kroltan, Gad, Code Monkey
+  m_text: 'My family, Kroltan, Gad, Code Monkey, GDN Community
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7f6d4806d90356845b8675ea1b288204, type: 2}
   m_sharedMaterial: {fileID: 552283849756935992, guid: 7f6d4806d90356845b8675ea1b288204,
