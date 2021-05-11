@@ -15,10 +15,17 @@ namespace UI {
             GetComponent<Button>().onClick.RemoveListener(AddValue);
         }
 
+        /// <summary>
+        /// Add value to attached slider.
+        /// </summary>
         private void AddValue() {
-            if (slider != null) {
-                slider.value += valueToAdd;
-            } else Debug.LogWarning("Slider is null", gameObject);
+
+            if(slider == null) {
+                Debug.LogWarning("Slider is null", gameObject);
+                return;
+            }
+
+            slider.value += valueToAdd;
         }
     }
 }

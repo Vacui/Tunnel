@@ -82,6 +82,11 @@ namespace PlayerLogic {
         }
 
         private void Update() {
+
+            if(!isSafe || !IsActive) {
+                return;
+            }
+
             if (IsSafe && IsActive) {
                 Direction moveDirection = Direction.NULL;
                 if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) {
@@ -169,6 +174,11 @@ namespace PlayerLogic {
             MoveToCell(x + offsetX, y + offsetY, false);
         }
 
+        /// <summary>
+        /// Teleport to starting cell.
+        /// </summary>
+        /// <param name="x">Start cell X.</param>
+        /// <param name="y">Start cell Y.</param>
         public void MoveToStartCell(int x, int y) {
             IsActive = true;
             dirCurrent = Direction.NULL;
@@ -181,6 +191,9 @@ namespace PlayerLogic {
             MoveToCell(dirCurrent);
         }
 
+        /// <summary>
+        /// Check if the player is standing is safe, otherwise continue moving in current direction.
+        /// </summary>
         public void CheckCurrentTile() {
             if (showDebugLog) Debug.Log("Checking current tile", gameObject);
 

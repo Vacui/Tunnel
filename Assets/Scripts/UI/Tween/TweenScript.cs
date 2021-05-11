@@ -23,12 +23,18 @@ public class TweenScript : MonoBehaviour {
 #endif
     }
 
+    /// <summary>
+    /// Start the tween.
+    /// </summary>
     public void Execute() {
         StopTween();
         ApplyTweenTypeSettings();
         SetTweenSettings();
     }
 
+    /// <summary>
+    /// Stop the tween.
+    /// </summary>
     public void StopTween() {
         if (id > -1 && LeanTween.isTweening(id)) {
             LeanTween.cancel(id, false);

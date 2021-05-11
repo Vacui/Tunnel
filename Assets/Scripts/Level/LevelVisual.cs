@@ -4,6 +4,9 @@ using UnityEngine.Tilemaps;
 namespace Level {
     [DisallowMultipleComponent, RequireComponent(typeof(Tilemap))]
     public class LevelVisual : MonoBehaviour {
+        /// <summary>
+        /// Level Visual singleton.
+        /// </summary>
         public static LevelVisual main { get; private set; }
 
         [SerializeField] private TileBase t_start;
@@ -14,7 +17,7 @@ namespace Level {
         public Tilemap Tilemap { get; private set; }
 
         [System.Flags]
-        enum LevelVisualDebug {
+        private enum LevelVisualDebug {
             Nothing = 0,
             Hiding_Tile = 1,
             Discovering_Tile = 2,
@@ -48,12 +51,20 @@ namespace Level {
             };
         }
 
+        /// <summary>
+        /// Set the provided tilemap cell to the correct visual.
+        /// </summary>
+        /// <param name="x">Tilemap cell X.</param>
+        /// <param name="y">Tilemap cell Y.</param>
         public void UpdateVisual(int x, int y) {
-            if (LevelManager.Main.LvlState != LevelManager.LevelState.Win) {
-                Element element = LevelManager.Main.Grid.GetTile(x, y);
-                if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
-                Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
+
+            if(LevelManager.Main.LvlState == LevelManager.LevelState.Win) {
+                return;
             }
+
+            Element element = LevelManager.Main.Grid.GetTile(x, y);
+            if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
+            Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }
 
         private TileBase GetTileBase(Element type) {

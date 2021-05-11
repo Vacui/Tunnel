@@ -22,6 +22,11 @@ namespace UI {
             Player.StoppedMoveStatic += (sender, args) => UpdateValue(args.x, args.y);
         }
 
+        /// <summary>
+        /// Update the attached text to the distance between the specified cell and the level end.
+        /// </summary>
+        /// <param name="startX">Start cell X.</param>
+        /// <param name="startY">Start cell Y.</param>
         public void UpdateValue(int startX, int startY) {
             if (text == null) {
                 return;
