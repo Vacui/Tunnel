@@ -2,6 +2,9 @@
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Custom A* algorythm used to navigate a level and also generate one.
+/// </summary>
 public static class LevelNavigation {
     private const int MOVE_STRAIGHT_COST = 1;
 
