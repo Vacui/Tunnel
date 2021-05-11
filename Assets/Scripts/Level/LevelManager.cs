@@ -13,10 +13,12 @@ public enum Direction {
 }
 
 public static class DirectionUtils {
-    public static bool IsNull(this Direction dir) {
-        return dir == Direction.NULL;
-    }
 
+    /// <summary>
+    /// Return the opposite direction.
+    /// </summary>
+    /// <param name="dir">Direction to reverse.</param>
+    /// <returns>Opposite direction.</returns>
     public static Direction Opposite(this Direction dir) {
         switch (dir) {
             default:
@@ -27,6 +29,12 @@ public static class DirectionUtils {
         }
     }
 
+    /// <summary>
+    /// Converts direction to local offset.
+    /// </summary>
+    /// <param name="dir">Direction to convert.</param>
+    /// <param name="offsetX">Offset X.</param>
+    /// <param name="offsetY">Offset Y.</param>
     public static void ToOffset(this Direction dir, out int offsetX, out int offsetY) {
         offsetX = 0;
         offsetY = 0;
@@ -37,24 +45,46 @@ public static class DirectionUtils {
             case Direction.Left: offsetX--; break;
         }
     }
+    /// <summary>
+    /// Converts direction to local offset.
+    /// </summary>
+    /// <param name="dir">Direction to convert.</param>
+    /// <returns>Offset</returns>
     public static Vector2Int ToOffset(this Direction dir) {
         ToOffset(dir, out int offsetX, out int offsetY);
         return new Vector2Int(offsetX, offsetY);
     }
 
+    /// <summary>
+    /// Return the cell a specified cell is facing on a direction.
+    /// </summary>
+    /// <param name="dir">Facing direction.</param>
+    /// <param name="tileCell">Origin cell.</param>
+    /// <returns>Cell faced.</returns>
     public static Vector2Int FacingCell(this Direction dir, Vector2Int tileCell) {
         return tileCell + dir.ToOffset();
     }
 
+    /// <summary>
+    /// Converts direction to angle
+    /// </summary>
+    /// <param name="dir">Direction.</param>
+    /// <returns>Angle.</returns>
     public static float ToAngle(this Direction dir) {
-        float result = -1;
 
-        if (dir != Direction.NULL)
-            result = (int)dir * 90;
+        if(dir == Direction.NULL || dir == Direction.All) {
+            return -1;
+        }
 
-        return result;
+        return (int)dir * 90; ;
     }
 
+    /// <summary>
+    /// Rotate a direction of a specified angle. It must be a multiple of 90.
+    /// </summary>
+    /// <param name="direction">Direction to rotate.</param>
+    /// <param name="angle">Angle of rotation.</param>
+    /// <returns>Rotated direction.</returns>
     public static Direction Rotate(this Direction direction, int angle) {
         switch (direction) {
             case Direction.NULL: return Direction.NULL;
@@ -81,6 +111,12 @@ public enum Element {
 }
 
 public static class ElementUtils {
+
+    /// <summary>
+    /// Converts an element to its direction.
+    /// </summary>
+    /// <param name="element">Element to convert.</param>
+    /// <returns>Element's direction.</returns>
     public static Direction ToDirection(this Element element) {
         Direction result = Direction.NULL;
         switch (element) {
@@ -96,6 +132,11 @@ public static class ElementUtils {
         return result;
     }
 
+    /// <summary>
+    /// Check if element's direction is ALL.
+    /// </summary>
+    /// <param name="element">Element to check.</param>
+    /// <returns>True if the element's direction is ALL.</returns>
     public static bool IsNodeType(this Element element) {
         return element.ToDirection() == Direction.All;
     }
@@ -106,22 +147,57 @@ namespace Level {
     [DisallowMultipleComponent]
     public class LevelManager : MonoBehaviour {
 
+        /// <summary>
+        /// Level Manager's singleton.
+        /// </summary>
         public static LevelManager Main { get; private set; }
 
+        /// <summary>
+        /// Level cell size.
+        /// </summary>
         public const float CELLSIZE = 1f;
 
+        /// <summary>
+        /// Level grid.
+        /// </summary>
         public GridXY<Element> Grid { get; private set; }
+
+        /// <summary>
+        /// Level start cell.
+        /// </summary>
         public Vector2Int StartCell { get; private set; }
+
+        /// <summary>
+        /// Level end cell.
+        /// </summary>
         public Vector2Int EndCell { get; private set; }
+
         public enum LevelState { NotReady, NotPlayable, Ready, Playable, Win }
+        /// <summary>
+        /// Level playable state.
+        /// </summary>
         public LevelState LvlState { get; private set; }
 
+        /// <summary>
+        /// Event called when a level is not initialized.
+        /// </summary>
         public static event EventHandler OnLevelNotReady;
+        /// <summary>
+        /// Event called when a level has no end or start.
+        /// </summary>
         public static event EventHandler OnLevelNotPlayable;
+
+        /// <summary>
+        /// Event called when a level has been correctly initialized.
+        /// </summary>
         public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
         public class OnLevelReadyEventArgs : EventArgs {
             public int width, height;
         }
+
+        /// <summary>
+        /// Event called when a level has an end and a start.
+        /// </summary>
         public static event EventHandler<OnLevelPlayableEventArgs> OnLevelPlayable;
         public class OnLevelPlayableEventArgs : EventArgs {
             public int startX, startY;
@@ -157,6 +233,9 @@ namespace Level {
             };
         }
 
+        /// <summary>
+        /// Delete the current level.
+        /// </summary>
         public void ClearLevel() {
             LeanTween.cancelAll();
             StopAllCoroutines();
@@ -166,6 +245,10 @@ namespace Level {
             OnLevelNotReady?.Invoke(this, null);
         }
 
+        /// <summary>
+        /// Load a new level
+        /// </summary>
+        /// <param name="newLevel">New level.</param>
         public void LoadLevel(GridXY<Element> newLevel) {
             if (newLevel == null || newLevel.Size == 0) {
                 Debug.LogWarning("The new level grid is not valid");
@@ -224,6 +307,9 @@ namespace Level {
             OnLevelStart?.Invoke();
         }
 
+        /// <summary>
+        /// Restart the current level.
+        /// </summary>
         public void Restart() {
             GridXY<Element> newLevel = new GridXY<Element>();
             newLevel.CreateGridXY(Grid.Width, Grid.Height, Grid.CellSize, Grid.OriginPosition, false, Element.NULL, Element.NULL);
