@@ -104,113 +104,9 @@ public static class ElementUtils {
 }
 
 namespace Level {
-    public static class SeedUtils {
-        public static string ToSeedString(this GridXY<Element> grid) {
-            string result = "";
-            if (grid.Width > 0 && grid.Height > 0) {
-                result = $"{grid.Width}/{grid.Height}/";
-
-                for (int y = 0; y < grid.Height; y++) {
-                    for (int x = 0; x < grid.Width; x++) {
-                        result += $"{((x != 0 || y != 0) ? "-" : "")}{(int)grid.GetTile(x, y)}";
-                    }
-                }
-
-                result = result.TrimEnd('-');
-            }
-            return result;
-        }
-
-        public static LevelManager.Seed ToSeed(this GridXY<Element> grid) {
-            return new LevelManager.Seed(grid.ToSeedString());
-        }
-    }
-
 
     [DisallowMultipleComponent]
     public class LevelManager : MonoBehaviour {
-        public class Seed {
-            int width;
-            public int Width { get { return width; } private set { width = value; } }
-            int height;
-            public int Height { get { return height; } private set { height = value; } }
-            public int Size { get { return width * height; } }
-            public List<int> Cells { get; private set; }
-            public string SeedOriginal { get; private set; }
-
-            public bool IsValid { get; private set; }
-
-            public Seed(string seed) {
-                Width = -1;
-                Height = -1;
-                Cells = new List<int>();
-
-                SeedOriginal = seed;
-                seed = seed.Trim();
-                List<string> seedParts = seed.Split('/').ToList();
-
-                IsValid = false;
-
-                if (seedParts.Count != 3) {
-                    Debug.LogWarning($"Error in seed number of parts [{seedParts.Count}]");
-                    return;
-                }
-
-                if(!int.TryParse(seedParts[0], out width)) {
-                    Debug.LogWarning($"Error in parsing seed Width [{seedParts[0]}]");
-                    return;
-                }
-
-                if(Width <= 0) {
-                    Debug.LogWarning($"Seed Width is less or equal to 0 [{Width}]");
-                    return;
-                }
-
-                if(!int.TryParse(seedParts[1], out height)) {
-                    Debug.LogWarning($"Error in parsing seed Height [{seedParts[1]}]");
-                    return;
-                }
-
-                if (Height <= 0) {
-                    Debug.LogWarning($"Seed Height is less or equal to 0 [{Height}]");
-                    return;
-                }
-
-                if(seedParts[2].Count(c => (c == '-')) != (width * height) - 1) {
-                    Debug.LogWarning($"Error in the seed cells section length [{seedParts[2].Count(c => (c == '-'))}]");
-                    return;
-                }
-
-
-                List<string> cellString = seedParts[2].Split('-').ToList();
-                for (int i = 0; i < cellString.Count; i++) {
-                    if (cellString[i] != "" && int.TryParse(cellString[i], out int cell)) {
-                        Cells.Add(cell);
-                    } else {
-                        Cells.Add(0);
-                    }
-                }
-                IsValid = Cells.Count == cellString.Count;
-            }
-
-            public GridXY<Element> ToGrid() {
-                GridXY<Element> grid = new GridXY<Element>();
-                grid.CreateGridXY(Width, Height, 1, Vector3.zero, false, Element.NULL, Element.NULL);
-                for(int i = 0; i < Cells.Count; i++) {
-                    grid.SetTile(i, (Element)Cells[i]);
-                }
-                return grid;
-            }
-
-            public override string ToString() {
-                string seed = $"{width}/{height}/";
-                foreach (int cell in Cells) {
-                    seed += $"{cell}-";
-                }
-                seed.Trim('-');
-                return seed;
-            }
-        }
 
         public static LevelManager Main { get; private set; }
 
@@ -328,18 +224,6 @@ namespace Level {
             LvlState = LevelState.Playable;
             OnLevelPlayable?.Invoke(this, new OnLevelPlayableEventArgs { startX = StartCell.x, startY = StartCell.y, endX = EndCell.x, endY = EndCell.y });
             OnLevelStart?.Invoke();
-        }
-        public void LoadLevel(Seed lvlSeed) {
-            if (lvlSeed == null || !lvlSeed.IsValid) {
-                Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
-                return;
-            }
-
-            Debug.Log($"Loading seed: {lvlSeed}");
-            LoadLevel(lvlSeed.ToGrid());
-        }
-        public void LoadLevel(string seed) {
-            LoadLevel(new Seed(seed));
         }
 
         public void Restart() {
