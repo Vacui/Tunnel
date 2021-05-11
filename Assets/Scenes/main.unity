@@ -15297,7 +15297,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  duration: 1
+  duration: 0.6
   delay: 1
   loop: 0
   pingPong: 0
