@@ -16,7 +16,13 @@ namespace Level {
         }
 
         private GridXY<TileVisibility> grid;
+        /// <summary>
+        /// Event called when a tile visibility is changed to Invisible.
+        /// </summary>
         public static event EventHandler<GridCellEventArgs> HiddenTile;
+        /// <summary>
+        /// Event called when a tile visibility is changed to Visible
+        /// </summary>
         public static event EventHandler<GridCellEventArgs> DiscoveredTile;
 
         [Header("Visuals")]
@@ -25,9 +31,8 @@ namespace Level {
         [SerializeField] private float clusterDiscoverySpeed = 0.3f;
         private int clusterDiscoveryTweenId = -1;
 
-
-        [System.Flags]
-        enum LevelFogDebug {
+        [Flags]
+        private enum LevelFogDebug {
             Nothing = 0,
             Setting_Tile = 1,
             Tiles_Around = 2,
@@ -96,9 +101,13 @@ namespace Level {
         private void DiscoverTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Visible); }
         private void HideTile(int x, int y) { grid.SetTile(x, y, TileVisibility.Invisible); }
 
+        /// <summary>
+        /// Set all tiles' visibility to Visible.
+        /// </summary>
         public void DisableFog() {
             grid.SetAllTiles(TileVisibility.Visible);
         }
+
         private void CheckNullTiles() {
             for (int x = 0; x < grid.Width; x++) {
                 for (int y = 0; y < grid.Height; y++) {
@@ -128,12 +137,19 @@ namespace Level {
             Vector2Int neighbour;
             for (int i = 0; i < neighbours.Count && isReadyToVisible; i++) {
                 neighbour = neighbours[i];
-                if (LevelManager.Main.Grid.CellIsValid(neighbour.x, neighbour.y) && grid.CellIsValid(neighbour.x, neighbour.y)) {
-                    type = LevelManager.Main.Grid.GetTile(neighbour.x, neighbour.y);
-                    visibility = grid.GetTile(neighbour.x, neighbour.y);
-                    isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
-                    if (showDebugLog.HasFlag(LevelFogDebug.ReadyToVisible_Logic)) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
+
+                if(!LevelManager.Main.Grid.CellIsValid(neighbour.x, neighbour.y)) {
+                    continue;
                 }
+
+                if(!grid.CellIsValid(neighbour.x, neighbour.y)) {
+                    continue;
+                }
+
+                type = LevelManager.Main.Grid.GetTile(neighbour.x, neighbour.y);
+                visibility = grid.GetTile(neighbour.x, neighbour.y);
+                isReadyToVisible = visibility == TileVisibility.Visible || type == Element.NULL;
+                if (showDebugLog.HasFlag(LevelFogDebug.ReadyToVisible_Logic)) Debug.Log($"Checked neighbour {x},{y} ({visibility}) => {isReadyToVisible}");
             }
 
             if (isReadyToVisible) {
@@ -181,12 +197,17 @@ namespace Level {
             Vector2Int neighbour;
             for (int i = 0; i < neighbours.Count && clusterIsNotInvisible; i++) {
                 neighbour = neighbours[i];
-                if (!cellsChecked.Contains(neighbour)) {
-                    if (grid.CellIsValid(neighbour.x, neighbour.y)) {
-                        if (LevelManager.Main.Grid.GetTile(neighbour.x, neighbour.y) == Element.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible) {
-                            clusterIsNotInvisible = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
-                        }
-                    }
+
+                if (cellsChecked.Contains(neighbour)) {
+                    continue;
+                }
+
+                if(!grid.CellIsValid(neighbour.x, neighbour.y)) {
+                    continue;
+                }
+
+                if (LevelManager.Main.Grid.GetTile(neighbour.x, neighbour.y) == Element.NULL && grid.GetTile(neighbour.x, neighbour.y) != TileVisibility.Visible) {
+                    clusterIsNotInvisible = CheckClusterTileVisibility(neighbour.x, neighbour.y, ref cellsChecked);
                 }
             }
 
@@ -194,15 +215,18 @@ namespace Level {
         }
 
         private void DiscoverNextClusterTile(int index, List<Vector2Int> cells) {
-            if (index < cells.Count) {
-                if(index == 0) {
-                    cells.ShuffleUsingRandom();
-                }
+            if(index >= cells.Count) {
+                return;
+            }
 
-                DiscoverTile(cells[index].x, cells[index].y);
-                if (index + 1 < cells.Count) {
-                    clusterDiscoveryTweenId = LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); }).id;
-                }
+            if (index == 0) {
+                cells.ShuffleUsingRandom();
+            }
+
+            DiscoverTile(cells[index].x, cells[index].y);
+
+            if (index + 1 < cells.Count) {
+                clusterDiscoveryTweenId = LeanTween.value(index, index + 1, clusterDiscoverySpeed).setOnComplete(() => { DiscoverNextClusterTile(index + 1, cells); }).id;
             }
         }
     }
