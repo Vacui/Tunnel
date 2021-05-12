@@ -1,0 +1,16 @@
+{
+"companyName": "Vacui",
+"productName": "Tunnel",
+"productVersion": "Demo 2",
+"dataUrl": "MatteoG Tunnel Demo 2 HTML5.data.unityweb",
+"wasmCodeUrl": "MatteoG Tunnel Demo 2 HTML5.wasm.code.unityweb",
+"wasmFrameworkUrl": "MatteoG Tunnel Demo 2 HTML5.wasm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0","WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.4.20f1"
+}

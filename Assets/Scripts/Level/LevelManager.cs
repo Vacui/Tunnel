@@ -1,191 +1,324 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using PlayerLogic;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Level
-{
-    public static class SeedUtils
-    {
-        public static string ToSeedString(this GridXY<TileType> grid)
-        {
-            string result = "";
-            if (grid.width > 0 && grid.height > 0)
-            {
-                result = $"{grid.width}/{grid.height}/";
+public enum Direction {
+    NULL,
+    All,
+    Up,
+    Right,
+    Down,
+    Left
+}
 
-                for (int x = 0; x < grid.width; x++)
-                    for (int y = 0; y < grid.height; y++)
-                        result += $"{((x != 0 || y != 0) ? "-" : "")}{(int)grid.GetTile(x, y)}";
-            }
-            return result;
+public static class DirectionUtils {
+
+    /// <summary>
+    /// Return the opposite direction.
+    /// </summary>
+    /// <param name="dir">Direction to reverse.</param>
+    /// <returns>Opposite direction.</returns>
+    public static Direction Opposite(this Direction dir) {
+        switch (dir) {
+            default:
+            case Direction.Up: return Direction.Down;
+            case Direction.Right: return Direction.Left;
+            case Direction.Down: return Direction.Up;
+            case Direction.Left: return Direction.Right;
         }
-        public static LevelManager.Seed ToSeed(this GridXY<TileType> grid) { return new LevelManager.Seed(grid.ToSeedString()); }
     }
 
+    /// <summary>
+    /// Converts direction to local offset.
+    /// </summary>
+    /// <param name="dir">Direction to convert.</param>
+    /// <param name="offsetX">Offset X.</param>
+    /// <param name="offsetY">Offset Y.</param>
+    public static void ToOffset(this Direction dir, out int offsetX, out int offsetY) {
+        offsetX = 0;
+        offsetY = 0;
+        switch (dir) {
+            case Direction.Up: offsetY++; break;
+            case Direction.Right: offsetX++; break;
+            case Direction.Down: offsetY--; break;
+            case Direction.Left: offsetX--; break;
+        }
+    }
+    /// <summary>
+    /// Converts direction to local offset.
+    /// </summary>
+    /// <param name="dir">Direction to convert.</param>
+    /// <returns>Offset</returns>
+    public static Vector2Int ToOffset(this Direction dir) {
+        ToOffset(dir, out int offsetX, out int offsetY);
+        return new Vector2Int(offsetX, offsetY);
+    }
 
-    [DisallowMultipleComponent]
-    public class LevelManager : MonoBehaviour
-    {
-        public class Seed
-        {
-            int width;
-            public int Width { get { return width; } }
-            int height;
-            public int Height { get { return height; } }
-            public int Size { get { return width * height; } }
-            public List<int> cells { get; private set; }
-            public string SeedOriginal { get; private set; }
+    /// <summary>
+    /// Return the cell a specified cell is facing on a direction.
+    /// </summary>
+    /// <param name="dir">Facing direction.</param>
+    /// <param name="tileCell">Origin cell.</param>
+    /// <returns>Cell faced.</returns>
+    public static Vector2Int FacingCell(this Direction dir, Vector2Int tileCell) {
+        return tileCell + dir.ToOffset();
+    }
 
-            public bool isValid { get; private set; }
+    /// <summary>
+    /// Converts direction to angle
+    /// </summary>
+    /// <param name="dir">Direction.</param>
+    /// <returns>Angle.</returns>
+    public static float ToAngle(this Direction dir) {
 
-            public Seed(string seed)
-            {
-                width = -1;
-                height = -1;
-                cells = new List<int>();
-
-                SeedOriginal = seed;
-                seed = seed.Trim();
-                List<string> seedParts = seed.Split('/').ToList();
-
-                isValid = false;
-
-                if (seedParts.Count == 3)
-                {
-                    if (int.TryParse(seedParts[0], out width))
-                    {
-                        if (width > 0)
-                        {
-                            if (int.TryParse(seedParts[1], out height))
-                            {
-                                if (height > 0)
-                                {
-                                    if (seedParts[2].Count(c => (c == '-')) == (width * height) - 1)
-                                    {
-                                        List<string> cellString = seedParts[2].Split('-').ToList();
-                                        int cell;
-                                        for (int i = 0; i < cellString.Count; i++)
-                                        {
-                                            if (cellString[i] != "" && int.TryParse(cellString[i], out cell))
-                                                cells.Add(cell);
-                                            else
-                                                cells.Add(0);
-                                        }
-                                        isValid = cells.Count == cellString.Count;
-                                    } else { Debug.LogWarning("Error in the seed cells section length."); }
-                                } else { Debug.LogWarning("Seed height is less or equal to 0."); }
-                            } else { Debug.LogWarning("Error in parsing seed height number."); }
-                        } else { Debug.LogWarning("Seed width is less or equal to 0."); }
-                    } else { Debug.LogWarning("Error in parsing seed width number."); }
-                } else { Debug.LogWarning("Error in seed number of parts."); }
-            }
-
-            public override string ToString()
-            {
-                string seed = $"{width}/{height}/";
-                foreach (int cell in cells)
-                {
-                    seed += $"{cell}-";
-                }
-                seed.Trim('-');
-                return seed;
-            }
+        if(dir == Direction.NULL || dir == Direction.All) {
+            return -1;
         }
 
-        public static LevelManager main;
+        return (int)dir * 90; ;
+    }
 
-        public const float CELLSIZE = 1.1f;
+    /// <summary>
+    /// Rotate a direction of a specified angle. It must be a multiple of 90.
+    /// </summary>
+    /// <param name="direction">Direction to rotate.</param>
+    /// <param name="angle">Angle of rotation.</param>
+    /// <returns>Rotated direction.</returns>
+    public static Direction Rotate(this Direction direction, int angle) {
+        switch (direction) {
+            case Direction.NULL: return Direction.NULL;
+            case Direction.All: return Direction.All;
+            default:
+                int dir = (int)direction;
+                dir += angle / 90;
+                if (dir > 5) dir -= 4;
+                return (Direction)dir;
+        }
+    }
+}
 
-        public GridXY<TileType> grid { get; private set; }
-        public enum LevelState { NotReady, NotPlayable, Ready, Playable }
+[Serializable]
+public enum Element {
+    NULL = 0,
+    Start = 1,
+    End = 2,
+    Node = 3,
+    Up = 4,
+    Right = 5,
+    Down = 6,
+    Left = 7
+}
+
+public static class ElementUtils {
+
+    /// <summary>
+    /// Converts an element to its direction.
+    /// </summary>
+    /// <param name="element">Element to convert.</param>
+    /// <returns>Element's direction.</returns>
+    public static Direction ToDirection(this Element element) {
+        Direction result = Direction.NULL;
+        switch (element) {
+            case Element.NULL: result = Direction.NULL; break;
+            case Element.Start: result = Direction.All; break;
+            case Element.Node: result = Direction.All; break;
+            case Element.End: result = Direction.All; break;
+            case Element.Up: result = Direction.Up; break;
+            case Element.Right: result = Direction.Right; break;
+            case Element.Down: result = Direction.Down; break;
+            case Element.Left: result = Direction.Left; break;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Check if element's direction is ALL.
+    /// </summary>
+    /// <param name="element">Element to check.</param>
+    /// <returns>True if the element's direction is ALL.</returns>
+    public static bool IsNodeType(this Element element) {
+        return element.ToDirection() == Direction.All;
+    }
+}
+
+namespace Level {
+
+    [DisallowMultipleComponent]
+    public class LevelManager : MonoBehaviour {
+
+        /// <summary>
+        /// Level Manager's singleton.
+        /// </summary>
+        public static LevelManager Main { get; private set; }
+
+        /// <summary>
+        /// Level cell size.
+        /// </summary>
+        public const float CELLSIZE = 1f;
+
+        /// <summary>
+        /// Level grid.
+        /// </summary>
+        public GridXY<Element> Grid { get; private set; }
+
+        /// <summary>
+        /// Level start cell.
+        /// </summary>
+        public Vector2Int StartCell { get; private set; }
+
+        /// <summary>
+        /// Level end cell.
+        /// </summary>
+        public Vector2Int EndCell { get; private set; }
+
+        public enum LevelState { NotReady, NotPlayable, Ready, Playable, Win }
+        /// <summary>
+        /// Level playable state.
+        /// </summary>
         public LevelState LvlState { get; private set; }
 
+        /// <summary>
+        /// Event called when a level is not initialized.
+        /// </summary>
         public static event EventHandler OnLevelNotReady;
+        /// <summary>
+        /// Event called when a level has no end or start.
+        /// </summary>
         public static event EventHandler OnLevelNotPlayable;
+
+        /// <summary>
+        /// Event called when a level has been correctly initialized.
+        /// </summary>
         public static event EventHandler<OnLevelReadyEventArgs> OnLevelReady;
-        public class OnLevelReadyEventArgs : EventArgs { public int width, height; }
-        public static event EventHandler<GridCoordsEventArgs> OnLevelPlayable;
+        public class OnLevelReadyEventArgs : EventArgs {
+            public int width, height;
+        }
+
+        /// <summary>
+        /// Event called when a level has an end and a start.
+        /// </summary>
+        public static event EventHandler<OnLevelPlayableEventArgs> OnLevelPlayable;
+        public class OnLevelPlayableEventArgs : EventArgs {
+            public int startX, startY;
+            public int endX, endY;
+        }
 
         [Header("Events")]
+        [SerializeField] private UnityEvent OnLevelStart;
         [SerializeField] private UnityEvent OnWin;
 
         [Header("Debug")]
         [SerializeField] private bool showDebugLog = false;
 
-        private void Awake()
-        {
-            grid = new GridXY<TileType>();
-            if (main == null) main = this;
+        private void Awake() {
+            if (Main == null) Main = this;
             else Destroy(this);
+
+            Grid = new GridXY<Element>();
         }
 
-        private void OnEnable()
-        {
-            Player.OnPlayerStoppedMove += (sender, args) =>
-            {
-                if (grid != null)
-                    if (grid.CellIsValid(args.x, args.y))
-                        if (grid.GetTile(args.x, args.y) == TileType.Goal)
-                            OnWin?.Invoke();
+        private void OnEnable() {
+            Player.StoppedMoveStatic += (sender, args) => {
+                if (Grid == null) {
+                    return;
+                }
+
+                if (Grid.CellIsValid(args.x, args.y)) {
+                    if (Grid.GetTile(args.x, args.y) == Element.End) {
+                        LvlState = LevelState.Win;
+                        OnWin?.Invoke();
+                    }
+                }
             };
         }
 
-        public void LoadLevel(Seed lvlSeed)
-        {
-            if (lvlSeed != null && lvlSeed.isValid)
-            {
-                Debug.Log("0. Loading level...");
+        /// <summary>
+        /// Delete the current level.
+        /// </summary>
+        public void ClearLevel() {
+            LeanTween.cancelAll();
+            StopAllCoroutines();
 
-                LeanTween.cancelAll();
-                StopAllCoroutines();
-
-                Debug.Log("Level is not ready!");
-                LvlState = LevelState.NotReady;
-                OnLevelNotReady?.Invoke(this, null);
-
-                Debug.Log($"1. Initializing level...");
-                grid.CreateGridXY(lvlSeed.Width, lvlSeed.Height, CELLSIZE, new Vector2(lvlSeed.Width / 2.0f - 0.5f, lvlSeed.Height / 2.0f - 0.5f) * new Vector2(-1, 1) * CELLSIZE);
-                grid.SetAllTiles(TileType.NULL);
-
-                Debug.Log("Level is not playable!");
-                LvlState = LevelState.NotPlayable;
-                OnLevelNotPlayable?.Invoke(this, null);
-
-                Debug.Log("2. Generating level...");
-                Vector2Int startPos = Vector2Int.one * -1;
-
-                bool hasStart = false, hasEnd = lvlSeed.Size == 1;
-
-                TileType type;
-                for (int i = 0; i < lvlSeed.cells.Count; i++)
-                {
-                    grid.CellNumToCell(i, out int x, out int y);
-                    type = (TileType)lvlSeed.cells[i];
-                    grid.SetTile(x, y, type);
-                    if (showDebugLog) Debug.Log($"Setted Tile n.{i} {grid.GetTileToString(x, y)}");
-                    if (type == TileType.Player)
-                    {
-                        startPos.x = x;
-                        startPos.y = y;
-                        hasStart = true;
-                    } else
-                        hasEnd = hasEnd || type == TileType.Goal;
-                }
-
-                Debug.Log("Level is ready!");
-                LvlState = LevelState.Ready;
-                OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = lvlSeed.Width, height = lvlSeed.Height });
-                if (hasStart && hasEnd)
-                {
-                    Debug.Log("Level is playable!");
-                    LvlState = LevelState.Playable;
-                    OnLevelPlayable?.Invoke(this, new GridCoordsEventArgs { x = startPos.x, y = startPos.y });
-                }
-            } else
-                Debug.LogWarning($"Can't load level from seed {lvlSeed.SeedOriginal}");
+            Debug.Log("Level is not ready!");
+            LvlState = LevelState.NotReady;
+            OnLevelNotReady?.Invoke(this, null);
         }
-        public void LoadLevel(string seed) { LoadLevel(new Seed(seed)); }
+
+        /// <summary>
+        /// Load a new level
+        /// </summary>
+        /// <param name="newLevel">New level.</param>
+        public void LoadLevel(GridXY<Element> newLevel) {
+            if (newLevel == null || newLevel.Size == 0) {
+                Debug.LogWarning("The new level grid is not valid");
+                return;
+            }
+
+            Debug.Log($"0. Loading level {newLevel.Width}x{newLevel.Height}...");
+            ClearLevel();
+
+            Debug.Log($"1. Initializing level...");
+            Grid.CreateGridXY(newLevel.Width, newLevel.Height, 1, Vector3.zero, true, Element.NULL, Element.NULL);
+
+            Debug.Log("Level is not playable!");
+            LvlState = LevelState.NotPlayable;
+            OnLevelNotPlayable?.Invoke(this, null);
+
+            Debug.Log("2. Generating level...");
+            StartCell = Vector2Int.one * -1;
+            EndCell = Vector2Int.one * -1;
+
+            bool hasStart = false;
+            bool hasEnd = Grid.Size == 1;
+
+            Element type;
+            for (int x = 0; x < Grid.Width; x++) {
+                for (int y = 0; y < Grid.Height; y++) {
+                    type = newLevel.GetTile(x, y);
+                    if (showDebugLog) Debug.Log($"Setted Tile {x},{y} ({type})");
+                    Grid.SetTile(x, y, type);
+                    if (type == Element.Start) {
+                        StartCell = new Vector2Int(x, y);
+                        hasStart = true;
+                    } else {
+                        if (type == Element.End) {
+                            EndCell = new Vector2Int(x, y);
+                            hasEnd = true;
+                        }
+                    }
+                }
+            }
+
+            Debug.Log("Level is ready!");
+            LvlState = LevelState.Ready;
+            OnLevelReady?.Invoke(this, new OnLevelReadyEventArgs { width = Grid.Width, height = Grid.Height });
+
+            if(!hasStart || !hasEnd) {
+                Debug.LogWarning($"Level has {(!hasStart ? "NO": "")} Start and {(!hasEnd ? "NO" : "")} End");
+                return;
+            }
+
+            LevelNavigation.SetUp(Grid.Width, Grid.Height, false, true, Grid);
+
+            Debug.Log("Level is playable!");
+            LvlState = LevelState.Playable;
+            OnLevelPlayable?.Invoke(this, new OnLevelPlayableEventArgs { startX = StartCell.x, startY = StartCell.y, endX = EndCell.x, endY = EndCell.y });
+            OnLevelStart?.Invoke();
+        }
+
+        /// <summary>
+        /// Restart the current level.
+        /// </summary>
+        public void Restart() {
+            GridXY<Element> newLevel = new GridXY<Element>();
+            newLevel.CreateGridXY(Grid.Width, Grid.Height, Grid.CellSize, Grid.OriginPosition, false, Element.NULL, Element.NULL);
+            for (int x = 0; x < Grid.Width; x++) {
+                for (int y = 0; y < Grid.Height; y++) {
+                    newLevel.SetTile(x, y, Grid.GetTile(x, y));
+                }
+            }
+            LoadLevel(newLevel);
+        }
     }
 }

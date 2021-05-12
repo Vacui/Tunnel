@@ -1,82 +1,84 @@
 ﻿using UnityEngine;
+using UnityEngine.Tilemaps;
 
-namespace Level
-{
-    [DisallowMultipleComponent]
-    public class LevelVisual : MonoBehaviour
-    {
-        public static LevelVisual main;
+namespace Level {
+    [DisallowMultipleComponent, RequireComponent(typeof(Tilemap))]
+    public class LevelVisual : MonoBehaviour {
+        /// <summary>
+        /// Level Visual singleton.
+        /// </summary>
+        public static LevelVisual main { get; private set; }
 
-        public GridXY<SpriteRenderer> grid { get; private set; }
-        [SerializeField] private ElementsVisuals skinTiles;
+        [SerializeField] private TileBase t_start;
+        [SerializeField] private TileBase t_end;
+        [SerializeField] private TileBase t_node;
+        [SerializeField] private TileBase t_tunnel;
 
-        private Transform transformLevel;
+        public Tilemap Tilemap { get; private set; }
 
+        [System.Flags]
+        private enum LevelVisualDebug {
+            Nothing = 0,
+            Hiding_Tile = 1,
+            Discovering_Tile = 2,
+            Updating_Visual = 4,
+            Everything = ~0
+        }
         [Header("Debug")]
-        [SerializeField] bool showDebugLog;
+        [SerializeField, EnumFlag] private LevelVisualDebug showDebugLog;
 
-        private void Awake()
-        {
+        private void Awake() {
             if (main == null) main = this;
             else Destroy(this);
 
-            grid = new GridXY<SpriteRenderer>();
-            LevelManager.main.grid.OnGridCreated += (sender, args) =>
-            {
-                ResetVisuals();
-                grid.CreateGridXY(args.width, args.height, args.cellSize, args.originPosition);
+            Tilemap = GetComponent<Tilemap>();
+
+            LevelManager.Main.Grid.OnGridCreated += (sender, args) => {
+                Debug.Log("Clearing visual Tilemap");
+                Tilemap.ClearAllTiles();
             };
-            LevelManager.main.grid.OnGridObjectChanged += (sender, args) => ResetTileVisual(args.x, args.y);
+            //LevelManager.main.Grid.OnTileChanged += (sender, args) => {
+            //    UpdateVisual(args.x, args.y);
+            //};
+
+            LevelFog.HiddenTile += (sender, args) => {
+                if (showDebugLog.HasFlag(LevelVisualDebug.Hiding_Tile)) Debug.Log($"Hiding Visual Tile {args.x},{args.y}");
+                Tilemap.SetTile(new Vector3Int(args.x, args.y, 0), null);
+            };
+            LevelFog.DiscoveredTile += (sender, args) => {
+                if (showDebugLog.HasFlag(LevelVisualDebug.Discovering_Tile)) Debug.Log($"Discovering Visual Tile {args.x},{args.y}");
+                UpdateVisual(args.x, args.y);
+            };
         }
 
         /// <summary>
-        /// Clear the game visuals. USE WITH CAUTION!
+        /// Set the provided tilemap cell to the correct visual.
         /// </summary>
-        private void ResetVisuals()
-        {
-            if (showDebugLog) Debug.Log("Deleting visuals");
-            if (transformLevel)
-                Destroy(transformLevel.gameObject);
+        /// <param name="x">Tilemap cell X.</param>
+        /// <param name="y">Tilemap cell Y.</param>
+        public void UpdateVisual(int x, int y) {
 
-            transformLevel = new GameObject("level").transform;
-            transformLevel.parent = transform;
-            transformLevel.localPosition = Vector3.zero;
-            transformLevel.localRotation = Quaternion.identity;
+            if(LevelManager.Main.LvlState == LevelManager.LevelState.Win) {
+                return;
+            }
+
+            Element element = LevelManager.Main.Grid.GetTile(x, y);
+            if (showDebugLog.HasFlag(LevelVisualDebug.Updating_Visual)) Debug.Log($"Updating Visual Tile {x},{y} ({element})");
+            Tilemap.SetTile(new Vector3Int(x, y, 0), GetTileBase(element));
         }
 
-        public void ResetTileVisual(int x, int y, Color color)
-        {
-            TileType typeTile = LevelManager.main.grid.GetTile(x, y);
-            if (showDebugLog) Debug.Log($"Updating Tile {x},{y} ({typeTile}) Visual");
-            SetTileVisual(x, y, skinTiles.GetVisualData(typeTile));
-        }
-        public void ResetTileVisual(int x, int y) { ResetTileVisual(x, y, Color.black); }
-
-        public void SetTileVisual(int x, int y, Sprite sprite, Color color)
-        {
-            if (grid.CellIsValid(x, y) && sprite)
-            {
-                SpriteRenderer visualTile = grid.GetTile(x, y);
-                if (!visualTile)
-                {
-                    visualTile = SpawnVisuals(x, y);
-                    grid.SetTile(x, y, visualTile);
-                }
-
-                visualTile.sprite = sprite;
-                visualTile.color = color;
+        private TileBase GetTileBase(Element type) {
+            switch (type) {
+                case Element.NULL: return null;
+                case Element.Start: return t_start;
+                case Element.End: return t_end;
+                case Element.Node: return t_node;
+                default: return t_tunnel;
             }
         }
-        public void SetTileVisual(int x, int y, Sprite sprite) { SetTileVisual(x, y, sprite, Color.black); }
-        public void SetTileVisual(int x, int y, ElementsVisuals.VisualData visualData) { SetTileVisual(x, y, visualData.sprite, visualData.color); }
 
-        private SpriteRenderer SpawnVisuals(int x, int y)
-        {
-            SpriteRenderer newTile = new GameObject($"{x},{y}").AddComponent<SpriteRenderer>();
-            newTile.color = Color.black;
-            newTile.transform.parent = transformLevel;
-            newTile.transform.localPosition = grid.CellToWorld(x, y);
-            return newTile;
+        private void OnDisable() {
+            Tilemap.ClearAllTiles();
         }
     }
 }
