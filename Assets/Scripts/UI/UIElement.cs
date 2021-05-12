@@ -2,24 +2,18 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace UI
-{
+namespace UI {
     [RequireComponent(typeof(RectTransform)), DisallowMultipleComponent]
-    public abstract class UIElement : MonoBehaviour
-    {
+    public abstract class UIElement : MonoBehaviour {
         [SerializeField, Disable, EditorButton("ToggleActive", "Toggle Active", activityType: ButtonActivityType.Everything)] private bool isActive = false;
-        public bool IsActive
-        {
+        public bool IsActive {
             get { return isActive; }
-            private set
-            {
+            private set {
                 isActive = IsLocked ? false : value;
-                if (isActive)
-                {
+                if (isActive) {
                     OnActive();
                     OnActiveEvent?.Invoke();
-                } else
-                {
+                } else {
                     OnInactive();
                     OnInactiveEvent?.Invoke();
                 }
@@ -27,19 +21,15 @@ namespace UI
         }
 
         private bool isLocked = false;
-        public bool IsLocked
-        {
+        public bool IsLocked {
             get { return isLocked; }
-            private set
-            {
+            private set {
                 isLocked = value;
-                if (isLocked)
-                {
+                if (isLocked) {
                     OnLock();
                     OnLockEvent?.Invoke();
                     IsActive = false;
-                } else
-                {
+                } else {
                     OnUnlock();
                     OnUnlockEvent?.Invoke();
                 }
@@ -52,21 +42,33 @@ namespace UI
         public UltEvent OnLockEvent;
         public UltEvent OnUnlockEvent;
 
-        public void Active() { IsActive = IsLocked ? false : true; }
+        public void Active() {
+            IsActive = IsLocked ? false : true;
+        }
         protected virtual void OnActive() { }
 
-        public void Inactive() { IsActive = false; }
+        public void Inactive() {
+            IsActive = false;
+        }
         protected virtual void OnInactive() { }
 
-        public void ToggleActive() { IsActive = !IsActive; }
+        public void ToggleActive() {
+            IsActive = !IsActive;
+        }
 
-        public void Lock() { IsLocked = true; }
+        public void Lock() {
+            IsLocked = true;
+        }
         protected virtual void OnLock() { }
 
-        public void Unlock() { IsLocked = false; }
+        public void Unlock() {
+            IsLocked = false;
+        }
         protected virtual void OnUnlock() { }
 
-        public void ToggleLock() { IsLocked = !IsLocked; }
+        public void ToggleLock() {
+            IsLocked = !IsLocked;
+        }
 
         protected virtual void Awake() { }
 
@@ -79,8 +81,7 @@ namespace UI
         protected virtual void Update() { }
     }
 
-    public abstract class UIElementButton : UIElement, IPointerClickHandler
-    {
+    public abstract class UIElementButton : UIElement, IPointerClickHandler {
         public virtual void OnPointerClick(PointerEventData eventData) { Active(); }
     }
 }
