@@ -9,21 +9,9 @@ namespace UI
         [SerializeField] private Color color;
         private Color baseColor;
 
-        private void Awake() {
-            if (graphic != null) {
-                baseColor = graphic.color;
-            }
-        }
+        private void Awake() { if (graphic != null) baseColor = graphic.color; }
 
-        public void SetColorGraphic() {
-            if (graphic != null) {
-                graphic.color = color;
-            }
-        }
-        public void ResetColorGraphic() {
-            if (graphic != null) {
-                graphic.color = baseColor;
-            }
-        }
+        public void SetColorGraphic() { if (graphic != null) graphic.color = color; }
+        public void ResetColorGraphic() { if (graphic != null) graphic.color = baseColor; }
     }
 }

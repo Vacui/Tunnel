@@ -5,7 +5,7 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - skinTiles: {fileID: 11400000, guid: e619457bed41daf45ba684a65f502768, type: 2}
-  executionOrder: -15
+  executionOrder: 400
   icon: {instanceID: 0}
   userData: 
   assetBundleName: 

@@ -1,60 +1,57 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace UI {
+namespace UI
+{
     [RequireComponent(typeof(RectTransform))]
-    public class TabGroup : MonoBehaviour {
-        [SerializeField] private Tab originTab;
-        private string OriginName { get { return originTab.GetName(); } }
-        private Dictionary<string, Tab> tabs;
-        [SerializeField, Disable] private List<Tab> history;
+    public class TabGroup : MonoBehaviour
+    {
+        [SerializeField] string originName;
+        Dictionary<string, Tab> tabs;
+        [SerializeField, Disable] List<Tab> history;
         public List<Tab> History { get { return history; } }
 
-        private void Awake() {
+        private void Awake()
+        {
             tabs = new Dictionary<string, Tab>();
             history = new List<Tab>();
         }
 
-        public void Subscribe(string name, Tab tab) {
+        public void Subscribe(string name, Tab tab)
+        {
             name = name.Trim().ToLower();
-            if (!tabs.ContainsKey(name)) {
+            if (!tabs.ContainsKey(name))
+            {
                 tabs.Add(name, tab);
-                if (name == OriginName) {
+                if (name == originName)
                     ShowTab(name);
-                } else {
+                else
                     tab.Inactive();
-                }
             }
         }
 
-        public void ShowTab(string name) {
+        public void ShowTab(string name)
+        {
             name = name.Trim().ToLower();
+            if (name != "" && tabs.ContainsKey(name) && tabs[name])
+            {
+                Debug.Log($"Showing tab {name}");
 
-            if(name == "" || !tabs.ContainsKey(name) || !tabs[name]) {
-                return;
+                if (history.Count > 0)
+                    history.Last().Inactive();
+
+                if (name == originName)
+                    history = new List<Tab>();
+
+                history.Add(tabs[name]);
+                history.Last().Active();
             }
-
-            if (history.Count > 0) {
-                Tab lastTab = history.Last();
-                if (lastTab.GetName() == name) {
-                    return;
-                }
-
-                Debug.Log($"Hiding tab { lastTab.GetName()}");
-                lastTab.Inactive();
-            }
-
-            if (name == OriginName) {
-                history = new List<Tab>();
-            }
-
-            history.Add(tabs[name]);
-            Debug.Log($"Showing tab {history.Last().GetName()}");
-            history.Last().Active();
         }
 
-        public void GoBack() {
-            if (history.Count > 1) {
+        public void GoBack()
+        {
+            if (history.Count > 1)
+            {
                 history.Last().Inactive();
                 history.RemoveLast();
             }
