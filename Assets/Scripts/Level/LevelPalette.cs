@@ -14,12 +14,13 @@ public class LevelPalette : MonoBehaviour {
         }
     }
 
-    [SerializeField] private Color defaultColor;
-    [SerializeField] private List<Color> colors;
     /// <summary>
     /// Event called when a new color is setted.
     /// </summary>
     public static System.Action<Color> UpdatedColor;
+
+    [SerializeField, EditorButton(nameof(RandomColor), "New Color", ButtonActivityType.OnPlayMode)] private Color defaultColor;
+    [SerializeField] private List<Color> colors;
 
     private void Awake() {
         Color = defaultColor;
@@ -29,6 +30,6 @@ public class LevelPalette : MonoBehaviour {
     /// Choose a random color between the setted possibilities.
     /// </summary>
     public void RandomColor() {
-        Color = colors[Random.Range(0, colors.Count - 1)];
+        Color = colors[Random.Range(0, colors.Count)];
     }
 }
