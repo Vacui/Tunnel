@@ -173,27 +173,29 @@ namespace Level {
             int attempts = 0;
             int maxAttempts = num * 2;
 
-            List<Vector2Int> nodesAlreadyFound = new List<Vector2Int>();
-            Vector2Int cell = Vector2Int.zero;
-            System.Random rnd = new System.Random(System.DateTime.Now.Millisecond);
+            List<Vector2Int> allNodes = new List<Vector2Int>(lvlWidth * lvlHeight);
+            List<Vector2Int> nodes = new List<Vector2Int>(num);
 
             Status = LevelGenerationStatus.Nodes;
             yield return null;
 
-            for (int i = 0; i < num && attempts < maxAttempts; i++, attempts++) {
-                cell = new Vector2Int(rnd.Next(0, newLevel.Width), rnd.Next(0, newLevel.Height));
-                if (newLevel.GetTile(cell).IsNodeType() || nodesAlreadyFound.Contains(cell)) {
-                    i--;
-                    continue;
+            for(int x = 0; x < lvlWidth; x++) {
+                for(int y = 0; y < lvlHeight; y++) {
+                    allNodes.Add(new Vector2Int(x, y));
                 }
-                nodesAlreadyFound.Add(cell);
-                newLevel.SetTile(cell, Element.Node);
-                genProgression = Mathf.Max((float)i / num, (float)attempts / maxAttempts);
-                yield return null;
             }
-            Debug.Log($"Generated {nodesAlreadyFound.Count}/{num} nodes in {attempts}/{maxAttempts} attempts");
 
-            callback?.Invoke(nodesAlreadyFound);
+            allNodes.ShuffleUsingRandom();
+
+            for (int i = 0; i < num && i < allNodes.Count; i++) {
+                nodes.Add(allNodes[i]);
+                newLevel.SetTile(allNodes[i], Element.Node);
+                genProgression = Mathf.Max((float)i / num, (float)attempts / maxAttempts);
+                //yield return null;
+            }
+            Debug.Log($"Generated {nodes.Count}/{num} nodes");
+
+            callback?.Invoke(nodes);
             yield break;
         }
 
@@ -215,7 +217,11 @@ namespace Level {
             Status = LevelGenerationStatus.Paths;
             yield return null;
 
+            float startTime;
+
             for (path = 0; path + nodesUnusable + 1 < nodes.Count && attempts < maxAttempts; path++, attempts++) {
+                startTime = Time.realtimeSinceStartup;
+
                 newPath = LevelNavigation.FindPath(nodes[path], nodes[path + nodesUnusable + 1], newLevel);
                 if (newPath == null) {
                     path--;
@@ -227,8 +233,10 @@ namespace Level {
                     }
                     path += nodesUnusable;
                     nodesUnusable = 0;
+                    Debug.Log(((Time.realtimeSinceStartup - startTime) * 100f) + "ms");
                 }
                 genProgression = Mathf.Max((float)path / nodes.Count, (float)attempts / maxAttempts);
+
                 yield return null;
             }
 

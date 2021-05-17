@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using Palette;
 
 [DisallowMultipleComponent]
 public class GetLevelPaletteColor : MonoBehaviour {
 
+    [SerializeField] private PaletteColors desiredColor;
     [SerializeField] private UltEventColor UpdatedColor;
 
     private void OnEnable() {
-        LevelPalette.UpdatedColor += UpdateColor;
-        UpdateColor(LevelPalette.Color);
+        LevelPalette.UpdatedColor += (paletteColor) => UpdateColor(paletteColor.GetColor(desiredColor));
+        UpdateColor(LevelPalette.Color.GetColor(desiredColor));
     }
 
     private void OnDisable() {
-        LevelPalette.UpdatedColor -= UpdateColor;
+        LevelPalette.UpdatedColor -= (paletteColor) => UpdateColor(paletteColor.GetColor(desiredColor));
     }
 
     private void UpdateColor(Color color) {
