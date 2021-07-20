@@ -1,5 +1,3 @@
-_The code in this repository is read only, **nobody** is allowed to redistribuite or use it, with 
-or without modification._
 <h1 align="center">Tunnel</h1>
 <p align="center">
   <img src="https://img.shields.io/badge/-unity-000000?style=for-the-badge&logo=unity&logoColor=white" alt="Unity">
